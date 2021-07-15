@@ -5,4 +5,5 @@
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('indicator') }}'><i class='nav-icon la la-question'></i> Indicators</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('sdg') }}'><i class='nav-icon la la-question'></i> Sdgs</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('language') }}'><i class='nav-icon la la-question'></i> Languages</a></li>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('form') }}'><i class='nav-icon la la-question'></i> Forms</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-question'></i> Projects</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('xlsform') }}'><i class='nav-icon la la-question'></i> Forms</a></li>

@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\XlsformRequest;
-use App\Jobs\CreateDraftFormOnOdkCentral;
+use App\Models\Project;
+use App\Http\Requests\ProjectRequest;
 use App\Jobs\CreateProjectOnOdkCentral;
-use App\Models\Xlsform;
-use Illuminate\Support\Facades\Storage;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class FormCrudController
+ * Class ProjectCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class XlsformCrudController extends CrudController
+class ProjectCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -31,9 +28,9 @@ class XlsformCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Xlsform::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/xlsform');
-        CRUD::setEntityNameStrings('form', 'forms');
+        CRUD::setModel(\App\Models\Project::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/project');
+        CRUD::setEntityNameStrings('project', 'projects');
     }
 
     /**
@@ -44,15 +41,18 @@ class XlsformCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('project')->type('relationship');
-        CRUD::column('title')->label('Form Title');
-        CRUD::column('status')->label('Form Status');
-        CRUD::column('xlsfile')->wrapper(['href' => function ($crud, $column, $entry, $key) {
-            return Storage::url($entry->xlsfile);
-        }]);
+        $this->crud->query = $this->crud->query->withCount('xlsforms');
+        CRUD::column('name');
+        CRUD::column('xlsforms_count');
+        CRUD::column('odk_central_id')->label('ODK Central ID')->wrapper([
+            'href' => function ($crud, $column, $entry, $key) {
+                return 'https://central.rhomis.cgiar.org/#/projects/' .$entry->odk_central_id;
+            },
+        ]);
 
-        CRUD::button('deploy')->type('view')->stack('line')->view('backpack::crud.buttons.deploy');
+        CRUD::button('deploy_project')->type('view')->stack('line')->view('backpack::crud.buttons.deploy');
     }
+
     /**
      * Define what happens when the Create operation is loaded.
      *
@@ -61,12 +61,9 @@ class XlsformCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(XlsformRequest::class);
+        CRUD::setValidation(ProjectRequest::class);
 
-        CRUD::field('project_id')->type('relationship')->label('Select project for the new form');
-        CRUD::field('title')->label('Enter form title');
-        CRUD::field('xlsfile')->label('Upload the XLS form file for the form')->type('upload')->upload(true);
-        CRUD::field('user_id')->type('hidden')->default(Auth::id());
+        CRUD::field('name')->label('Enter Project Name');
     }
 
     /**
@@ -80,9 +77,9 @@ class XlsformCrudController extends CrudController
         $this->setupCreateOperation();
     }
 
-    public function deploy(Xlsform $xlsform)
+    public function deploy(Project $project)
     {
-        CreateDraftFormOnOdkCentral::dispatchSync($xlsform);
+        CreateProjectOnOdkCentral::dispatchSync($project);
 
         return response('', 200);
     }

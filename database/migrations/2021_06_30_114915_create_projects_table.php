@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateXlsformsTable extends Migration
+class CreateProjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateXlsformsTable extends Migration
      */
     public function up()
     {
-        Schema::create('xlsforms', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->string('title');
-            $table->string('xlsfile');
-            $table->string('status')->nullable();
+            $table->string('name');
             $table->string('odk_central_id')->nullable();
             $table->timestamps();
         });
@@ -31,6 +28,6 @@ class CreateXlsformsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('forms');
+        Schema::dropIfExists('projects');
     }
 }

@@ -30,4 +30,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'odk_central' => [
+        'url' => env('ODK_CENTRAL_URL'),
+        'admin' => [
+            'email' => env('ODK_CENTRAL_ADMIN_EMAIL'),
+            'password' => env('ODK_CENTRAL_ADMIN_PASSWORD'),
+        ],
+    ],
+
 ];

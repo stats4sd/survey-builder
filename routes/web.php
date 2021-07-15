@@ -17,8 +17,9 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+// overwrite Backpack auth route defaults:
+Route::get('admin/login', function () {
+    return redirect('login');
+});
 
 require __DIR__.'/auth.php';

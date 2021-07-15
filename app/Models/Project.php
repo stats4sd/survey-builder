@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUploadFields;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
-class Xlsform extends Model
+class Project extends Model
 {
-    use CrudTrait, HasUploadFields;
+    use CrudTrait;
 
     /*
     |--------------------------------------------------------------------------
@@ -16,13 +15,8 @@ class Xlsform extends Model
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'xlsforms';
+    protected $table = 'projects';
     protected $guarded = ['id'];
-
-    public function setXlsfileAttribute($value)
-    {
-        $this->uploadFileWithNames($value, 'xlsfile', 'public', 'forms');
-    }
 
 
     /*
@@ -31,8 +25,8 @@ class Xlsform extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function project()
+    public function xlsforms()
     {
-        return $this->belongsTo(Project::class);
+        return $this->hasMany(Xlsform::class);
     }
 }
