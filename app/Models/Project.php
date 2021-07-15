@@ -9,11 +9,6 @@ class Project extends Model
 {
     use CrudTrait;
 
-    /*
-    |--------------------------------------------------------------------------
-    | GLOBAL VARIABLES
-    |--------------------------------------------------------------------------
-    */
 
     protected $table = 'projects';
     protected $guarded = ['id'];

@@ -26,7 +26,10 @@ class ModuleRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'theme_id' => 'required|exists:themes,id',
+            'title' => 'required|string',
+            'file' => 'required',
+
         ];
     }
 

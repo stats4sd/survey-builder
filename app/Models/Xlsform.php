@@ -10,11 +10,6 @@ class Xlsform extends Model
 {
     use CrudTrait, HasUploadFields;
 
-    /*
-    |--------------------------------------------------------------------------
-    | GLOBAL VARIABLES
-    |--------------------------------------------------------------------------
-    */
 
     protected $table = 'xlsforms';
     protected $guarded = ['id'];

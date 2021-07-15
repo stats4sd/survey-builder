@@ -2,54 +2,26 @@
 
 namespace App\Models;
 
+use App\Imports\ModuleFileImport;
+use App\Models\Traits\HasUploadFields;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Module extends Model
 {
-    use CrudTrait;
-
-    /*
-    |--------------------------------------------------------------------------
-    | GLOBAL VARIABLES
-    |--------------------------------------------------------------------------
-    */
+    use CrudTrait, HasUploadFields;
 
     protected $table = 'modules';
-    // protected $primaryKey = 'id';
-    // public $timestamps = false;
     protected $guarded = ['id'];
-    // protected $fillable = [];
-    // protected $hidden = [];
-    // protected $dates = [];
 
-    /*
-    |--------------------------------------------------------------------------
-    | FUNCTIONS
-    |--------------------------------------------------------------------------
-    */
+    public function theme()
+    {
+        return $this->belongsTo(Theme::class);
+    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELATIONS
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | SCOPES
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | ACCESSORS
-    |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | MUTATORS
-    |--------------------------------------------------------------------------
-    */
+    public function setFileAttribute($value)
+    {
+        $this->uploadFileWithNames($value, "file", "local", "modules");
+    }
 }

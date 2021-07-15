@@ -17,13 +17,15 @@ class CreateModulesTable extends Migration
             $table->id();
             $table->foreignId('theme_id');
             $table->string('title');
-            $table->string('logo');
-            $table->text('localisation_needs');
-            $table->text('r_scripts');
-            $table->text('ordering_rules');
+            $table->string('logo')->nullable();
+            $table->text('localisation_needs')->nullable();
+            $table->text('r_scripts')->nullable();
+            $table->json('requires')->comment('list of other modules that this module requires / relies on.')->nullable();
+            $table->json('requires_before')->comment('list of other modules that must come before this module in the survey.')->nullable();
             $table->string('version');
             $table->unsignedInteger('minutes');
             $table->boolean('core');
+            $table->string('file');
             $table->timestamps();
         });
     }

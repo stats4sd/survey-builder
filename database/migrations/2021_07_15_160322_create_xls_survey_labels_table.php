@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateThemesTable extends Migration
+class CreateXlsSurveyLabelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,14 @@ class CreateThemesTable extends Migration
      */
     public function up()
     {
-        Schema::create('themes', function (Blueprint $table) {
+        Schema::create('xls_survey_labels', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
-            $table->text('description');
+            $table->foreignId('xls_survey_row_id');
+            $table->string('type');
+            $table->string('language_id');
+            $table->string('label');
+
+
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ class CreateThemesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('themes');
+        Schema::dropIfExists('xls_survey_labels');
     }
 }
