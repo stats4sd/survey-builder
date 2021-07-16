@@ -16,7 +16,7 @@ class Xlsform extends Model
 
     public function setXlsfileAttribute($value)
     {
-        $this->uploadFileWithNames($value, 'xlsfile', 'public', 'forms');
+        $this->uploadFileWithNames($value, 'xlsfile', 'local', 'forms');
     }
 
 
