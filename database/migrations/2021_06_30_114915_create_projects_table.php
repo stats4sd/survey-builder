@@ -16,6 +16,9 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('embargo')->nullable();
+            $table->boolean('global')->default(0);
+            $table->text('authors')->nullable();
             $table->string('odk_central_id')->nullable();
             $table->timestamps();
         });

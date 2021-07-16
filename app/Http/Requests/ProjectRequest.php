@@ -26,7 +26,10 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'name' => 'required|max:255',
+            'embargo' => 'nullable|max:255',
+            'global' => 'nullable|boolean',
+            'authors' => 'nullable',
         ];
     }
 
