@@ -26,4 +26,7 @@ Route::group([
 
     Route::post('project/{project}/deploy', 'ProjectCrudController@deploy');
     Route::post('xlsform/{xlsform}/deploy', 'XlsformCrudController@deploy');
+
+
+    Route::post('user/{user}/newtoken', 'TokenController@store')->name('account.newtoken');
 }); // this should be the absolute last line of this file

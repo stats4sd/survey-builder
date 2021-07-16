@@ -22,4 +22,6 @@ Route::get('admin/login', function () {
     return redirect('login');
 });
 
+
+
 require __DIR__.'/auth.php';
