@@ -23,7 +23,6 @@ class ModuleSurveyImport implements ToCollection, WithHeadingRow, WithCalculated
 
     public function collection(Collection $rows)
     {
-        //dd($rows);;
 
         foreach ($rows as $row) {
 
@@ -66,7 +65,6 @@ class ModuleSurveyImport implements ToCollection, WithHeadingRow, WithCalculated
                         'label' => $label,
                     ]);
                 }
-                //SurveyLabel::create()
             }
         }
     }

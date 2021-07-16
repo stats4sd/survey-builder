@@ -6,15 +6,15 @@ use App\Models\Module;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
-class ChoiceRow extends Model
+class ChoicesRow extends Model
 {
-    protected $table = 'xls_choice_rows';
+    protected $table = 'xls_choices_rows';
     protected $guarded = ['id'];
 
 
-    public function choiceLabels()
+    public function ChoicesLabels()
     {
-        return $this->hasMany(ChoiceLabel::class, 'xls_choice_row_id');
+        return $this->hasMany(ChoicesLabel::class, 'xls_choice_row_id');
     }
 
     public function module()

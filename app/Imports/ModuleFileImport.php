@@ -17,7 +17,7 @@ class ModuleFileImport implements WithMultipleSheets
     {
         return [
             'survey' => new ModuleSurveyImport($this->module),
-            //  'choices' => new ModuleChoiceImport(),
+            'choices' => new ModuleChoiceImport($this->module),
         ];
     }
 }
