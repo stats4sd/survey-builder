@@ -43,10 +43,9 @@ class ModuleCrudController extends CrudController
         CRUD::column('title');
         CRUD::column('requires')->type('array');
         CRUD::column('requires_before')->type('array');
-        CRUD::column('version');
+        CRUD::column('latest_version_name');
         CRUD::column('minutes');
         CRUD::column('core')->type('boolean');
-        CRUD::column('file')->type('upload');
     }
 
     /**
@@ -61,10 +60,9 @@ class ModuleCrudController extends CrudController
 
         CRUD::field('theme_id')->type('relationship');
         CRUD::field('title');
-        CRUD::field('file')->type('upload')->upload(true);
-        CRUD::field('version');
         CRUD::field('minutes');
         CRUD::field('core')->type('checkbox');
+        CRUD::field('live')->type('checkbox');
     }
 
     /**
@@ -77,4 +75,10 @@ class ModuleCrudController extends CrudController
     {
         $this->setupCreateOperation();
     }
+
+    public function setupShowOperation ()
+    {
+       CRUD::setShowView('modules.show');
+    }
+
 }

@@ -18,6 +18,7 @@ Route::group([
 
     Route::crud('theme', 'ThemeCrudController');
     Route::crud('module', 'ModuleCrudController');
+
     Route::crud('indicator', 'IndicatorCrudController');
     Route::crud('sdg', 'SdgCrudController');
     Route::crud('language', 'LanguageCrudController');
@@ -29,4 +30,7 @@ Route::group([
 
 
     Route::post('user/{user}/newtoken', 'TokenController@store')->name('account.newtoken');
+    Route::crud('moduleversion', 'ModuleVersionCrudController');
+
+    Route::get('moduleversion/{moduleversion}/publish', 'ModuleVersionCrudController@publish')->name('moduleversion.publish');
 }); // this should be the absolute last line of this file

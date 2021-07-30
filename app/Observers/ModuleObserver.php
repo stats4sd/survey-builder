@@ -17,7 +17,7 @@ class ModuleObserver
      */
     public function created(Module $module)
     {
-        Excel::import(new ModuleFileImport($module), $module->file);
+        //  Excel::import(new ModuleFileImport($module), $module->file);
     }
 
     /**

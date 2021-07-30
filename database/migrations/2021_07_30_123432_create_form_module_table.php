@@ -13,10 +13,10 @@ class CreateFormModuleTable extends Migration
      */
     public function up()
     {
-        Schema::create('module_xlsform', function (Blueprint $table) {
+        Schema::create('module_version_xlsform', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id');
-            $table->foreignId('xlsform_id');
+            $table->foreignId('module_version_id');
+            $table->foreignId('xlsform_i');
             $table->timestamps();
         });
     }

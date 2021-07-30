@@ -10,18 +10,60 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class Module extends Model
 {
-    use CrudTrait, HasUploadFields;
+    use CrudTrait;
 
     protected $table = 'modules';
     protected $guarded = ['id'];
+    protected $appends = [
+        'current_version_name'
+    ];
+
+    // ****** Latest Published Version ********* //
+    public function getCurrentVersionAttribute()
+    {
+        if ($this->publishedVersions->count() > 0) {
+            return $this->publishedVersions()->orderBy('created_at', 'desc')->first();
+        }
+
+        return null;
+    }
+
+    public function getCurrentVersionNameAttribute()
+    {
+        if ($this->publishedVersions->count() > 0) {
+            return $this->current_version->version_name;
+        }
+
+        return null;
+    }
+
+    public function getCurrentFileAttribute ()
+    {
+        if($this->publishedVersions->count() > 0) {
+            return $this->current_version->file;
+        }
+
+        return null;
+    }
+
 
     public function theme()
     {
         return $this->belongsTo(Theme::class);
     }
 
-    public function setFileAttribute($value)
+    public function moduleVersions()
     {
-        $this->uploadFileWithNames($value, "file", "local", "modules");
+        return $this->hasMany(ModuleVersion::class);
+    }
+
+    public function draftVersions()
+    {
+        return $this->hasMany(ModuleVersion::class)->where('published_at', null);
+    }
+
+    public function publishedVersions()
+    {
+        return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null);
     }
 }

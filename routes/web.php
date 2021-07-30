@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ModuleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,13 @@ Route::get('admin/login', function () {
     return redirect('login');
 });
 
-
+Route::group(
+    [
+        'middleware' => 'auth',
+    ],
+    function () {
+        Route::get('module/{module}', [ModuleController::class, 'show'])->name('module.localshow');
+    }
+);
 
 require __DIR__.'/auth.php';

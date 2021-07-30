@@ -22,10 +22,9 @@ class CreateModulesTable extends Migration
             $table->text('r_scripts')->nullable();
             $table->json('requires')->comment('list of other modules that this module requires / relies on.')->nullable();
             $table->json('requires_before')->comment('list of other modules that must come before this module in the survey.')->nullable();
-            $table->string('version');
             $table->unsignedInteger('minutes');
-            $table->boolean('core');
-            $table->string('file');
+            $table->boolean('core')->comment('is the module part of the RHOMIS core?');
+            $table->boolean('live')->comment('is the module available for use?');
             $table->timestamps();
         });
     }

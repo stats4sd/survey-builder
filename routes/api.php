@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ModuleController;
+use App\Http\Controllers\Api\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +24,5 @@ Route::group([
     'middleware' => 'auth:sanctum'
 ], function () {
     Route::apiResource('project', ProjectController::class);
+    //Route::apiResource('module', ModuleController::class);
 });

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ModuleRequest extends FormRequest
+class ModuleVersionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,7 @@ class ModuleRequest extends FormRequest
     public function rules()
     {
         return [
-            'theme_id' => 'required|exists:themes,id',
-            'title' => 'required|string',
-
+            // 'name' => 'required|min:5|max:255'
         ];
     }
 
