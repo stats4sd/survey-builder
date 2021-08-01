@@ -14,7 +14,7 @@ class ChoicesRow extends Model
 
     public function ChoicesLabels()
     {
-        return $this->hasMany(ChoicesLabel::class, 'xls_choice_row_id');
+        return $this->hasMany(ChoicesLabel::class, 'xls_choices_row_id');
     }
 
     public function module()

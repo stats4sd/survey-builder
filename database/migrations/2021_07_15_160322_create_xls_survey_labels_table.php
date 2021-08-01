@@ -15,7 +15,7 @@ class CreateXlsSurveyLabelsTable extends Migration
     {
         Schema::create('xls_survey_labels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('xls_survey_row_id');
+            $table->foreignId('xls_survey_row_id')->constrained()->onDelete('cascade');
             $table->string('type');
             $table->string('language_id');
             $table->string('label');

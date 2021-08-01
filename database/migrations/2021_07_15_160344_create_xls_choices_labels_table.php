@@ -15,7 +15,7 @@ class CreateXlsChoicesLabelsTable extends Migration
     {
         Schema::create('xls_choices_labels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('xls_choice_row_id');
+            $table->foreignId('xls_choices_row_id')->constrained()->onDelete('cascade');
             $table->string('type');
             $table->string('language_id');
             $table->string('label');

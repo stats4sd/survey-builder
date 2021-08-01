@@ -13,6 +13,6 @@ class ChoicesLabel extends Model
 
     public function ChoicesRow()
     {
-        return $this->belongsTo(ChoicesRow::class, 'xls_choice_row_id');
+        return $this->belongsTo(ChoicesRow::class, 'xls_choices_row_id');
     }
 }
