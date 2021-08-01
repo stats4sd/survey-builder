@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Imports\ModuleFileImport;
-use App\Models\Traits\HasUploadFields;
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Xlsforms\SurveyRow;
+use App\Models\Xlsforms\ChoicesRow;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Traits\HasUploadFields;
+use Illuminate\Database\Eloquent\Model;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 class Module extends Model
 {
@@ -60,11 +62,21 @@ class Module extends Model
 
     public function draftVersions()
     {
-        return $this->hasMany(ModuleVersion::class)->where('published_at', null);
+        return $this->hasMany(ModuleVersion::class)->where('published_at', null)->orderBy('created_at', 'desc');
     }
 
     public function publishedVersions()
     {
-        return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null);
+        return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null)->orderBy('published_at', 'desc');
+    }
+
+    public function surveyRows()
+    {
+        return $this->hasMany(SurveyRow::class);
+    }
+
+    public function choicesRows()
+    {
+        return $this->hasMany(ChoicesRow::class);
     }
 }

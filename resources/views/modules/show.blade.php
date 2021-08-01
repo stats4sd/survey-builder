@@ -46,7 +46,7 @@
             </li>
         </ul>
         <hr />
-        <h3>Current Draft Version(s)</h3>
+        <h3>Draft Version(s)</h3>
         <div class="list-group" style="max-width: 1000px">
             @foreach ($entry->draftVersions as $version)
                 <li class="list-group-item d-flex justify-content-between">
@@ -65,6 +65,8 @@
                 </li>
             @endforeach
         </div>
+        <a href="{{ route('moduleversion.createformodule', ['module' => $entry]) }}" class="btn btn-primary ml-4">+
+            Create New Version</a>
 
         <hr />
         <h3>Previous Published Versions</h3>
@@ -86,12 +88,6 @@
             @endforeach
         </div>
         <hr />
-
-        <a href="{{ route('moduleversion.createformodule', ['module' => $entry]) }}" class="btn btn-primary ml-4">+
-            Create New Version</a>
-
-
-
     </div>
 
 

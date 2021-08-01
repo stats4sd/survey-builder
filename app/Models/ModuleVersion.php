@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUploadFields;
 use Carbon\Carbon;
+use App\Imports\ModuleFileImport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Traits\HasUploadFields;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
@@ -16,6 +18,16 @@ class ModuleVersion extends Model
 
     public function publish()
     {
+
+            // clean out old module_version from survey and choices table
+        $this->module->surveyRows()->delete();
+        $this->module->choicesRows()->delete();
+
+        // import the new
+        Excel::import(new ModuleFileImport($this->module), $this->file);
+
+
+
         $this->update(['published_at' => Carbon::now()]);
 
         return $this->published_at;
@@ -34,6 +46,6 @@ class ModuleVersion extends Model
 
     public function setFileAttribute($value)
     {
-        $this->uploadFileWithNames($value, "file", "local", "modules");
+        $this->uploadFileWithNames($value, "file", config('filesystems.default'), "modules");
     }
 }

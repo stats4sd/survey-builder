@@ -46,7 +46,10 @@ class ModuleCrudController extends CrudController
         CRUD::column('requires_before')->type('array');
         CRUD::column('current_version_name')->label('Current Version')->wrapper([
             'href' => function ($crud, $column, $entry, $related_key) {
-                return Storage::url($entry->current_version->file);
+                if ($entry->current_version) {
+                    return Storage::url($entry->current_version->file);
+                }
+                return '#';
             }
         ]);
         CRUD::column('minutes');

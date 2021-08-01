@@ -23,7 +23,6 @@ class ModuleSurveyImport implements ToCollection, WithHeadingRow, WithCalculated
 
     public function collection(Collection $rows)
     {
-
         foreach ($rows as $row) {
 
             //ignore empty rows
