@@ -15,7 +15,8 @@ class Module extends Model
     protected $table = 'modules';
     protected $guarded = ['id'];
     protected $appends = [
-        'current_version_name'
+        'current_version_name',
+        'current_version',
     ];
 
     // ****** Latest Published Version ********* //
@@ -37,9 +38,9 @@ class Module extends Model
         return null;
     }
 
-    public function getCurrentFileAttribute ()
+    public function getCurrentFileAttribute()
     {
-        if($this->publishedVersions->count() > 0) {
+        if ($this->publishedVersions->count() > 0) {
             return $this->current_version->file;
         }
 

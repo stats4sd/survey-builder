@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ModuleRequest;
+use Illuminate\Support\Facades\Storage;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -43,7 +44,11 @@ class ModuleCrudController extends CrudController
         CRUD::column('title');
         CRUD::column('requires')->type('array');
         CRUD::column('requires_before')->type('array');
-        CRUD::column('latest_version_name');
+        CRUD::column('current_version_name')->label('Current Version')->wrapper([
+            'href' => function ($crud, $column, $entry, $related_key) {
+                return Storage::url($entry->current_version->file);
+            }
+        ]);
         CRUD::column('minutes');
         CRUD::column('core')->type('boolean');
     }
@@ -76,9 +81,8 @@ class ModuleCrudController extends CrudController
         $this->setupCreateOperation();
     }
 
-    public function setupShowOperation ()
+    public function setupShowOperation()
     {
-       CRUD::setShowView('modules.show');
+        CRUD::setShowView('modules.show');
     }
-
 }
