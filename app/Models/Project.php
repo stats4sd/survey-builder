@@ -24,4 +24,9 @@ class Project extends Model
     {
         return $this->hasMany(Xlsform::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

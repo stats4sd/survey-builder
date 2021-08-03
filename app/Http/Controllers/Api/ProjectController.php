@@ -15,7 +15,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Project::all();
+        return Project::with('users:id,name')->get();
     }
 
     /**

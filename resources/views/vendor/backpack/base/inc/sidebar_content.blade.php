@@ -7,4 +7,4 @@
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('language') }}'><i class='nav-icon la la-question'></i> Languages</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-question'></i> Projects</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('xlsform') }}'><i class='nav-icon la la-question'></i> Forms</a></li>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('moduleversion') }}'><i class='nav-icon la la-question'></i> ModuleVersions</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('user') }}'><i class='nav-icon la la-question'></i> Users</a></li>

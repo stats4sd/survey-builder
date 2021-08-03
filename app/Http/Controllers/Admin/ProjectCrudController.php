@@ -49,6 +49,7 @@ class ProjectCrudController extends CrudController
                 return 'https://central.rhomis.cgiar.org/#/projects/' .$entry->odk_central_id;
             },
         ]);
+        CRUD::column('users_count')->label('# of Users');
 
         CRUD::button('deploy_project')->type('view')->stack('line')->view('backpack::crud.buttons.deploy');
     }
@@ -67,7 +68,7 @@ class ProjectCrudController extends CrudController
         CRUD::field('embago')->label('Enter the standard embago time period for data collected with this project');
         CRUD::field('global')->label('Should project data be included in the anonymised RHoMIS global dataset?');
         CRUD::field('authors')->label('Enter information of collaborators for the project. This information will be used to include authorship information for any published results based on this project\'s activities');
-
+        CRUD::field('users')->type('relationship')->label('Add users to the project')->pivot(true);
     }
 
     /**
