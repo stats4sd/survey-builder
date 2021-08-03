@@ -30,4 +30,10 @@ class Xlsform extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function module ()
+    {
+       return $this->belongsToMany(Module::class);
+    }
+
 }

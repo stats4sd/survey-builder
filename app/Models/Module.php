@@ -79,4 +79,10 @@ class Module extends Model
     {
         return $this->hasMany(ChoicesRow::class);
     }
+
+    public function xlsforms ()
+    {
+       return $this->belongsToMany(Xlsform::class);
+    }
+
 }
