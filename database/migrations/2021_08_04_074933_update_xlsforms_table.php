@@ -16,8 +16,8 @@ class UpdateXlsformsTable extends Migration
         Schema::table('xlsforms', function (Blueprint $table) {
             $table->string('xlsfile')->nullable()->change();
             $table->string('status')->default('new')->change();
-            $table->timestamp('draft_at')->comment('when did it get first published as a draft');
-            $table->timestamp('published_at')->comment('when did it go live');
+            $table->timestamp('draft_at')->comment('when did it get first published as a draft')->nullable();
+            $table->timestamp('published_at')->comment('when did it go live')->nullable();
         });
     }
 

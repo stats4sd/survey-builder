@@ -20,3 +20,15 @@
     width: 200px !important;
     background-color: $white !important;
 }
+
+.bd-callout {
+    padding: 1.25rem;
+    border: 1px solid #eee;
+    border-left-color: rgb(238, 238, 238);
+    border-left-width: 1px;
+    border-left-width: 0.25rem;
+    border-radius: 0.25rem;
+    &.bd-callout-info {
+        border-left-color: #5bc0de;
+    }
+}

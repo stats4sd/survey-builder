@@ -17,4 +17,14 @@ class Theme extends Model
     {
         return $this->hasMany(Module::class);
     }
+
+    public function modifiers()
+    {
+        return $this->hasMany(Modifier::class);
+    }
+
+    public function xlsforms()
+    {
+        return $this->belongsToMany(Xlsform::class);
+    }
 }

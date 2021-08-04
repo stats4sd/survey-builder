@@ -15,6 +15,9 @@ class ModuleVersion extends Model
 
     protected $table = 'module_versions';
     protected $guarded = ['id'];
+    protected $appends = [
+        'dropdown_label',
+    ];
 
     public function publish()
     {
@@ -38,11 +41,30 @@ class ModuleVersion extends Model
         return $this->file;
     }
 
+    // ** probably temporary label var ** //
+    public function getDropdownLabelAttribute()
+    {
+        return '('.$this->module->theme?->title.') ' . $this->module->title . ' - Version: ' . $this->version_name;
+    }
+
+
 
     public function module()
     {
         return $this->belongsTo(Module::class);
     }
+
+    public function modifiers()
+    {
+        return $this->belongsToMany(Modifier::class);
+    }
+
+    public function xlsforms()
+    {
+        return $this->belongsToMany(Xlsform::class);
+    }
+
+
 
     public function setFileAttribute($value)
     {

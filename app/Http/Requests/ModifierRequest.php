@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class XlsformRequest extends FormRequest
+class ModifierRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,7 @@ class XlsformRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => 'required',
-            'title' => 'required',
-            'xlsfile' => 'nullable',
-            'themes' => 'nullable',
-            'modules' => 'nullable',
-            'user_id' => 'required',
+            // 'name' => 'required|min:5|max:255'
         ];
     }
 

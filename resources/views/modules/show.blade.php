@@ -6,13 +6,45 @@
         <a href="{{ route('module.index') }}">Back to module list</a>
         <h1>{{ $entry->title }}</h1>
         <h3>{{ $entry->theme->title }}</h3>
+        <h6>Authors: {{ $entry->authors->pluck('name')->join(', ') }}</h6>
 
+        <a class="btn btn-link" href="{{ backpack_url('module/'.$entry->id.'/edit') }}">Edit Module</a>
         <hr />
 
         <ul class="list-group" style="max-width: 800px">
             <li class="list-group-item d-flex">
                 <div class="w-50 text-right mr-4">Approx. time required (minutes): </div>
                 <div>{{ $entry->minutes }}</div>
+            </li>
+            <li class="list-group-item d-flex">
+                <div class="w-50 text-right mr-4">Available In Languages: </div>
+                <div>
+                    <ul>
+                    @foreach ($entry->languages as $language)
+                        <li>{{ $language->name }} ({{ $language->id }}) </li>
+                    @endforeach
+                    </ul>
+                </div>
+            </li>
+            <li class="list-group-item d-flex">
+                <div class="w-50 text-right mr-4">Indicators Calculated: </div>
+                <div>
+                    <ul>
+                    @foreach ($entry->indicators as $indicator)
+                        <li>{{ $indicator->name }}</li>
+                    @endforeach
+                    </ul>
+                </div>
+            </li>
+            <li class="list-group-item d-flex">
+                <div class="w-50 text-right mr-4">SDG Indicators: </div>
+                <div>
+                    <ul>
+                    @foreach ($entry->sdgs as $sdg)
+                        <li> {{ $sdg->id }} - {{ $sdg->name }}</li>
+                    @endforeach
+                    </ul>
+                </div>
             </li>
             <li class="list-group-item d-flex">
                 <div class="w-50 text-right mr-4">Core module? </div>

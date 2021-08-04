@@ -31,9 +31,14 @@ class Xlsform extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function module ()
+    public function themes()
     {
-       return $this->belongsToMany(Module::class);
+        return $this->belongsToMany(Theme::class);
     }
 
+
+    public function moduleVersions()
+    {
+        return $this->belongsToMany(ModuleVersion::class);
+    }
 }

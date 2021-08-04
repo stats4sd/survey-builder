@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateModifiersTable extends Migration
+class CreateModifierModuleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateModifiersTable extends Migration
      */
     public function up()
     {
-        Schema::create('modifiers', function (Blueprint $table) {
+        Schema::create('modifier_module', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->foreignId('theme_id')->nullable(); ##generic modifiers, like "reduced" are not theme-specific. Other modifiers, like gender-questions - are.
+            $table->foreignId('modifier_id');
+            $table->foreignId('module_id');
+
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateModifiersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('modifiers');
+        Schema::dropIfExists('modifier_module');
     }
 }

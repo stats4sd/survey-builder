@@ -12,4 +12,9 @@ class Indicator extends Model
 
     protected $table = 'indicators';
     protected $guarded = ['id'];
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class);
+    }
 }

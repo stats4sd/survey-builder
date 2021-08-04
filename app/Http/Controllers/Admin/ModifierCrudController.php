@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\SdgRequest;
+use App\Http\Requests\ModifierRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class SdgCrudController
+ * Class ModifierCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class SdgCrudController extends CrudController
+class ModifierCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class SdgCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Sdg::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/sdg');
-        CRUD::setEntityNameStrings('sdg', 'sdgs');
+        CRUD::setModel(\App\Models\Modifier::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/modifier');
+        CRUD::setEntityNameStrings('modifier', 'modifiers');
     }
 
     /**
@@ -39,8 +39,8 @@ class SdgCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('name');
+        CRUD::column('label')->label('Modifier');
+        CRUD::column('theme')->type('relationship')->attribute('title')->label('Linked to Theme?');
     }
 
     /**
@@ -51,10 +51,11 @@ class SdgCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(SdgRequest::class);
+        CRUD::setValidation(ModifierRequest::class);
 
-        CRUD::field('id');
-        CRUD::field('name');
+        CRUD::field('title');
+        CRUD::field('description');
+        CRUD::field('theme_id')->type('relationship')->hint('Leave blank for "global" modifiers');
     }
 
     /**

@@ -49,7 +49,6 @@ class Module extends Model
         return null;
     }
 
-
     public function theme()
     {
         return $this->belongsTo(Theme::class);
@@ -80,9 +79,33 @@ class Module extends Model
         return $this->hasMany(ChoicesRow::class);
     }
 
-    public function xlsforms ()
+    public function xlsforms()
     {
-       return $this->belongsToMany(Xlsform::class);
+        return $this->belongsToMany(Xlsform::class);
     }
 
+    public function modifiers()
+    {
+        return $this->belongsToMany(Modifier::class);
+    }
+
+    public function authors()
+    {
+        return $this->belongsToMany(Author::class);
+    }
+
+    public function indicators()
+    {
+        return $this->belongsToMany(Indicator::class);
+    }
+
+    public function sdgs()
+    {
+        return $this->belongsToMany(Sdg::class);
+    }
+
+    public function languages()
+    {
+        return $this->belongsToMany(Language::class);
+    }
 }

@@ -11,5 +11,11 @@ class Sdg extends Model
 
 
     protected $table = 'sdgs';
-    protected $guarded = ['id'];
+    protected $guarded = [];
+    public $incrementing = false;
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class);
+    }
 }

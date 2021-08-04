@@ -66,10 +66,25 @@ class ModuleCrudController extends CrudController
     {
         CRUD::setValidation(ModuleRequest::class);
 
+        CRUD::field('info')->type('section-title')->title('Basic Info');
         CRUD::field('theme_id')->type('relationship');
         CRUD::field('title');
-        CRUD::field('minutes');
+        CRUD::field('minutes')->label('Approx. time to complete this part of the survey (in minutes)');
+
+        CRUD::field('modifier-info')->type('section-title')->content('Modifiers are ways to define variants of a module. For example, if this module should have a "reduced" version that is different from the main version, add the "reduced" modifier.');
+        CRUD::field('modifiers')->type('relationship')->attribute('title');
+
+        CRUD::field('property-info')->type('section-title')->title('Module Properties');
+        CRUD::field('authors')->type('relationship');
+        CRUD::field('indicators')->type('relationship');
+        CRUD::field('sdgs')->type('relationship');
+        CRUD::field('languages')->type('relationship');
+
+
         CRUD::field('core')->type('checkbox');
+
+
+
         CRUD::field('live')->type('checkbox');
     }
 
