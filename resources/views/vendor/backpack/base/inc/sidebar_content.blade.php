@@ -4,6 +4,7 @@
 
 <h4 class="nav-item pl-3 py-4">Module Properties</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('theme') }}'><i class='nav-icon las la-info'></i> Themes</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('author') }}'><i class='nav-icon la la-user'></i> Authors</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('indicator') }}'><i class="nav-icon las la-digital-tachograph"></i> Indicators</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('sdg') }}'><i class='nav-icon las la-globe-africa'></i> SDG Indicators</a></li>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('language') }}'><i class='nav-icon las la-language'></i> Languages</a></li>
@@ -20,4 +21,3 @@
 <h4 class="nav-item pl-3 py-4">Platform Admin</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('user') }}'><i class='nav-icon la la-user'></i> Users</a></li>
 
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('author') }}'><i class='nav-icon la la-question'></i> Authors</a></li>
