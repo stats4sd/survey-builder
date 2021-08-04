@@ -12,8 +12,11 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ModuleChoiceImport implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
-    public function __construct(public Module $module)
+    public Module $module;
+
+    public function __construct(Module $module)
     {
+        $this->module = $module;
     }
 
 

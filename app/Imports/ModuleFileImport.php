@@ -8,8 +8,11 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ModuleFileImport implements WithMultipleSheets
 {
-    public function __construct(public Module $module)
+    public Module $module;
+
+    public function __construct(Module $module)
     {
+        $this->module = $module;
     }
 
 
