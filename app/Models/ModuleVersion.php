@@ -44,7 +44,9 @@ class ModuleVersion extends Model
     // ** probably temporary label var ** //
     public function getDropdownLabelAttribute()
     {
-        return '('.$this->module->theme?->title.') ' . $this->module->title . ' - Version: ' . $this->version_name;
+        $title = $this->module ? ($this->module->theme ? $this->module->theme->title : null) : null;
+
+        return '('.$title.') ' . $this->module->title . ' - Version: ' . $this->version_name;
     }
 
 
