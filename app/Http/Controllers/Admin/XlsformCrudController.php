@@ -64,9 +64,11 @@ class XlsformCrudController extends CrudController
         CRUD::setValidation(XlsformRequest::class);
 
         CRUD::field('project_id')->type('relationship')->label('Select project for the new form');
-        CRUD::field('title')->label('Enter form title');
-        CRUD::field('xlsfile')->label('Upload the XLS form file for the form')->type('upload')->upload(true);
         CRUD::field('user_id')->type('hidden')->default(Auth::id());
+
+        CRUD::field('title')->label('Enter form title');
+
+        CRUD::field('themes')->type('themes');
     }
 
     /**

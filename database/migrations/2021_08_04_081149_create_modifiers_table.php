@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFormModuleTable extends Migration
+class CreateModifiersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateFormModuleTable extends Migration
      */
     public function up()
     {
-        Schema::create('module_version_xlsform', function (Blueprint $table) {
+        Schema::create('modifiers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_version_id');
-            $table->foreignId('xlsform_i');
+            $table->string('label');
+            $table->foreignId('theme_id')->nullable(); ##generic modifiers, like "reduced" are not theme-specific. Other modifiers, like gender-questions - are.
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateFormModuleTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('form_module');
+        Schema::dropIfExists('modifiers');
     }
 }
