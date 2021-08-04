@@ -39,8 +39,8 @@ class LanguageCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::field('id')->label('ISO-2 Code');
-        CRUD::field('name')->label('Name');
+        CRUD::column('id')->label('ISO-2 Code');
+        CRUD::column('name')->label('Name');
     }
 
     /**
@@ -53,7 +53,9 @@ class LanguageCrudController extends CrudController
     {
         CRUD::setValidation(LanguageRequest::class);
 
-        CRUD::setFromDb(); // fields
+        CRUD::field('id')->label('ISO-2 Code');
+        CRUD::field('name')->label('Name');
+
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
