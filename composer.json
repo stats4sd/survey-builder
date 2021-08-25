@@ -15,7 +15,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/telescope": "^4.4",
         "laravel/tinker": "^2.5",
-        "maatwebsite/excel": "^3.1"
+        "maatwebsite/excel": "^3.1",
+        "orangehill/iseed": "^3.0"
     },
     "require-dev": {
         "backpack/generators": "^3.1",

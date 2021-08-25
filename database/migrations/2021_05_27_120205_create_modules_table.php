@@ -15,6 +15,7 @@ class CreateModulesTable extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->foreignId('theme_id');
             $table->string('title');
             $table->string('logo')->nullable();

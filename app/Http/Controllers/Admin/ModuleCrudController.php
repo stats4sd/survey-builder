@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\ModuleRequest;
 use Illuminate\Support\Facades\Storage;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
+use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
@@ -19,8 +20,10 @@ class ModuleCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use ReorderOperation;
 
     /**
+     *
      * Configure the CrudPanel object. Apply settings to all operations.
      *
      * @return void
@@ -30,6 +33,15 @@ class ModuleCrudController extends CrudController
         CRUD::setModel(\App\Models\Module::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/module');
         CRUD::setEntityNameStrings('module', 'modules');
+    }
+
+    protected function setupReorderOperation()
+    {
+        // define which model attribute will be shown on draggable elements
+        $this->crud->set('reorder.label', 'title');
+        // define how deep the admin is allowed to nest the items
+        // for infinite levels, set it to 0
+        $this->crud->set('reorder.max_level', 0);
     }
 
     /**
@@ -42,6 +54,7 @@ class ModuleCrudController extends CrudController
     {
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
+        CRUD::column('slug')->label('slug');
         CRUD::column('requires')->type('array');
         CRUD::column('requires_before')->type('array');
         CRUD::column('current_version_name')->label('Current Version')->wrapper([
@@ -69,6 +82,7 @@ class ModuleCrudController extends CrudController
         CRUD::field('info')->type('section-title')->title('Basic Info');
         CRUD::field('theme_id')->type('relationship');
         CRUD::field('title');
+        CRUD::field('slug')->label('No-spaces unique string to identify modules in compiled XLSforms');
         CRUD::field('minutes')->label('Approx. time to complete this part of the survey (in minutes)');
 
         CRUD::field('modifier-info')->type('section-title')->content('Modifiers are ways to define variants of a module. For example, if this module should have a "reduced" version that is different from the main version, add the "reduced" modifier.');
