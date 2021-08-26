@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Auth\Events\Registered;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
@@ -32,22 +35,46 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $newUser = $request->validate([
+            'username' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:8',
+            'password' => 'required|string|confirmed|min:6',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $response = Http::post(config('auth.jwt_url').'/api/user/register', $newUser);
 
-        event(new Registered($user));
+        // if creation fails
+        if (! $response->ok()) {
+            if ($response->body() === "Email already exists") {
+                throw ValidationException::withMessages(
+                    ['email' => 'This email already exists. Please try logging in'],
+                );
+            }
+        }
+
+        $login = [
+            'email' => $newUser['email'],
+            'password' => $newUser['password'],
+        ];
+
+        $loginResponse = Http::post(config('auth.jwt_url').'/api/user/login', $login);
+
+        //If cannot authenticate
+        if (! $loginResponse->ok()) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+
+        //If user is not in system, store:
+        $user = User::updateOrCreate(
+            ['email' => $login['email']],
+            ['jwt_token' => $loginResponse->body()]
+        );
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect('admin');
     }
 }

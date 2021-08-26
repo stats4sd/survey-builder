@@ -18,6 +18,8 @@ return [
         'passwords' => 'users',
     ],
 
+    'jwt_url' => env('JWT_URL', 'http://localhost:3002'),
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards
