@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests\Auth;
 
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -45,7 +47,19 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->filled('remember'))) {
+        // validate credentials against JWT server requirements:
+
+        $credentials = $this->validate([
+            'email' => 'email|required',
+            'password' => 'min:6|required',
+        ]);
+
+        // TODO: is it ok to post password without hashing?
+        //check credentials against external server
+        $response = Http::post(config('auth.jwt_url').'/api/user/login', $credentials);
+
+        //If cannot authenticate
+        if (! $response->ok()) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -53,7 +67,17 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+
+        //If user is not in system, store:
+        $user = User::updateOrCreate(
+            ['email' => $credentials['email']],
+            ['jwt_token' => $response->body()]
+        );
+
         RateLimiter::clear($this->throttleKey());
+        Auth::login($user);
+
+        return redirect('admin');
     }
 
     /**
