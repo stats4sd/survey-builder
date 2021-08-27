@@ -63,11 +63,11 @@
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 @php
-                                    $label = trans('backpack::base.name');
-                                    $field = 'name';
+                                    $label = 'username';
+                                    $field = 'username';
                                 @endphp
                                 <label class="required">{{ $label }}</label>
-                                <input required class="form-control" type="text" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}">
+                                <input required class="form-control" type="text" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}" disabled>
                             </div>
 
                             <div class="col-md-6 form-group">
@@ -76,7 +76,7 @@
                                     $field = backpack_authentication_column();
                                 @endphp
                                 <label class="required">{{ $label }}</label>
-                                <input required class="form-control" type="{{ backpack_authentication_column()=='email'?'email':'text' }}" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}">
+                                <input required class="form-control" type="{{ backpack_authentication_column()=='email'?'email':'text' }}" name="{{ $field }}" value="{{ old($field) ? old($field) : $user->$field }}" disabled>
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
         </div>
 
         {{-- CHANGE PASSWORD FORM --}}
-        <div class="col-lg-8">
+        {{-- <div class="col-lg-8">
             <form class="form" action="{{ route('backpack.account.password') }}" method="post">
 
                 {!! csrf_field() !!}
@@ -197,7 +197,7 @@
                 </div>
 
             </form>
-        </div>
+        </div> --}}
 
     </div>
 @endsection

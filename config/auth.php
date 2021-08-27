@@ -19,7 +19,7 @@ return [
     ],
 
     'jwt_url' => env('JWT_URL', 'http://localhost:3002'),
-
+    'jwt_secret' => env('JWT_SECRET', ''),
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

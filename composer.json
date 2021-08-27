@@ -9,6 +9,7 @@
         "backpack/crud": "^4.1",
         "backpack/permissionmanager": "^6.0",
         "fideloper/proxy": "^4.4",
+        "firebase/php-jwt": "^5.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.12",
@@ -16,7 +17,8 @@
         "laravel/telescope": "^4.4",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
-        "orangehill/iseed": "^3.0"
+        "orangehill/iseed": "^3.0",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "backpack/generators": "^3.1",

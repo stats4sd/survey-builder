@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
+use Firebase\JWT\JWT;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
@@ -67,11 +68,19 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // decode token to get User info
+        // $token = JWTAuth::getToken();
+        $token = $response->body();
+        $decoded = JWT::decode($token, config('auth.jwt_secret'), ['alg' => 'HS256']);
+
 
         //If user is not in system, store:
         $user = User::updateOrCreate(
-            ['email' => $credentials['email']],
-            ['jwt_token' => $response->body()]
+            ['id' => $decoded->_id],
+            [
+                'email' => $credentials['email'],
+                'username' => $decoded->username,
+            ],
         );
 
         RateLimiter::clear($this->throttleKey());

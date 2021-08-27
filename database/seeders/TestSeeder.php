@@ -14,7 +14,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::factory()->create(['name' => 'Local Tester', 'email' => 'test@example.com']);
-        $user->assignRole('admin');
+        // $user = User::factory()->create(['username' => 'Local Tester', 'email' => 'test@example.com']);
+        // $user->assignRole('admin');
     }
 }
