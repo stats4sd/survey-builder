@@ -35,4 +35,7 @@ Route::group([
     Route::get('moduleversion/{moduleversion}/publish', 'ModuleVersionCrudController@publish')->name('moduleversion.publish');
     Route::crud('modifier', 'ModifierCrudController');
     Route::crud('author', 'AuthorCrudController');
+    Route::crud('core-version', 'CoreVersionCrudController');
+
+    Route::get('core-version/{coreversion}/publish', 'CoreVersionCrudController@publish')->name('coreversion.publish');
 }); // this should be the absolute last line of this file

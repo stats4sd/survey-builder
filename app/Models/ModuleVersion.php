@@ -22,14 +22,12 @@ class ModuleVersion extends Model
     public function publish()
     {
 
-            // clean out old module_version from survey and choices table
+        // clean out old module_version from survey and choices table
         $this->module->surveyRows()->delete();
         $this->module->choicesRows()->delete();
 
         // import the new
         Excel::import(new ModuleFileImport($this->module), $this->file);
-
-
 
         $this->update(['published_at' => Carbon::now()]);
 
@@ -66,6 +64,12 @@ class ModuleVersion extends Model
     {
         return $this->belongsToMany(Xlsform::class);
     }
+
+    public function coreVersion ()
+    {
+       return $this->belongsTo(CoreVersion::class);
+    }
+
 
 
 

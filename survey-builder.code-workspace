@@ -1,0 +1,35 @@
+{
+    "folders": [
+        {
+            "path": "./"
+        }
+    ],
+    "settings": {
+        "sqltools.connections": [
+            {
+                "mysqlOptions": {
+                    "authProtocol": "default"
+                },
+                "previewLimit": 50,
+                "server": "localhost",
+                "port": 3306,
+                "driver": "MySQL",
+                "name": "local",
+                "database": "template",
+                "username": "root",
+                "password": "root"
+            }
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Run Auth Server",
+                "type": "shell",
+                "command": "cd ../../Packages/rhomis-authenticator && npm run start-dev",
+                "problemMatcher": []
+            }
+        ]
+    },
+}

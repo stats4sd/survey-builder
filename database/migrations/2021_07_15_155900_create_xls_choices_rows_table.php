@@ -15,7 +15,7 @@ class CreateXlsChoicesRowsTable extends Migration
     {
         Schema::create('xls_choices_rows', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id');
+            $table->foreignId('module_id')->nullable(); //if null, choice is linked to the 'core', and so the list should be included in all forms.
             $table->string('list_name');
             $table->string('name');
 

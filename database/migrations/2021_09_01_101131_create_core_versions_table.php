@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateModuleVersionsTable extends Migration
+class CreateCoreVersionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateModuleVersionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('module_versions', function (Blueprint $table) {
+        Schema::create('core_versions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id');
-            $table->foreignId('core_version_id')->nullable();
             $table->string('version_name');
             $table->boolean('mini')->comment('is this a Reduced / shortened version of a module?')->default(0);
-            $table->timestamp('published_at')->nullable();
             $table->string('file');
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ class CreateModuleVersionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('module_versions');
+        Schema::dropIfExists('core_versions');
     }
 }

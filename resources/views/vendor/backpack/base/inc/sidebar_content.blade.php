@@ -21,3 +21,5 @@
 <h4 class="nav-item pl-3 py-4">Platform Admin</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('user') }}'><i class='nav-icon la la-user'></i> Users</a></li>
 
+
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('core-version') }}'><i class='nav-icon la la-question'></i> Core versions</a></li>

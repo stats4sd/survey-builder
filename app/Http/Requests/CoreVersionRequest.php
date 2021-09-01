@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ModuleVersionRequest extends FormRequest
+class CoreVersionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,9 @@ class ModuleVersionRequest extends FormRequest
     public function rules()
     {
         return [
-            'module_id' => 'required|exists:modules,id',
-            'version_name' => 'required|min:5|max:255',
-            'file' => 'required|file',
+            'file' => 'required|file|mimetypes:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
+            'version_name' => 'required|string',
+            'mini' => 'sometimes|boolean',
         ];
     }
 

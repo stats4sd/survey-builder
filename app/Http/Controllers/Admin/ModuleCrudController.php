@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Module;
+use App\Imports\CoreFileImport;
 use App\Http\Requests\ModuleRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CoreImportRequest;
+use App\Http\Controllers\Operations\ImportOperation;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 
 /**
  * Class ModuleCrudController
@@ -22,6 +26,7 @@ class ModuleCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
     use ReorderOperation;
 
+
     /**
      *
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -33,7 +38,33 @@ class ModuleCrudController extends CrudController
         CRUD::setModel(\App\Models\Module::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/module');
         CRUD::setEntityNameStrings('module', 'modules');
+
+        // CRUD::set('import.importer', CoreFileImport::class);
     }
+
+    // protected function setupImportOperation()
+    // {
+    //     CRUD::setValidation(CoreImportRequest::class);
+
+    //     CRUD::field('import_instructions')->type('custom_html')->value('
+    //         <div class="alert">
+    //             <h3>Instructions</h3>
+    //             Please upload the Excel file containing all the core modules.
+    //             <ul>
+    //                 <li>The file should include a "modules" column to show which module each row is intended for. Match the modules using the "slug" field.</li>
+    //                 <li>The modules must exist within the platform before importing.</li>
+    //                 <li>Once complete, a new version of each core module within the file will be created using the details supplied here.</li>
+    //             </ul>
+    //         </div>
+    //     ');
+
+    //     // Assume that core modules are updated together
+    //     // Find a core module and get the latest version to display
+    //     CRUD::field('module_id')->type('hidden')->default(Module::firstWhere('core', true)->id);
+    //     CRUD::field('prev_version')->type('prev_module_version_core');
+    //     CRUD::field('version_name')->type('text');
+    //     CRUD::field('mini')->type('checkbox');
+    // }
 
     protected function setupReorderOperation()
     {
@@ -52,6 +83,9 @@ class ModuleCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::setDefaultPageLength(50);
+        $this->crud->query = $this->crud->query->orderBy('lft', 'asc');
+
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
         CRUD::column('slug')->label('slug');

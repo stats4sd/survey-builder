@@ -14,15 +14,15 @@ class ModulesTableSeeder extends Seeder
      */
     public function run()
     {
-        
+
 
         \DB::table('modules')->delete();
-        
+
         \DB::table('modules')->insert(array (
-            0 => 
+            0 =>
             array (
                 'id' => 1,
-                'slug' => 'metadata-start',
+                'slug' => 'metadata_start',
                 'theme_id' => 5,
             'title' => 'Metadata (Start)',
                 'logo' => NULL,
@@ -40,7 +40,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            1 => 
+            1 =>
             array (
                 'id' => 2,
                 'slug' => 'metadata_end',
@@ -61,7 +61,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            2 => 
+            2 =>
             array (
                 'id' => 3,
                 'slug' => 'demographics',
@@ -82,7 +82,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            3 => 
+            3 =>
             array (
                 'id' => 4,
                 'slug' => 'land_use',
@@ -103,7 +103,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            4 => 
+            4 =>
             array (
                 'id' => 5,
                 'slug' => 'crops',
@@ -124,7 +124,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            5 => 
+            5 =>
             array (
                 'id' => 6,
                 'slug' => 'crop_intensification',
@@ -145,7 +145,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            6 => 
+            6 =>
             array (
                 'id' => 7,
                 'slug' => 'land_management',
@@ -166,7 +166,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            7 => 
+            7 =>
             array (
                 'id' => 8,
                 'slug' => 'livestock',
@@ -187,7 +187,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            8 => 
+            8 =>
             array (
                 'id' => 9,
                 'slug' => 'livestock_intensification',
@@ -208,7 +208,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            9 => 
+            9 =>
             array (
                 'id' => 10,
                 'slug' => 'wildfoods',
@@ -229,7 +229,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            10 => 
+            10 =>
             array (
                 'id' => 11,
                 'slug' => 'food_security',
@@ -250,7 +250,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            11 => 
+            11 =>
             array (
                 'id' => 12,
                 'slug' => 'hdds',
@@ -271,7 +271,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            12 => 
+            12 =>
             array (
                 'id' => 13,
                 'slug' => 'off_farm_income',
@@ -292,10 +292,10 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            13 => 
+            13 =>
             array (
                 'id' => 14,
-                'slug' => 'debts_aids',
+                'slug' => 'debts_aid',
                 'theme_id' => 6,
                 'title' => 'Credit, Aid, Debts',
                 'logo' => NULL,
@@ -313,7 +313,7 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
-            14 => 
+            14 =>
             array (
                 'id' => 15,
                 'slug' => 'ppi',
@@ -334,8 +334,29 @@ class ModulesTableSeeder extends Seeder
                 'rgt' => 0,
                 'depth' => 0,
             ),
+            15 =>
+            array (
+                'id' => 16,
+                'slug' => 'fies',
+                'theme_id' => 6,
+                'title' => 'FIES',
+                'logo' => NULL,
+                'localisation_needs' => NULL,
+                'r_scripts' => NULL,
+                'requires' => NULL,
+                'requires_before' => NULL,
+                'minutes' => 4,
+                'core' => 1,
+                'live' => 0,
+                'created_at' => '2021-08-25 13:32:40',
+                'updated_at' => '2021-08-25 13:32:40',
+                'parent_id' => 0,
+                'lft' => 0,
+                'rgt' => 0,
+                'depth' => 0,
+            ),
         ));
-        
-        
+
+
     }
 }
