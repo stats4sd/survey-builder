@@ -4,9 +4,9 @@
 
     <div class="container-fluid mt-4 pt-4">
         <a href="{{ route('module.index') }}">Back to module list</a>
-        <h1>{{ $entry->title }}</h1>
-        <h3>{{ $entry->theme->title }}</h3>
-        <h6>Authors: {{ $entry->authors->pluck('name')->join(', ') }}</h6>
+        <h1>Title: {{ $entry->title }}</h1>
+        <h3>Theme: {{ $entry->theme->title }}</h3>
+        <h5>Authors: {{ $entry->authors->pluck('name')->join(', ') }}</h5>
 
         <a class="btn btn-link" href="{{ backpack_url('module/'.$entry->id.'/edit') }}">Edit Module</a>
         <hr />
@@ -54,16 +54,9 @@
                 <div class="w-50 text-right mr-4">Live version available? </div>
                 <div class="{{ $entry->live ? 'text-success' : 'text-danger' }}">{{ $entry->live ? 'Yes' : 'No' }}</div>
             </li>
-            <li class="list-group-item d-flex">
-                <div class="w-50 text-right mr-4">Current Published Version: </div>
-                <div class="{{ $entry->publishedVersions->count() > 0 ? 'text-success' : 'text-danger' }}">
-                    @if ($entry->publishedVersions->count() < 1)
-                        ~none~
-                    @else
-                        {{ $entry->current_version_name }}
-                    @endif
-
-                </div>
+            <hr/>
+            <li class="list-group-item d-flex bg-primary">
+                <h5 class="mb-0">Current Version:  {{ $entry->current_version_name }}</h5>
             </li>
             <li class="list-group-item d-flex">
                 <div class="w-50 text-right mr-4">Current Published File: </div>
@@ -101,22 +94,25 @@
             Create New Version</a>
 
         <hr />
+
         <h3>Previous Published Versions</h3>
         <div class="list-group" style="max-width: 1000px">
             @foreach ($entry->publishedVersions as $version)
-                <li class="list-group-item d-flex justify-content-between">
-                    <h5 class="mb-0 align-self-center">
-                        {{ $version->version_name }}
-                    </h5>
-                    <a class="btn btn-link align-self-center" href="{{ Storage::disk('local')->url($version->file) }}">
-                        {{ $version->file_name }}
-                    </a>
+                @if(!$loop->first)
+                    <li class="list-group-item d-flex justify-content-between">
+                        <h5 class="mb-0 align-self-center">
+                            {{ $version->version_name }}
+                        </h5>
+                        <a class="btn btn-link align-self-center" href="{{ Storage::disk('local')->url($version->file) }}">
+                            {{ $version->file_name }}
+                        </a>
 
-                    <div class="btn-group">
-                        <a href="{{ route('moduleversion.show', ['id' => $version->id]) }}"
-                            class="btn btn-primary">show</a>
-                    </div>
-                </li>
+                        <div class="btn-group">
+                            <a href="{{ route('moduleversion.show', ['id' => $version->id]) }}"
+                                class="btn btn-primary">show</a>
+                        </div>
+                    </li>
+                @endif
             @endforeach
         </div>
         <hr />

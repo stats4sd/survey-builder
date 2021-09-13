@@ -86,6 +86,8 @@ class ModuleCrudController extends CrudController
         CRUD::setDefaultPageLength(50);
         $this->crud->query = $this->crud->query->orderBy('lft', 'asc');
 
+
+
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
         CRUD::column('slug')->label('slug');

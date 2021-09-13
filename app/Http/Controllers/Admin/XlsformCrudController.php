@@ -68,23 +68,15 @@ class XlsformCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(XlsformRequest::class);
-
-        CRUD::field('project_id')->type('relationship')->label('Select project for the new form');
-        CRUD::field('user_id')->type('hidden')->default(Auth::id());
-
-        CRUD::field('title')->label('Enter form title');
-
-        CRUD::field('xlsform')->label('For demo - upload a complete XLSForm file')->hint('This is for testing / debugging purposes only')->type('upload')->upload(true);
-
-        CRUD::field('theme_title')->type('section-title')->title('Form Content')->content('
-            The RHoMIS Survey is made of different modules. Each module contains a set of related questions that together let you calculate a set of indicators.<br/><br/>
-            You can create your form by choosing the modules that you need. Some modules are "core", which means they are always included. <br/><br/>
-            First, select the themes that best fit your information needs. When you select a theme, the relevant modules will become available to you.
-        ');
-        CRUD::field('themes')->type('checklist')->entity('themes')->attribute('title')->model(Theme::class)->pivot(true);
-        CRUD::field('moduleVersions')->type('relationship')->ajax(true)->minimum_input_length(0)->dependencies('themes')->attribute('dropdown_label');
+        CRUD::setCreateView('forms.create');
     }
+
+    public function create ()
+    {
+        $projects = Auth::user()->projects;
+       return view('forms.create', compact('projects'));
+    }
+
 
     /**
      * Define what happens when the Update operation is loaded.

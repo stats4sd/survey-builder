@@ -75,6 +75,15 @@ class CoreVersionCrudController extends CrudController
         $this->setupCreateOperation();
     }
 
+
+    protected function show($id)
+    {
+        $coreVersion = CoreVersion::find($id)->load('moduleVersions.module');
+
+        return view('core_versions.show', ['coreVersion' => $coreVersion]);
+    }
+
+
     public function getLatest ()
     {
         return CoreVersion::where('published_at', '!=', null)->orderBy('published_at', 'desc')->first();

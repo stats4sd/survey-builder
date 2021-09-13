@@ -4,13 +4,15 @@ namespace App\Imports;
 
 use App\Models\Language;
 use App\Models\Module;
-use App\Models\Xlsforms\ChoicesRow;
+use App\Models\Xlsforms\SurveyLabel;
+use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class ModuleChoiceImport implements ToCollection, WithHeadingRow, WithCalculatedFormulas
+class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
     public Module $module;
 
@@ -20,19 +22,29 @@ class ModuleChoiceImport implements ToCollection, WithHeadingRow, WithCalculated
     }
 
 
+
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
 
             //ignore empty rows
-            if ($row['list_name'] === null) {
+            if ($row['module_for_import'] === null) {
                 continue;
             }
 
-            $ChoicesRow = ChoicesRow::create([
+            $surveyRow = SurveyRow::create([
                 'module_id' => $this->module->id,
-                'list_name' => $row['list_name'],
+                'type' => $row['type'],
                 'name' => $row['name'],
+                'constraint' => $row['constraint'],
+                'required' => $row['required'],
+                'appearance' => $row['appearance'],
+                'default' => $row['default'],
+                'relevant' => $row['relevant'],
+                'repeat_count' => $row['repeat_count'],
+                'read_only' => $row['read_only'],
+                'calculation' => $row['calculation'],
+                'choice_filter' => $row['choice_filter'],
             ]);
 
             foreach ($row as $header => $value) {
@@ -42,13 +54,13 @@ class ModuleChoiceImport implements ToCollection, WithHeadingRow, WithCalculated
                     $language_id = $matches[3];
                     $label = $value;
 
-                    //check if langauge exists. If not, create it:
+                    // check if language exists. If not, create it;
                     Language::firstOrCreate(
                         ['id' => $language_id],
-                        ['name' => $language]
+                        ['name' => $language],
                     );
 
-                    $ChoicesRow->ChoicesLabels()->create([
+                    $surveyRow->surveyLabels()->create([
                         'type' => $type,
                         'language_id' => $language_id,
                         'label' => $label,

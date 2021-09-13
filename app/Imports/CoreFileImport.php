@@ -49,7 +49,7 @@ class CoreFileImport implements ToCollection, WithValidation, WithHeadingRow
 
             $moduleVersion = $this->coreVersion->moduleVersions()->create([
                 'module_id' => $module->id,
-                //'core_version_id' => $this->id,
+                'question_count' => $rows->count(),
                 'version_name' => $this->coreVersion->version_name,
                 'mini' => $this->coreVersion->mini,
                 'file' => $this->coreVersion->file,
@@ -67,7 +67,7 @@ class CoreFileImport implements ToCollection, WithValidation, WithHeadingRow
     public function customValidationMessages ()
     {
        return [
-           'module_for_import.exists' => 'The module_for_import canot be found in the database.',
+           'module_for_import.exists' => 'The module_for_import cannot be found in the database.',
        ];
     }
 

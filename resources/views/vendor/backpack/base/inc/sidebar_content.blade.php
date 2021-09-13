@@ -11,8 +11,10 @@
 <hr/>
 
 <h4 class="nav-item pl-3 py-4">Modules</h4>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('module') }}'><i class='nav-icon la la-puzzle-piece'></i> Modules</a></li>
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('modifier') }}'><i class='nav-icon la la-flag'></i> Modifiers</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('core-version') }}'><i class='nav-icon la la-digital-tachograph'></i> Core Versions</a></li>
+
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('module') }}'><i class='nav-icon la la-puzzle-piece'></i> All Modules</a></li>
+
 
 <h4 class="nav-item pl-3 py-4">User Section</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('project') }}'><i class='nav-icon la la-users'></i> Projects</a></li>
@@ -20,6 +22,3 @@
 
 <h4 class="nav-item pl-3 py-4">Platform Admin</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('user') }}'><i class='nav-icon la la-user'></i> Users</a></li>
-
-
-<li class='nav-item'><a class='nav-link' href='{{ backpack_url('core-version') }}'><i class='nav-icon la la-question'></i> Core versions</a></li>

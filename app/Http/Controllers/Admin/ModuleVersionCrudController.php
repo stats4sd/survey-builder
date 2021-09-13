@@ -111,7 +111,7 @@ class ModuleVersionCrudController extends CrudController
         $this->crud->allowAccess('create');
 
         $this->crud->operation('createForModule', function () {
-            $this->crud->loadDefaultOperationSettingsFromConfig();
+            $this->crud->loadDefaultOperationSettingsFromConfig('backpack.crud.operations.create');
             $this->crud->setupDefaultSaveActions();
         });
 

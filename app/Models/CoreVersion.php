@@ -76,7 +76,14 @@ class CoreVersion extends Model
         // import the new survey and choices rows with the Unpack imports:
         Excel::import(new CoreFileUnpack($this->module), $this->file);
 
-        $this->update(['published_at' => Carbon::now()]);
+        $publishedAt = Carbon::now();
+        $this->update(['published_at' => $publishedAt]);
+
+        $this->moduleVersions->each(function($moduleVersion) use ($publishedAt) {
+            $moduleVersion->published_at = $publishedAt;
+            $moduleVersion->save();
+        });
+
         return $this->published_at;
     }
 

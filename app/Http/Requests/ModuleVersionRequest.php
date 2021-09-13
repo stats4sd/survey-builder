@@ -27,7 +27,7 @@ class ModuleVersionRequest extends FormRequest
     {
         return [
             'module_id' => 'required|exists:modules,id',
-            'version_name' => 'required|min:5|max:255',
+            'version_name' => 'required|max:255',
             'file' => 'required|file',
         ];
     }

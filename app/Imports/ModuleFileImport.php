@@ -3,24 +3,33 @@
 namespace App\Imports;
 
 use App\Models\Module;
+use App\Models\ModuleVersion;
+use CreateModuleVersionXlsformTable;
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-class ModuleFileImport implements WithMultipleSheets
+class ModuleFileImport implements ToCollection
 {
-    public Module $module;
 
-    public function __construct(Module $module)
+    public ModuleVersion $moduleVersion;
+
+    public function __construct(ModuleVersion $moduleVersion)
     {
-        $this->module = $module;
+        $this->moduleVersion = $moduleVersion;
     }
 
-
-    public function sheets(): array
+    /**
+    * @param Collection $collection
+    */
+    public function collection(Collection $rows)
     {
-        return [
-            'survey' => new ModuleSurveyImport($this->module),
-            'choices' => new ModuleChoiceImport($this->module),
-        ];
+        if(!isset($rows['module_for_import']) || !$rows['module_for_import']) {
+            return;
+        }
+
+        $this->moduleVersion->question_count = $rows->count();
+        $this->moduleVersion->save();
+
+        return;
     }
 }

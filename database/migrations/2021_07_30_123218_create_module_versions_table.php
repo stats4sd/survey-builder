@@ -19,7 +19,9 @@ class CreateModuleVersionsTable extends Migration
             $table->foreignId('core_version_id')->nullable();
             $table->string('version_name');
             $table->boolean('mini')->comment('is this a Reduced / shortened version of a module?')->default(0);
+            $table->unsignedInteger('question_count')->default(0);
             $table->timestamp('published_at')->nullable();
+            $table->boolean('is_current')->default(0);
             $table->string('file');
             $table->timestamps();
         });

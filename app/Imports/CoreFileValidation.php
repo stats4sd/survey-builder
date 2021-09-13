@@ -3,11 +3,12 @@
 namespace App\Imports;
 
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class CoreFileValidation implements ToCollection, WithHeadingRow, WithValidation
+class CoreFileValidation implements ToCollection, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
     /**
     * @param Collection $collection
@@ -27,7 +28,7 @@ class CoreFileValidation implements ToCollection, WithHeadingRow, WithValidation
     public function customValidationMessages ()
     {
        return [
-           'module_for_import.exists' => 'The module_for_import canot be found in the database.',
+           'module_for_import.exists' => 'The module_for_import cannot be found in the database.',
        ];
     }
 }
