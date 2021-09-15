@@ -20,6 +20,9 @@ class ModuleVersion extends Model
     protected $appends = [
         // 'dropdown_label',
     ];
+    protected $casts = [
+        'is_current' => 'boolean',
+    ];
 
     protected static function booted()
     {
@@ -61,8 +64,11 @@ class ModuleVersion extends Model
         // import the new
         Excel::import(new ModuleFileUnpack($this->module), $this->file);
 
-        $this->update(['published_at' => Carbon::now()]);
+        //remove 'is_current' flag from previous versions;
+        $this->module->moduleVersions()->update(['is_current' => false]);
 
+
+        $this->update(['published_at' => Carbon::now(), 'is_current' => true]);
         return $this->published_at;
     }
 

@@ -7,8 +7,9 @@ use Illuminate\Support\Collection;
 use App\Models\Xlsforms\ChoicesRow;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
-class CoreChoiceUnpack implements ToCollection, WithHeadingRow
+class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
     public function collection(Collection $rows)
     {

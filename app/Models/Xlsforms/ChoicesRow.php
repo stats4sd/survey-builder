@@ -3,6 +3,7 @@
 namespace App\Models\Xlsforms;
 
 use App\Models\Module;
+use App\Models\Xlsforms\ChoicesLabel;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 

@@ -5,7 +5,7 @@
     "keywords": ["framework", "laravel", "template"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "backpack/crud": "^4.1",
         "backpack/permissionmanager": "^6.0",
         "fideloper/proxy": "^4.4",

@@ -74,15 +74,12 @@ class CoreVersion extends Model
         ChoicesRow::where('module_id', null)->delete();
 
         // import the new survey and choices rows with the Unpack imports:
-        Excel::import(new CoreFileUnpack($this->module), $this->file);
+        Excel::import(new CoreFileUnpack(), $this->file);
 
         $publishedAt = Carbon::now();
         $this->update(['published_at' => $publishedAt]);
 
-        $this->moduleVersions->each(function($moduleVersion) use ($publishedAt) {
-            $moduleVersion->published_at = $publishedAt;
-            $moduleVersion->save();
-        });
+        $this->moduleVersions()->update(['published_at' => $publishedAt, 'is_current' => true]);
 
         return $this->published_at;
     }

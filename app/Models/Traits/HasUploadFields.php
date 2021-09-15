@@ -47,12 +47,6 @@ trait HasUploadFields
             $this->attributes[$attribute_name] = null;
         }
 
-        Log::info('valid = '.request()->file($attribute_name)->isValid());
-
-        Log::info('has file '. request()->hasFile($attribute_name));
-
-
-
         // if a new file is uploaded, store it on disk and its filename in the database
         if (request()->hasFile($attribute_name) && request()->file($attribute_name)->isValid()) {
             // 1. Generate a new file name

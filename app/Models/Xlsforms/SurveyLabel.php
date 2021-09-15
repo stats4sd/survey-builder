@@ -2,8 +2,9 @@
 
 namespace App\Models\Xlsforms;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use App\Models\Language;
 use Illuminate\Database\Eloquent\Model;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 class SurveyLabel extends Model
 {
@@ -15,4 +16,10 @@ class SurveyLabel extends Model
     {
         return $this->belongsTo(SurveyRow::class, 'xls_survey_row_id');
     }
+
+    public function language ()
+    {
+       return $this->belongsTo(Language::class);
+    }
+
 }

@@ -22,7 +22,19 @@ class CoreFileValidation implements ToCollection, WithHeadingRow, WithValidation
     {
         return [
             'module_for_import' => ['exists:modules,slug'],
+            'name' => ['required'],
+            'type' => ['required'],
         ];
+    }
+
+    public function prepareForValidation ($data, $index)
+    {
+        if(isset($data['module_for_import'])) {
+            return $data;
+        }
+
+        // otherwise, the row is ignored on import, so can be ignored for validation
+        return ['name' => 'pass', 'type' => 'pass'];
     }
 
     public function customValidationMessages ()

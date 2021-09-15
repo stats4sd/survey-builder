@@ -29,6 +29,7 @@
     },
     "dependencies": {
         "bootstrap-vue": "^2.21.2",
-        "noty": "^3.2.0-beta-deprecated"
+        "noty": "^3.2.0-beta-deprecated",
+        "vuedraggable": "^2.24.3"
     }
 }

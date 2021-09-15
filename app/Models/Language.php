@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use App\Models\Xlsforms\SurveyLabel;
+use App\Models\Xlsforms\ChoicesLabel;
 use Illuminate\Database\Eloquent\Model;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 class Language extends Model
 {
@@ -18,4 +20,16 @@ class Language extends Model
     {
         return $this->belongsToMany(Module::class);
     }
+
+    public function surveyLabels ()
+    {
+       return $this->hasMany(SurveyLabel::class);
+    }
+
+    public function choicesLabels ()
+    {
+       return $this->hasMany(ChoicesLabel::class);
+    }
+
+
 }

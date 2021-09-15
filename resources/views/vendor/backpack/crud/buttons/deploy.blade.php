@@ -37,7 +37,7 @@
                   // Show an alert with the result
                   new Noty({
                     type: "warning",
-                    text: "Deployment failed"
+                    text: "Deployment failed with message: <br/>" + result.message
                   }).show();
               }
           });

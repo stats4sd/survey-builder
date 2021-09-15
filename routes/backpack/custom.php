@@ -27,7 +27,7 @@ Route::group([
 
     Route::post('project/{project}/deploy', 'ProjectCrudController@deploy');
     Route::post('xlsform/{xlsform}/deploy', 'XlsformCrudController@deploy');
-
+    Route::get('xlsform/{xlsform}/build', 'XlsformCrudController@build');
 
     Route::post('user/{user}/newtoken', 'TokenController@store')->name('account.newtoken');
     Route::crud('moduleversion', 'ModuleVersionCrudController');

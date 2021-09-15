@@ -29,8 +29,8 @@ class XlsformRequest extends FormRequest
             'project_id' => 'required',
             'title' => 'required',
             'xlsfile' => 'nullable',
-            'themes' => 'nullable',
-            'modules' => 'nullable',
+            //'themes' => 'nullable',
+            //'modules' => 'nullable',
             'user_id' => 'required',
         ];
     }

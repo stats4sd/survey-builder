@@ -16,7 +16,13 @@ class Xlsform extends Model
 
     public function setXlsfileAttribute($value)
     {
-        $this->uploadFileWithNames($value, 'xlsfile', 'local', 'forms');
+        // if a file is not included, the file is being built on the server.
+        if(request()->hasFile('xlsfile')) {
+            $this->uploadFileWithNames($value, 'xlsfile', 'local', 'forms');
+        }
+        else {
+            $this->attributes['xlsfile'] = $value;
+        }
     }
 
 
