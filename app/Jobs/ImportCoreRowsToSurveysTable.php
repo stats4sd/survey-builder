@@ -84,6 +84,8 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                     ]);
                 }
             }
+
+            \Log::info('reached the end of module import for ' . $this->rows->first()['module_for_import']);
         }
     }
 }
