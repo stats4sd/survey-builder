@@ -52,7 +52,14 @@ class RegisteredUserController extends Controller
                     ['email' => 'This email already exists. Please try logging in'],
                 );
             }
+            throw ValidationException::withMessages(
+                [
+                    'email' => $response->body(),
+                ]
+            );
         }
+        dump($response->ok());
+        dump($response->body());
 
         // After registering, authenticate via the standard LoginRequest()
 
@@ -61,11 +68,11 @@ class RegisteredUserController extends Controller
             'password' => $newUser['password'],
         ]);
 
-        $login->authenticate();
+        return $login->authenticate();
 
-        //$login->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+
+        // return redirect()->intended(RouteServiceProvider::HOME);
 
         // $loginResponse = Http::post(config('auth.jwt_url').'/api/user/login', $login);
 

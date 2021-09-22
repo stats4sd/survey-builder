@@ -55,14 +55,17 @@ class LoginRequest extends FormRequest
             'password' => 'min:6|required',
         ]);
 
+
         // TODO: is it ok to post password without hashing?
         //check credentials against external server
         $response = Http::post(config('auth.jwt_url').'/api/user/login', $credentials);
+
 
         //If cannot authenticate
         if (! $response->ok()) {
             RateLimiter::hit($this->throttleKey());
 
+            //dd('auth failed');
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
@@ -73,20 +76,18 @@ class LoginRequest extends FormRequest
         $token = $response->body();
         $decoded = JWT::decode($token, config('auth.jwt_secret'), ['alg' => 'HS256']);
 
-
         //If user is not in system, store:
         $user = User::updateOrCreate(
             ['id' => $decoded->_id],
             [
                 'email' => $credentials['email'],
-                'username' => $decoded->username,
+                'username' => $credentials['email'],
             ],
         );
 
         RateLimiter::clear($this->throttleKey());
-        Auth::login($user);
+        return Auth::login($user);
 
-        return redirect('admin');
     }
 
     /**
