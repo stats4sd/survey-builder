@@ -68,6 +68,7 @@ class CoreVersion extends Model
         // delete survey rows for each core module:
         $this->moduleVersions->each(function($moduleVersion) {
             $moduleVersion->module->surveyRows()->delete();
+            $moduleVersion->module->moduleVersions()->update(['is_current' => false]);
         });
 
         // choices rows without a module are linked to core

@@ -7,7 +7,7 @@
     :projects="{{ $projects->toJson() }}"
     :modules="{{ $modules->toJson() }}"
     :themes="{{ $themes->toJson() }}"
-    :user-id="{{ Auth::id() }}"
+    user-id="{{ Auth::id() }}"
     >
     <template v-slot:csrf>@csrf</template>
     </form-builder>
