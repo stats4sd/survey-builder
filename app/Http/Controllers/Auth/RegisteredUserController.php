@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Tymon\JWTAuth\JWT;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -52,29 +54,47 @@ class RegisteredUserController extends Controller
             }
         }
 
-        $login = [
+        // After registering, authenticate via the standard LoginRequest()
+
+        $login = new LoginRequest([
             'email' => $newUser['email'],
             'password' => $newUser['password'],
-        ];
+        ]);
 
-        $loginResponse = Http::post(config('auth.jwt_url').'/api/user/login', $login);
+        $login->authenticate();
 
-        //If cannot authenticate
-        if (! $loginResponse->ok()) {
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
+        //$login->session()->regenerate();
+
+        return redirect()->intended(RouteServiceProvider::HOME);
+
+        // $loginResponse = Http::post(config('auth.jwt_url').'/api/user/login', $login);
+
+        // //If cannot authenticate
+        // if (! $loginResponse->ok()) {
+        //     throw ValidationException::withMessages([
+        //         'email' => __('auth.failed'),
+        //     ]);
+        // }
+
+        // $decoded = JWT::decode($loginResponse->body(), config('auth.jwt_secret'), ['alg' => 'HS256']);
 
 
-        //If user is not in system, store:
-        $user = User::updateOrCreate(
-            ['email' => $login['email']],
-            ['jwt_token' => $loginResponse->body()]
-        );
+        // //If user is not in system, store:
+        // $user = User::updateOrCreate(
+        //     ['id' => $decoded->_id],
+        //     [
+        //         'email' => $credentials['email'],
+        //         'username' => $decoded->username,
+        //     ],
+        // );
+        // //If user is not in system, store:
+        // $user = User::updateOrCreate(
+        //     ['email' => $login['email']],
+        //     ['jwt_token' => $loginResponse->body()]
+        // );
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect('admin');
+        // return redirect('admin');
     }
 }
