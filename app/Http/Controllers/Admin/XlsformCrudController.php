@@ -35,6 +35,7 @@ class XlsformCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
     //use FetchOperation;
 
     /**
@@ -67,6 +68,7 @@ class XlsformCrudController extends CrudController
         CRUD::button('deploy')->type('view')->stack('line')->view('backpack::crud.buttons.deploy')->makeFirst();
         CRUD::button('build')->type('view')->stack('line')->view('backpack::crud.buttons.build')->makeFirst();
     }
+
     /**
      * Define what happens when the Create operation is loaded.
      *
@@ -88,24 +90,27 @@ class XlsformCrudController extends CrudController
         CRUD::setCreateView('forms.create');
     }
 
-    public function create ()
+    public function create()
     {
         return $this->setupView();
     }
 
-    public function edit ($id)
+    public function edit($id)
     {
-       return $this->setupView($id);
+        return $this->setupView($id);
     }
 
-    public function setupView ($id = null)
+    public function setupView($id = null)
     {
         $projects = Auth::user()->projects;
         $themes = Theme::all();
+
+        // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
+        // Then it will be upto the Vue component to handle picking the correct version based on user input;
         $modules = ModuleVersion::with('module')->where('is_current', true)->get();
         $xlsform = null;
 
-        if($id) {
+        if ($id) {
             $xlsform = Xlsform::find($id)->load('themes', 'moduleVersions.module');
             $xlsform->modules = $xlsform->moduleVersions;
             // $xlsform->moduleVersions = $xlsform->modules->map(fn($version) => $version->id);
@@ -127,35 +132,40 @@ class XlsformCrudController extends CrudController
         if ($xlsform->status === 'live') {
             return;
         }
-
-        AuthenticateWithOdkCentral::dispatchSync();
+//
+//        AuthenticateWithOdkCentral::dispatchSync();
 
         $file = file_get_contents(Storage::path($xlsform->xlsfile));
 
-        try {
 
-            $response = Http::withToken(Session::get('odk.token'))
-            ->withHeaders([
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'X-XlsForm-FormId-Fallback' => Str::slug($xlsform->title),
-            ])
-            ->withBody($file, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            ->post(config('services.odk_central.url').'/v1/projects/'.$xlsform->project->odk_central_id.'/forms?ignoreWarnings=true')
-            ->throw()
-            ->json();
-        } catch(\Illuminate\Http\Client\RequestException $e) {
-            dd($e);
-            if($message = $e->getMessage()) {
+        // Check authentication
+        try {
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Authorization' => Auth::user()->jwt_token,
+                    'X-XlsForm-FormId-Fallback' => Str::slug($xlsform->title),
+                ])
+                ->withBody($file, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                ->post(
+                    config('auth.auth_url') .
+                    "/api/forms/new?form_name=" . Str::slug($xlsform->title) .
+                    "&project_name=" . urlencode($xlsform->project->name) .
+                    "&publish=true" .
+                    "&form_version=1.0"
+                )
+                ->throw();
+
+            return response($response->body(), 200);
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            if ($message = $e->getMessage()) {
                 return response($message, 500);
             }
         }
-
-        return response('', 200);
     }
 
-    public function build (Xlsform $xlsform)
+    public function build(Xlsform $xlsform)
     {
-        $path = $xlsform->id . '/' . Carbon::now()->toISOString() . '.xlsx';
+        $path = $xlsform->id . '/' . Str::slug(Carbon::now()->toISOString()) . '/'. $xlsform->title . '.xlsx';
 
         $file = Excel::store(new XlsFormExport($xlsform), $path);
 

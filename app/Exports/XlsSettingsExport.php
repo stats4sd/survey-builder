@@ -24,7 +24,7 @@ class XlsSettingsExport implements FromCollection, WithTitle
                 'version',
             ],
             [
-                $this->xlsform->title,
+                Str::slug($this->xlsform->title),
                 Str::slug($this->xlsform->title),
                 'English (en)',
                 'concat(${respondentname}," - ", ${village}," - ", ${starttime_auto})',

@@ -44,14 +44,14 @@ class ProjectCrudController extends CrudController
         $this->crud->query = $this->crud->query->withCount('xlsforms', 'users');
         CRUD::column('name');
         CRUD::column('xlsforms_count');
-        CRUD::column('odk_central_id')->label('ODK Central ID')->wrapper([
-            'href' => function ($crud, $column, $entry, $key) {
-                return 'https://central.rhomis.cgiar.org/#/projects/' .$entry->odk_central_id;
-            },
-        ]);
+//        CRUD::column('odk_central_id')->label('ODK Central ID')->wrapper([
+//            'href' => function ($crud, $column, $entry, $key) {
+//                return 'https://central.rhomis.cgiar.org/#/projects/' .$entry->odk_central_id;
+//            },
+//        ]);
         CRUD::column('users_count')->label('# of Users');
 
-        CRUD::button('deploy_project')->type('view')->stack('line')->view('backpack::crud.buttons.deploy');
+        // CRUD::button('deploy_project')->type('view')->stack('line')->view('backpack::crud.buttons.deploy');
     }
 
     /**

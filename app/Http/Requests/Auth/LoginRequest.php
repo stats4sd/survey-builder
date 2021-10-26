@@ -58,7 +58,7 @@ class LoginRequest extends FormRequest
 
         // TODO: is it ok to post password without hashing?
         //check credentials against external server
-        $response = Http::post(config('auth.jwt_url').'/api/user/login', $credentials);
+        $response = Http::post(config('auth.auth_url').'/api/user/login', $credentials);
 
 
         //If cannot authenticate
@@ -71,10 +71,13 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // set leeway to account for time diff?
+        JWT::$leeway = 10;
+
         // decode token to get User info
         // $token = JWTAuth::getToken();
         $token = $response->body();
-        $decoded = JWT::decode($token, config('auth.jwt_secret'), ['alg' => 'HS256']);
+        $decoded = JWT::decode($token, config('auth.auth_secret'), ['alg' => 'HS256']);
 
         //If user is not in system, store:
         $user = User::updateOrCreate(
@@ -82,6 +85,7 @@ class LoginRequest extends FormRequest
             [
                 'email' => $credentials['email'],
                 'username' => $credentials['email'],
+                'jwt_token' => $token,
             ],
         );
 
