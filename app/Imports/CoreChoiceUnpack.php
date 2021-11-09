@@ -16,7 +16,7 @@ class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
         foreach ($rows as $row) {
 
             //ignore empty rows
-            if ($row['list_name'] === null) {
+            if (!$row['list_name']) {
                 continue;
             }
 
@@ -24,6 +24,8 @@ class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
                 'module_id' => null, // so it's included in all forms
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
+                'localisable' => $row['localisable'] ?? 0,
+                'list_type' => $row['list_type'] ?? null,
             ]);
 
             foreach ($row as $header => $value) {

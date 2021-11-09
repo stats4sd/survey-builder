@@ -55,7 +55,7 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
         foreach ($this->rows as $row) {
 
             //ignore empty this->rows
-            if ($row['type'] == null) {
+            if (!$row['type']) {
                 continue;
             }
 

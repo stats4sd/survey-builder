@@ -31,7 +31,11 @@ class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'module_id' => $this->moduleVersion->id,
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
+                'localisable' => $row['localisable'] ?? 0,
+                'list_type' => $row['list_type'] ?? null,
             ]);
+
+
 
             foreach ($row as $header => $value) {
                 if (preg_match('/(.+)::(.+) \((.+)\)/', $header, $matches) && $value !== null) {
