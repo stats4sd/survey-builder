@@ -5,7 +5,6 @@
                 <h2>RHoMIS XLS Form Builder</h2>
                 <div class="card border border-info">
                     <div class="card-header">Instructions</div>
-
                     <div class="card-body">Instructions Go here</div>
                 </div>
 
@@ -224,7 +223,7 @@
         },
 
         mounted() {
-            console.log(this.modules);
+
 
             // if creating (not editing) assign core modules to xlsform
             if (this.xlsformOriginal == null) {

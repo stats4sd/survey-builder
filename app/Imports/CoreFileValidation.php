@@ -24,12 +24,14 @@ class CoreFileValidation implements ToCollection, WithHeadingRow, WithValidation
             'module_for_import' => ['exists:modules,slug'],
             'name' => ['required'],
             'type' => ['required'],
+            'localisation' => ['nullable', 'boolean'],
+            'localises_what' => ['nullable', 'regex:/^[0-9A-z]+(,[0-9A-z]+)*$/']
         ];
     }
 
     public function prepareForValidation ($data, $index)
     {
-        if(isset($data['module_for_import'])) {
+        if(isset($data['module_for_import']) && $data['type'] !== "end group" && $data['type'] !== "end repeat") {
             return $data;
         }
 

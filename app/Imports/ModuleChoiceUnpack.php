@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Language;
 use App\Models\Module;
+use App\Models\ModuleVersion;
 use App\Models\Xlsforms\ChoicesRow;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -12,12 +13,9 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
-    public Module $module;
 
-    public function __construct(Module $module)
-    {
-        $this->module = $module;
-    }
+    public function __construct(public ModuleVersion $moduleVersion)
+    {}
 
 
     public function collection(Collection $rows)
@@ -30,7 +28,7 @@ class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculated
             }
 
             $ChoicesRow = ChoicesRow::create([
-                'module_id' => $this->module->id,
+                'module_id' => $this->moduleVersion->id,
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
             ]);

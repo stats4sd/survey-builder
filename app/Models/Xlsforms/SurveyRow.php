@@ -3,6 +3,7 @@
 namespace App\Models\Xlsforms;
 
 use App\Models\Module;
+use App\Models\ModuleVersion;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
@@ -17,8 +18,8 @@ class SurveyRow extends Model
         return $this->hasMany(SurveyLabel::class, 'xls_survey_row_id');
     }
 
-    public function module()
+    public function moduleVersion()
     {
-        return $this->belongsTo(Module::class);
+        return $this->belongsTo(ModuleVersion::class);
     }
 }

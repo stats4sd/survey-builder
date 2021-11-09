@@ -14,17 +14,19 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
-    public Module $module;
-
-    public function __construct(Module $module)
+    public function __construct(public ModuleVersion $moduleVersion)
     {
-        $this->module = $module;
     }
 
 
-
+    /**
+     * @throws \JsonException
+     */
     public function collection(Collection $rows)
     {
+        //
+        $moduleLocalisable = false;
+
         foreach ($rows as $row) {
 
             //ignore empty rows
@@ -32,8 +34,14 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 continue;
             }
 
+            $localisable = $row['localisable'] === "TRUE" || (($row['localisable'] ?? false));
+
+            if($localisable) {
+                $moduleLocalisable = true;
+            }
+
             $surveyRow = SurveyRow::create([
-                'module_id' => $this->module->id,
+                'module_id' => $this->moduleVersion->id,
                 'type' => $row['type'],
                 'name' => $row['name'],
                 'constraint' => $row['constraint'],
@@ -45,6 +53,9 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'read_only' => $row['read_only'],
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
+                'localisable' => $localisable,
+                'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
+
             ]);
 
             foreach ($row as $header => $value) {
@@ -67,6 +78,11 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                     ]);
                 }
             }
+
+
         }
+        $this->moduleVersion->update([
+            'is_localisable' => $moduleLocalisable
+        ]);
     }
 }

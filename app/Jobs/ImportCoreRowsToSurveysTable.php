@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\CoreVersion;
 use App\Models\Module;
 use App\Models\Language;
+use App\Models\ModuleVersion;
 use Illuminate\Bus\Queueable;
 use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;
@@ -13,6 +15,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 
+/** Accepts a collection of rows imported from an XLSform that have the SAME module_for_import value.
+ * Will import the entire collection as new SurveyRow entries for the matching module
+ */
 class ImportCoreRowsToSurveysTable implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -28,6 +33,7 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \JsonException
      */
     public function handle()
     {
@@ -40,7 +46,11 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
         \Log::info($this->rows->first()['module_for_import']);
 
         $moduleSlug = $this->rows->first()['module_for_import'];
-        $module = Module::where('slug', $moduleSlug)->first();
+        $moduleVersion = ModuleVersion::whereHas('module', function($query) use ($moduleSlug) {
+            $query->where('slug', $moduleSlug);
+        })->firstOrFail();
+
+        $moduleLocalisable = false;
 
         foreach ($this->rows as $row) {
 
@@ -49,10 +59,16 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 continue;
             }
 
+            $localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
+
+            if($localisable) {
+                $moduleLocalisable = true;
+            }
+
             $surveyRow = SurveyRow::create([
-                'module_id' => $module->id,
+                'module_version_id' => $moduleVersion->id,
                 'type' => $row['type'],
-                'name' => $row['name'],
+                'name' => $row['name'] ?? '',
                 'constraint' => $row['constraint'],
                 'required' => $row['required'],
                 'appearance' => $row['appearance'],
@@ -62,6 +78,8 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 'read_only' => $row['read_only'],
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
+                'localisable' => $localisable,
+                'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
             ]);
 
             foreach ($row as $header => $value) {
@@ -86,6 +104,11 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
             }
 
         }
+
+        $moduleVersion->update([
+            'is_localisable' => $moduleLocalisable
+        ]);
+
         \Log::info('reached the end of module import for ' . $this->rows->first()['module_for_import']);
     }
 }

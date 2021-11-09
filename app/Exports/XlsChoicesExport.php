@@ -20,7 +20,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         $coreOptionRows = ChoicesRow::where('module_id', null)->with('choicesLabels.language')->get();
 
         $optionalModulesRows = $this->xlsform->moduleVersions->map(function($version) {
-            return $version->module->choicesRows->load('choicesLabels.language');
+            return $version->choicesRows->load('choicesLabels.language');
         })->flatten();
 
         return $coreOptionRows

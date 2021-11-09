@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Xlsforms\ChoicesRow;
+use App\Models\Xlsforms\SurveyRow;
 use Carbon\Carbon;
 use App\Imports\ModuleFileImport;
 use App\Imports\ModuleFileUnpack;
@@ -58,8 +60,8 @@ class ModuleVersion extends Model
     {
 
         // clean out old module_version from survey and choices table
-        $this->module->surveyRows()->delete();
-        $this->module->choicesRows()->delete();
+        $this->surveyRows()->delete();
+        $this->choicesRows()->delete();
 
         // import the new
         Excel::import(new ModuleFileUnpack($this->module), $this->file);
@@ -106,6 +108,15 @@ class ModuleVersion extends Model
     public function coreVersion ()
     {
        return $this->belongsTo(CoreVersion::class);
+    }
+
+    public function surveyRows()
+    {
+        return $this->hasMany(SurveyRow::class);
+    }
+    public function choicesRows()
+    {
+        return $this->hasMany(ChoicesRow::class);
     }
 
 

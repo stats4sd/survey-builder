@@ -71,16 +71,6 @@ class Module extends Model
         return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null)->orderBy('published_at', 'desc');
     }
 
-    public function surveyRows()
-    {
-        return $this->hasMany(SurveyRow::class);
-    }
-
-    public function choicesRows()
-    {
-        return $this->hasMany(ChoicesRow::class);
-    }
-
     public function xlsforms()
     {
         return $this->belongsToMany(Xlsform::class);

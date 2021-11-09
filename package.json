@@ -8,7 +8,8 @@
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "production": "mix --production",
-        "auth-server": "cd ../../Packages/rhomis-authenticator && npm run start-dev"
+        "auth-server": "cd ../../Packages/rhomis-authenticator && npm run start-dev",
+        "queue-watch": "php artisan queue:work"
     },
     "devDependencies": {
         "@coreui/coreui": "^2.1.16",

@@ -3,24 +3,21 @@
 namespace App\Imports;
 
 use App\Models\Module;
+use App\Models\ModuleVersion;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ModuleFileUnpack implements WithMultipleSheets
 {
-    public Module $module;
-
-    public function __construct(Module $module)
-    {
-        $this->module = $module;
-    }
+    public function __construct(public ModuleVersion $moduleVersion)
+    {}
 
 
     public function sheets(): array
     {
         return [
-            'survey' => new ModuleSurveyUnpack($this->module),
-            'choices' => new ModuleChoiceUnpack($this->module),
+            'survey' => new ModuleSurveyUnpack($this->moduleVersion),
+            'choices' => new ModuleChoiceUnpack($this->moduleVersion),
         ];
     }
 }

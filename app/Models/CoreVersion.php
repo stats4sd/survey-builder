@@ -67,12 +67,12 @@ class CoreVersion extends Model
     {
         // delete survey rows for each core module:
         $this->moduleVersions->each(function($moduleVersion) {
-            $moduleVersion->module->surveyRows()->delete();
+            $moduleVersion->surveyRows()->delete();
             $moduleVersion->module->moduleVersions()->update(['is_current' => false]);
         });
 
         // choices rows without a module are linked to core
-        ChoicesRow::where('module_id', null)->delete();
+        ChoicesRow::where('module_version_id', null)->delete();
 
         // import the new survey and choices rows with the Unpack imports:
         Excel::import(new CoreFileUnpack(), $this->file);

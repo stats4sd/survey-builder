@@ -18,9 +18,9 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     {
         // get module versions in correct order
         return $this->xlsform->moduleVersions->map(function($version) {
-            return $version->module->surveyRows;
+            return $version->surveyRows;
         })->flatten()
-        // merge in langauge labels:
+        // merge in language labels:
         ->map(function($row) {
             // hard code EN only for now
             $labels = $row->surveyLabels->load('language');
