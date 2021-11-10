@@ -32,6 +32,7 @@ class XlsformRequest extends FormRequest
             //'themes' => 'nullable',
             //'modules' => 'nullable',
             'user_id' => 'required',
+            'default_language' => 'nullable',
         ];
     }
 

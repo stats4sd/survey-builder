@@ -20,7 +20,7 @@ class ModuleVersion extends Model
     protected $table = 'module_versions';
     protected $guarded = ['id'];
     protected $appends = [
-        // 'dropdown_label',
+//        'required',
     ];
     protected $casts = [
         'is_current' => 'boolean',
@@ -77,6 +77,12 @@ class ModuleVersion extends Model
     public function getFileNameAttribute()
     {
         return $this->file;
+    }
+
+    // Added for drag-and-drop selection (core modules are required)
+    public function getRequiredAttribute()
+    {
+        return $this->module->core;
     }
 
     // ** probably temporary label var ** //

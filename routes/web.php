@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CoreVersionCrudController;
 use App\Http\Controllers\Api\ModuleController;
+use App\Http\Controllers\XlsChoicesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,8 +31,9 @@ Route::group(
     ],
     function () {
         Route::get('module/{module}', [ModuleController::class, 'show'])->name('module.localshow');
-
         Route::get('latest-core', [CoreVersionCrudController::class, 'getLatest'])->name('core.latest');
+
+        Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
     }
 );
 

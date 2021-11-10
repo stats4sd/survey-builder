@@ -15,6 +15,7 @@ class Language extends Model
     protected $table = 'languages';
     protected $guarded = [];
     public $incrementing = false;
+    protected $keyType = 'string';
 
     public function modules()
     {
@@ -29,6 +30,11 @@ class Language extends Model
     public function choicesLabels ()
     {
        return $this->hasMany(ChoicesLabel::class);
+    }
+
+    public function xlsforms()
+    {
+        return $this->belongsToMany(Xlsform::class);
     }
 
 

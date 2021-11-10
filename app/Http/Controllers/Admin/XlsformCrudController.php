@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Country;
+use App\Models\Language;
 use Carbon\Carbon;
 use App\Models\Theme;
 use App\Models\Module;
@@ -67,6 +69,9 @@ class XlsformCrudController extends CrudController
 
         CRUD::button('deploy')->type('view')->stack('line')->view('backpack::crud.buttons.deploy')->makeFirst();
         CRUD::button('build')->type('view')->stack('line')->view('backpack::crud.buttons.build')->makeFirst();
+
+        // return custom view
+        //CRUD::setListView('forms.index');
     }
 
     /**
@@ -85,7 +90,9 @@ class XlsformCrudController extends CrudController
         CRUD::field('user_id');
         CRUD::field('themes')->type('relationship');
         CRUD::field('moduleVersions')->type('relationship');
-
+        CRUD::field('languages')->type('relationship');
+        CRUD::field('default_language');
+        CRUD::field('countries')->type('relationship');
 
         CRUD::setCreateView('forms.create');
     }
@@ -104,6 +111,8 @@ class XlsformCrudController extends CrudController
     {
         $projects = Auth::user()->projects;
         $themes = Theme::all();
+        $languages = Language::all();
+        $countries = Country::all();
 
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
@@ -111,18 +120,23 @@ class XlsformCrudController extends CrudController
         $xlsform = null;
 
         if ($id) {
-            $xlsform = Xlsform::find($id)->load('themes', 'moduleVersions.module');
+            $xlsform = Xlsform::find($id)->load('themes', 'moduleVersions.module', 'countries', 'languages');
             $xlsform->modules = $xlsform->moduleVersions;
             // $xlsform->moduleVersions = $xlsform->modules->map(fn($version) => $version->id);
             // $xlsform->themes = $xlsform->themes->map(fn($theme) => $theme->id);
         }
-
-        return view('forms.create', compact('projects', 'modules', 'themes', 'xlsform'));
+        if(CRUD::getCurrentOperation() === 'create') {
+            $view = CRUD::getCreateView();
+        } else {
+            $view = CRUD::getEditView();
+        }
+        return view($view, compact('projects', 'modules', 'themes', 'xlsform', 'languages', 'countries'));
     }
 
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+        CRUD::setUpdateView('forms.edit');
     }
 
     public function deploy(Xlsform $xlsform)

@@ -32,6 +32,7 @@
     "dependencies": {
         "bootstrap-vue": "^2.21.2",
         "noty": "^3.2.0-beta-deprecated",
+        "vue-select": "^3.16.0",
         "vuedraggable": "^2.24.3"
     }
 }
