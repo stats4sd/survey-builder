@@ -11,7 +11,11 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 class XlsSettingsExport implements FromCollection, WithTitle
 {
 
-    public function __construct (public Xlsform $xlsform){}
+    public Xlsform $xlsform;
+
+    public function __construct (Xlsform $xlsform){
+        $this->xlsform = $xlsform;
+    }
 
     public function collection()
     {

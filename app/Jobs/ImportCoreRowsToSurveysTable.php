@@ -22,12 +22,16 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public Collection $rows;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(public Collection $rows){}
+    public function __construct(Collection $rows){
+        $this->rows = $rows;
+    }
 
     /**
      * Execute the job.
