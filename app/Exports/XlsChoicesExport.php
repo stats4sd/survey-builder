@@ -12,7 +12,11 @@ use stdClass;
 
 class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithMapping
 {
-    public function __construct(public Xlsform $xlsform){}
+    public Xlsform $xlsform;
+
+    public function __construct(Xlsform $xlsform){
+        $this->xlsform = $xlsform;
+    }
 
     public function collection()
     {

@@ -11,7 +11,11 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, WithTitle
 {
 
-    public function __construct (public Xlsform $xlsform){}
+    public Xlsform $xlsform;
+
+    public function __construct (Xlsform $xlsform){
+        $this->xlsform = $xlsform;
+    }
 
 
     public function collection()

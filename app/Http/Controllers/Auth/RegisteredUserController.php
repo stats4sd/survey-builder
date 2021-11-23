@@ -58,8 +58,6 @@ class RegisteredUserController extends Controller
                 ]
             );
         }
-        dump($response->ok());
-        dump($response->body());
 
         // After registering, authenticate via the standard LoginRequest()
 

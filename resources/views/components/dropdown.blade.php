@@ -1,7 +1,7 @@
 @props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white'])
 
 @php
-switch ($align) {
+/** @noinspection PhpUndefinedVariableInspection */switch ($align) {
     case 'left':
         $alignmentClasses = 'origin-top-left left-0';
         break;
@@ -14,7 +14,7 @@ switch ($align) {
         break;
 }
 
-switch ($width) {
+/** @noinspection PhpUndefinedVariableInspection */switch ($width) {
     case '48':
         $width = 'w-48';
         break;
