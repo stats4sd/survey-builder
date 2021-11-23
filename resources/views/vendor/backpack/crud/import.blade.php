@@ -1,7 +1,7 @@
 @extends(backpack_view('blank'))
 
 @php
-  $defaultBreadcrumbs = [
+  /** @noinspection PhpUndefinedVariableInspection */$defaultBreadcrumbs = [
     trans('backpack::crud.admin') => url(config('backpack.base.route_prefix'), 'dashboard'),
     $crud->entity_name_plural => url($crud->route),
     trans('backpack::crud.add') => false,
