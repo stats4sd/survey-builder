@@ -14,7 +14,10 @@ class Xlsform extends Model
 
 
     protected $table = 'xlsforms';
-    protected $guarded = ['id'];
+    protected $guarded = [];
+    public $incrementing = false;
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
 
     public function setXlsfileAttribute($value)
     {
@@ -36,7 +39,12 @@ class Xlsform extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
     }
 
     public function themes()

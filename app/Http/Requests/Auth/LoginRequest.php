@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Project;
 use App\Models\User;
+use App\Models\Xlsform;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Lockout;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
 class LoginRequest extends FormRequest
 {
@@ -32,73 +35,16 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
+            'token' => 'required|string',
+            'redirect_url' => 'nullable|string',
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function authenticate()
-    {
-        $this->ensureIsNotRateLimited();
-
-        // validate credentials against JWT server requirements:
-
-        $credentials = $this->validate([
-            'email' => 'email|required',
-            'password' => 'min:6|required',
-        ]);
-
-
-        // TODO: is it ok to post password without hashing?
-        //check credentials against external server
-        $response = Http::post(config('auth.auth_url').'/api/user/login', $credentials);
-
-
-        //If cannot authenticate
-        if (! $response->ok()) {
-            RateLimiter::hit($this->throttleKey());
-
-            //dd('auth failed');
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
-
-        // set leeway to account for time diff?
-        JWT::$leeway = 10;
-
-        // decode token to get User info
-        // $token = JWTAuth::getToken();
-        $token = $response->body();
-        $decoded = JWT::decode($token, config('auth.auth_secret'), ['alg' => 'HS256']);
-
-        //If user is not in system, store:
-        $user = User::updateOrCreate(
-            ['id' => $decoded->_id],
-            [
-                'email' => $credentials['email'],
-                'username' => $credentials['email'],
-                'jwt_token' => $token,
-            ],
-        );
-
-        RateLimiter::clear($this->throttleKey());
-
-        Auth::login($user);
-
-    }
-
-    /**
      * Attempt to authenticate using a JWT shared from an external application
+     * @throws \JsonException
      */
-    public function authenticateFromExternal() {
+    public function authenticate() {
          // set leeway to account for time diff?
         JWT::$leeway = 10;
 
@@ -107,15 +53,60 @@ class LoginRequest extends FormRequest
         $token = $this->input('token');
         $decoded = JWT::decode($token, config('auth.auth_secret'), ['alg' => 'HS256']);
 
+        // get user details:
+        $userMeta = Http::withHeaders([
+            'Token' => $token,
+            'Content-Type' => 'application/json',
+        ])
+            ->get(config('auth.auth_url') . '/api/meta-data')
+        ->json();
+
+        $userMeta = json_decode($userMeta, true, 512, JSON_THROW_ON_ERROR);
+
+
         //If user is not in system, store:
         $user = User::updateOrCreate(
             ['id' => $decoded->_id],
             [
                 'email' => $decoded->email,
-                'username' => $decoded->email,
                 'jwt_token' => $token,
             ],
         );
+
+        // If a project does not exist in the database, create it (this *should* not be needed!)
+        foreach($userMeta['projects'] as $project) {
+            if(! Project::find($project['name'])) {
+                Project::create([
+                    'name' => $project['name'],
+                    'description' => $project['description'],
+                ]);
+            }
+        }
+
+        // ensure user has access to all their projects;
+        $user->projects()->syncWithoutDetaching($userMeta['user']['projects']);
+
+        // If a form does not exist in the database, create...
+        foreach($userMeta['forms'] as $form) {
+            if(! Xlsform::find($form['name'])) {
+                Xlsform::create([
+                    'id' => $form['name'],
+                    'project' => $form['project'],
+                    'draft' => $form['draft'],
+                    'complete' => $form['complete'],
+                    'centralId' => $form['centralId'],
+                ]);
+            }
+        }
+
+        $user->xlsforms()->syncWithoutDetaching($userMeta['user']['forms']);
+
+        // check + update user permissions:
+        if($userMeta['user']['roles']['administrator']) {
+            $user->assignRole('admin');
+        } else {
+            $user->removeRole('admin');
+        }
 
         RateLimiter::clear($this->throttleKey());
         Auth::login($user);

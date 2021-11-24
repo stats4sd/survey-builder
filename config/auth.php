@@ -19,6 +19,7 @@ return [
     ],
 
     'auth_url' => env('AUTH_URL', 'http://localhost:3002'),
+    'rhomis_url' => env('RHOMIS_URL', 'http://localhost:3000'),
     'auth_secret' => env('AUTH_SECRET', ''),
     /*
     |--------------------------------------------------------------------------

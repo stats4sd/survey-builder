@@ -11,7 +11,11 @@ class Project extends Model
 
 
     protected $table = 'projects';
-    protected $guarded = ['id'];
+    protected $guarded = [];
+
+    protected $primaryKey = 'name';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
 
     /*
@@ -22,7 +26,7 @@ class Project extends Model
 
     public function xlsforms()
     {
-        return $this->hasMany(Xlsform::class);
+        return $this->hasMany(Xlsform::class, 'project');
     }
 
     public function users()

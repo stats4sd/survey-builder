@@ -46,6 +46,12 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            // Add custom auth routes
+            // This is outside the standard web middleware set to allow requests to come from external app (the Rhomis main app)...
+            Route::middleware('external-auth')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/auth.php'));
         });
     }
 

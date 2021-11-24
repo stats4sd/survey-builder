@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class);
     }
+
+    public function xlsforms()
+    {
+        return $this->belongsToMany(Xlsform::class);
+    }
 }

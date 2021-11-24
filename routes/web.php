@@ -37,5 +37,3 @@ Route::group(
         Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
     }
 );
-
-require __DIR__.'/auth.php';

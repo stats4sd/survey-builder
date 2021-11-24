@@ -19,7 +19,8 @@
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
         "orangehill/iseed": "^3.0",
-        "tymon/jwt-auth": "^1.0"
+        "tymon/jwt-auth": "^1.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "backpack/generators": "^3.1",

@@ -5,37 +5,36 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Redirect login requests to the main Rhomis App...
      *
-     * @return \Illuminate\View\View
+     * @return Application|RedirectResponse|Redirector
      */
     public function create()
     {
-        return view('auth.login');
+
+        return redirect(config('auth.rhomis_url'));
     }
 
     /**
      * Handle an incoming authentication request.
      *
-     * @param  \App\Http\Requests\Auth\LoginRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param LoginRequest $request
+     * @return RedirectResponse
      */
     public function store(LoginRequest $request)
     {
 
-        // check if request is coming from standard login page, or request from another Rhomis app
-        if($request->has('email')) {
-            $request->authenticate();
-        } else if($request->token) {
-
-            $request->authenticateFromExternal();
-        }
+        $request->authenticateFromExternal();
 
         $redirect = $request->input('redirect_url') ?? 'admin';
 
@@ -45,19 +44,18 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destroy an authenticated session, then redirect to RHoMIS app to destroy session there.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('auth.rhomis_url');
     }
 }
