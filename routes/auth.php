@@ -15,14 +15,7 @@ use Illuminate\Support\Facades\Route;
  * TODO: try and restrict to specific referrer urls/domains...
  *
  */
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware([
-        'cookies',
-        'cookies.queued',
-        'startsession',
-        'shareerrors',
-        'bindings',
-    ]);
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
 /**
  * Other auth routes should simply redirect back to the main app...
