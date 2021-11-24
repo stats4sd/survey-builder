@@ -90,8 +90,35 @@ class LoginRequest extends FormRequest
         );
 
         RateLimiter::clear($this->throttleKey());
-        return Auth::login($user);
 
+        Auth::login($user);
+
+    }
+
+    /**
+     * Attempt to authenticate using a JWT shared from an external application
+     */
+    public function authenticateFromExternal() {
+         // set leeway to account for time diff?
+        JWT::$leeway = 10;
+
+        // decode token to get User info
+        // $token = JWTAuth::getToken();
+        $token = $this->input('token');
+        $decoded = JWT::decode($token, config('auth.auth_secret'), ['alg' => 'HS256']);
+
+        //If user is not in system, store:
+        $user = User::updateOrCreate(
+            ['id' => $decoded->_id],
+            [
+                'email' => $decoded->email,
+                'username' => $decoded->email,
+                'jwt_token' => $token,
+            ],
+        );
+
+        RateLimiter::clear($this->throttleKey());
+        Auth::login($user);
     }
 
     /**

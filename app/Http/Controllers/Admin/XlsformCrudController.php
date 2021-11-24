@@ -33,8 +33,8 @@ use Backpack\CRUD\app\Http\Controllers\Operations\FetchOperation;
 class XlsformCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation {store as traitStore;}
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation {update as traitUpdate;}
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
@@ -67,11 +67,6 @@ class XlsformCrudController extends CrudController
             return Storage::url($entry->xlsfile);
         }]);
 
-        CRUD::button('deploy')->type('view')->stack('line')->view('backpack::crud.buttons.deploy')->makeFirst();
-        CRUD::button('build')->type('view')->stack('line')->view('backpack::crud.buttons.build')->makeFirst();
-
-        // return custom view
-        //CRUD::setListView('forms.index');
     }
 
     /**
@@ -105,6 +100,25 @@ class XlsformCrudController extends CrudController
     public function edit($id)
     {
         return $this->setupView($id);
+    }
+
+    public function store()
+    {
+        $redirect = $this->traitStore();
+
+        // send info to API;
+
+
+        return $redirect;
+    }
+
+    public function update()
+    {
+        $redirect = $this->traitUpdate();
+
+
+
+        return $redirect;
     }
 
     public function setupView($id = null)

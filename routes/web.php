@@ -25,6 +25,7 @@ Route::get('admin/login', function () {
     return redirect('login');
 });
 
+
 Route::group(
     [
         'middleware' => 'auth',

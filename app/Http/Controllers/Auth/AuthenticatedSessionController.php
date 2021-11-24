@@ -28,11 +28,20 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        $request->authenticate();
+
+        // check if request is coming from standard login page, or request from another Rhomis app
+        if($request->has('email')) {
+            $request->authenticate();
+        } else if($request->token) {
+
+            $request->authenticateFromExternal();
+        }
+
+        $redirect = $request->input('redirect_url') ?? 'admin';
 
         $request->session()->regenerate();
 
-        return redirect('admin');
+        return redirect($redirect);
     }
 
     /**
