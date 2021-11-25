@@ -55,14 +55,12 @@ class LoginRequest extends FormRequest
 
         // get user details:
         $userMeta = Http::withHeaders([
-            'Token' => $token,
+            'Authorization' => $token,
             'Content-Type' => 'application/json',
         ])
             ->get(config('auth.auth_url') . '/api/meta-data')
-        ->json();
-
-        $userMeta = json_decode($userMeta, true, 512, JSON_THROW_ON_ERROR);
-
+        ->throw()
+            ->json();
 
         //If user is not in system, store:
         $user = User::updateOrCreate(
@@ -91,7 +89,7 @@ class LoginRequest extends FormRequest
             if(! Xlsform::find($form['name'])) {
                 Xlsform::create([
                     'id' => $form['name'],
-                    'project' => $form['project'],
+                    'project_id' => $form['project'],
                     'draft' => $form['draft'],
                     'complete' => $form['complete'],
                     'centralId' => $form['centralId'],

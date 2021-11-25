@@ -16,7 +16,7 @@ class UpdateXlsformsTableToMatchRhomisApp extends Migration
         Schema::table('xlsforms', function (Blueprint $table) {
             $table->string('name');
             $table->dropColumn('project_id');
-            $table->string('project');
+            $table->string('project_id');
             $table->renameColumn('odk_central_id', 'centralId');
             $table->boolean('draft')->default(0);
             $table->boolean('complete')->default(0);
@@ -37,8 +37,8 @@ class UpdateXlsformsTableToMatchRhomisApp extends Migration
     {
         Schema::table('xlsforms', function (Blueprint $table) {
             $table->dropColumn('name');
+            $table->dropColumn('project_id');
             $table->foreignId('project_id');
-            $table->dropColumn('project');
             $table->dropForeign('project')->on('projects');
             $table->renameColumn('centralId', 'odk_central_id');
             $table->dropColumn('draft');

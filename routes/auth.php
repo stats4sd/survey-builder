@@ -20,6 +20,7 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 /**
  * Other auth routes should simply redirect back to the main app...
  */
+
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])
     ->middleware(['guest', 'web'])
     ->name('login');

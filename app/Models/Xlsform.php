@@ -39,7 +39,7 @@ class Xlsform extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project');
+        return $this->belongsTo(Project::class, 'project_name');
     }
 
     public function users()

@@ -21,8 +21,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function create()
     {
-
-        return redirect(config('auth.rhomis_url'));
+        // for local testing, allow manual login with token
+        if(app()->environment('local')) {
+            return view('auth.login');
+        } else {
+            return redirect(config('auth.rhomis_url'));
+        }
     }
 
     /**
@@ -33,7 +37,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        $request->authenticateFromExternal();
+        $request->authenticate();
 
         $redirect = $request->input('redirect_url') ?? 'admin';
 

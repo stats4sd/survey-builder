@@ -17,19 +17,19 @@
 
             <!-- Email Address -->
             <div>
-                <x-label for="email" :value="__('Email')" />
+                <x-label for="token" :value="__('Token')" />
 
-                <x-input id="email" class="" type="email" name="email" :value="old('email')" required autofocus />
+                <x-input id="token" class="" name="token" :value="old('token')" required autofocus />
             </div>
 
             <!-- Password -->
             <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
+                <x-label for="redirect_url" :value="__('Redirect Url')" />
 
-                <x-input id="password" class=""
-                                type="password"
-                                name="password"
-                                required autocomplete="current-password" />
+                <x-input id="redirect_url" class=""
+                                type="redirect_url"
+                                name="redirect_url"
+                                required/>
             </div>
 
             <!-- Remember Me -->

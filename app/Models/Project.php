@@ -26,7 +26,7 @@ class Project extends Model
 
     public function xlsforms()
     {
-        return $this->hasMany(Xlsform::class, 'project');
+        return $this->hasMany(Xlsform::class, 'project_name');
     }
 
     public function users()
