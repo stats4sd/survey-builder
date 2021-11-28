@@ -1,4 +1,4 @@
-<template>
+gs<template>
     <b-card header="Step 1 - Customise Locations">
         <b-row>
             <b-col cols="12">

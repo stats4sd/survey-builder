@@ -26,13 +26,11 @@ class XlsformRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => 'required',
-            'title' => 'required',
-            'xlsfile' => 'nullable',
-            //'themes' => 'nullable',
-            //'modules' => 'nullable',
+            'new_project_name' => ['required_without:project_name','unique:projects,name'],
+            'project_name' => ['required_without:new_project_name'],
+            'name' => 'required',
             'user_id' => 'required',
-            'default_language' => 'nullable',
+            'default_language' => 'required',
         ];
     }
 

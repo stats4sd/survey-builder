@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CoreVersionCrudController;
 use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\XlsChoicesController;
+use App\Http\Controllers\XlsformController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,5 +36,8 @@ Route::group(
         Route::get('latest-core', [CoreVersionCrudController::class, 'getLatest'])->name('core.latest');
 
         Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
+
+
+        Route::resource('xlsform', XlsformController::class);
     }
 );

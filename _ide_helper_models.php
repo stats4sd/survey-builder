@@ -60,6 +60,27 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * App\Models\Country
+ *
+ * @property string $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
+ * @property-read int|null $xlsforms_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Country newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Country whereUpdatedAt($value)
+ */
+	class Country extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * App\Models\Indicator
  *
  * @property int $id
@@ -93,6 +114,8 @@ namespace App\Models{
  * @property-read int|null $modules_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\SurveyLabel[] $surveyLabels
  * @property-read int|null $survey_labels_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
+ * @property-read int|null $xlsforms_count
  * @method static \Illuminate\Database\Eloquent\Builder|Language newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Language newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Language query()
@@ -156,8 +179,6 @@ namespace App\Models{
  * @property int $depth
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Author[] $authors
  * @property-read int|null $authors_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\ChoicesRow[] $choicesRows
- * @property-read int|null $choices_rows_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ModuleVersion[] $draftVersions
  * @property-read int|null $draft_versions_count
  * @property-read mixed $current_file
@@ -175,8 +196,6 @@ namespace App\Models{
  * @property-read int|null $published_versions_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Sdg[] $sdgs
  * @property-read int|null $sdgs_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\SurveyRow[] $surveyRows
- * @property-read int|null $survey_rows_count
  * @property-read \App\Models\Theme $theme
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
  * @property-read int|null $xlsforms_count
@@ -220,12 +239,18 @@ namespace App\Models{
  * @property string $file
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $is_localisable
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\ChoicesRow[] $choicesRows
+ * @property-read int|null $choices_rows_count
  * @property-read \App\Models\CoreVersion|null $coreVersion
  * @property-read mixed $dropdown_label
  * @property-read mixed $file_name
+ * @property-read mixed $required
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Modifier[] $modifiers
  * @property-read int|null $modifiers_count
  * @property-read \App\Models\Module $module
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\SurveyRow[] $surveyRows
+ * @property-read int|null $survey_rows_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
  * @property-read int|null $xlsforms_count
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion newModelQuery()
@@ -236,6 +261,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereFile($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereIsCurrent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereIsLocalisable($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereMini($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion whereModuleId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ModuleVersion wherePublishedAt($value)
@@ -250,7 +276,6 @@ namespace App\Models{
 /**
  * App\Models\Project
  *
- * @property int $id
  * @property string $name
  * @property string|null $embargo
  * @property int $global
@@ -258,6 +283,7 @@ namespace App\Models{
  * @property string|null $odk_central_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $description
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  * @property-read int|null $users_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
@@ -267,9 +293,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Project query()
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereAuthors($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Project whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereEmbargo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereGlobal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Project whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereOdkCentralId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Project whereUpdatedAt($value)
@@ -330,7 +356,6 @@ namespace App\Models{
  * App\Models\User
  *
  * @property string $id
- * @property string $username
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -345,6 +370,8 @@ namespace App\Models{
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
  * @property-read int|null $tokens_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsform[] $xlsforms
+ * @property-read int|null $xlsforms_count
  * @method static \Database\Factories\UserFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
@@ -356,7 +383,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereJwtToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUsername($value)
  */
 	class User extends \Eloquent {}
 }
@@ -365,35 +391,49 @@ namespace App\Models{
 /**
  * App\Models\Xlsform
  *
- * @property int $id
- * @property int $user_id
- * @property string $title
+ * @property string $user_id
+ * @property string $id
  * @property string|null $xlsfile
- * @property string|null $status
- * @property string|null $odk_central_id
+ * @property string|null $centralId
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int $project_id
- * @property string|null $draft_at when did it get first published as a draft
- * @property string|null $published_at when did it go live
+ * @property string|null $default_language
+ * @property string|null $region_label
+ * @property string|null $subregion_level
+ * @property string|null $village_level
+ * @property string $project_name
+ * @property int $draft
+ * @property int $complete
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\CompiledChoicesRow[] $compiledChoicesRows
+ * @property-read int|null $compiled_choices_rows_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\CompiledSurveyRow[] $compiledSurveyRows
+ * @property-read int|null $compiled_survey_rows_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Country[] $countries
+ * @property-read int|null $countries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Language[] $languages
+ * @property-read int|null $languages_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ModuleVersion[] $moduleVersions
  * @property-read int|null $module_versions_count
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Theme[] $themes
  * @property-read int|null $themes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereCentralId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereComplete($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereDraftAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereDefaultLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereDraft($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereOdkCentralId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereProjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform wherePublishedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereProjectName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereRegionLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereSubregionLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereVillageLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Xlsform whereXlsfile($value)
  */
 	class Xlsform extends \Eloquent {}
@@ -431,25 +471,107 @@ namespace App\Models\Xlsforms{
  * App\Models\Xlsforms\ChoicesRow
  *
  * @property int $id
- * @property int|null $module_id
+ * @property int|null $module_version_id
  * @property string $list_name
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $localisable
+ * @property string|null $list_type
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\ChoicesLabel[] $ChoicesLabels
  * @property-read int|null $choices_labels_count
- * @property-read \App\Models\Module|null $module
+ * @property-read \App\Models\ModuleVersion|null $moduleVersion
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow query()
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereListName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereListType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereLocalisable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereModuleVersionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ChoicesRow whereUpdatedAt($value)
  */
 	class ChoicesRow extends \Eloquent {}
+}
+
+namespace App\Models\Xlsforms{
+/**
+ * App\Models\Xlsforms\CompiledChoicesRow
+ *
+ * @property int $id
+ * @property int $xlsform_id
+ * @property int|null $module_id
+ * @property string $list_name
+ * @property string $name
+ * @property int $localisable
+ * @property string $list_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Xlsform $xlsform
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereListName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereListType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereLocalisable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledChoicesRow whereXlsformId($value)
+ */
+	class CompiledChoicesRow extends \Eloquent {}
+}
+
+namespace App\Models\Xlsforms{
+/**
+ * App\Models\Xlsforms\CompiledSurveyRow
+ *
+ * @property int $id
+ * @property int $xlsform_id
+ * @property int $module_id
+ * @property string $type
+ * @property string $name
+ * @property string|null $constraint
+ * @property string|null $required
+ * @property string|null $appearance
+ * @property string|null $default
+ * @property string|null $relevant
+ * @property string|null $repeat_count
+ * @property string|null $read_only
+ * @property string|null $calculation
+ * @property string|null $choice_filter
+ * @property int $localisable
+ * @property mixed|null $localise_what
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Xlsform $xlsform
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow query()
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereAppearance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereCalculation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereChoiceFilter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereConstraint($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereDefault($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereLocalisable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereLocaliseWhat($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereReadOnly($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereRelevant($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereRepeatCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|CompiledSurveyRow whereXlsformId($value)
+ */
+	class CompiledSurveyRow extends \Eloquent {}
 }
 
 namespace App\Models\Xlsforms{
@@ -484,7 +606,7 @@ namespace App\Models\Xlsforms{
  * App\Models\Xlsforms\SurveyRow
  *
  * @property int $id
- * @property int $module_id
+ * @property int $module_version_id
  * @property string $type
  * @property string $name
  * @property string|null $constraint
@@ -498,7 +620,9 @@ namespace App\Models\Xlsforms{
  * @property string|null $choice_filter
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Module $module
+ * @property int $localisable
+ * @property mixed|null $localise_what
+ * @property-read \App\Models\ModuleVersion $moduleVersion
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Xlsforms\SurveyLabel[] $surveyLabels
  * @property-read int|null $survey_labels_count
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow newModelQuery()
@@ -511,7 +635,9 @@ namespace App\Models\Xlsforms{
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereDefault($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereLocalisable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereLocaliseWhat($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereModuleVersionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereReadOnly($value)
  * @method static \Illuminate\Database\Eloquent\Builder|SurveyRow whereRelevant($value)

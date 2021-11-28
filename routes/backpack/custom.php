@@ -22,7 +22,7 @@ Route::group([
     Route::crud('indicator', 'IndicatorCrudController');
     Route::crud('sdg', 'SdgCrudController');
     Route::crud('language', 'LanguageCrudController');
-    Route::crud('xlsform', 'XlsformCrudController');
+
     Route::crud('project', 'ProjectCrudController');
 
     Route::post('project/{project}/deploy', 'ProjectCrudController@deploy');

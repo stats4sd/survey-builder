@@ -1,84 +1,124 @@
 <template>
-    <div class="container mt-2">
-        <div class="row justify-content-center">
-            <div class="col-md-12">
-                <h2 class="mb-3">Stage 1 - Create the form and add modules</h2>
-                <b-form @submit.prevent="submit">
-                    <slot name="csrf"></slot>
-                    <!-- ##################### STEP 1: Core Form Info ######################## -->
-                    <core-form-info
-                        :projects="projects"
-                        :projectId.sync="xlsform.project_id"
-                        :title.sync="xlsform.title"
-                        :countries="countries"
-                        :languages="languages"
-                        :selectedCountries.sync="xlsform.countries"
-                        :selectedLanguages.sync="xlsform.languages"
-                        :defaultLanguage.sync="xlsform.default_language"
-                    />
+    <div class="col-md-12">
+        <h2 class="mb-3">Stage 1 - Create a Survey</h2>
+        <b-form @submit.prevent="submit">
+            <slot name="csrf"></slot>
+            <b-form-group
+                v-if="projects.length > 0"
+                id="grp-project_name"
+                label="Select project for this form:"
+                label-for="project_name"
+                class="required"
+                :invalid-feedback="errors.project_name ? errors.project_name.join(', ') : ''"
+                :state="!errors.project_name"
+            >
+                <b-form-select
+                    v-model="xlsform.project_name"
+                    :options="projects"
+                    value-field="id"
+                    text-field="name"
+                    name="project_name"
+                />
+            </b-form-group>
+            <b-form-group
+                id="grp-new_project"
+                label="Please enter the project name."
+                label-for="project_name"
+                class="required"
+                :invalid-feedback="errors.new_project_name ? errors.new_project_name.join(', ') : ''"
+                :state="!errors.new_project_name"
 
-                    <!-- ##################### STEP 2 ######################## -->
-                    <b-alert show variant="link" class="text-danger"
-                    >NOTE: "reduced" core versions are not currently
-                        available in this demo
-                    </b-alert
-                    >
-                    <theme-select :themes="themes" :selectedThemes.sync="xlsform.themes"/>
-
-                    <!--  ################# STEP 3: MODULES #########################-->
-                    <drag-and-drop-select
-                        :available.sync="availableModules"
-                        :selected.sync="xlsform.modules"
-                        items-name="modules"
-                    >
-                        <template #selectedinfo>
-                            Drag to re-order the modules. This is the order the modules will appear in the survey.
-                        </template>
-                        <template #availableInfo>
-                            These are the available optional modules based on your chosen themes. Drag a module into the
-                            left list to add it to your form.
-                        </template>
-                        <template #listItem="props">
-                            {{ props.element.module.title }}
-                            <span
-                                v-if="props.element.module.core"
-                                class="text-small"
-                            >
-                                (core)
-                            </span>
-                            - Version: {{ props.element.version_name }}
-                        </template>
-                    </drag-and-drop-select>
-
-                    <input
-                        type="hidden"
-                        :value="selectedModuleIds"
-                        name="module_ids"
-                    />
-                    <b-form-group>
-                        <b-button type="submit" variant="primary"
-                        >Save Form
-                        </b-button
-                        >
-                    </b-form-group>
-                </b-form>
-            </div>
-        </div>
+            >
+                <b-form-input
+                    v-model="xlsform.new_project_name"
+                    name="new_project_name"
+                />
+            </b-form-group>
+            <b-form-group
+                id="grp-title"
+                label="Enter the form name:"
+                label-for="name"
+                class="required"
+                :invalid-feedback="errors.name"
+            >
+                <b-form-input
+                    name="name"
+                    v-model="xlsform.name"
+                    required
+                />
+            </b-form-group>
+            <b-form-group
+                id="grp-project_id"
+                label="Which country/ies will this form be used in?"
+                label-for="countries"
+            >
+                <vSelect
+                    name="countries"
+                    v-model="xlsform.countries"
+                    :options="countries"
+                    :reduce="country => country.id"
+                    label="name"
+                    multiple
+                />
+            </b-form-group>
+            <b-alert variant="info" show>Please select the language(s) that should be available in your ODK
+                form. All RHoMIS
+                forms must have English as a language. You can also choose a default language. This should be
+                the language
+                your
+                enumerators will use most often.
+            </b-alert>
+            <b-form-group
+                id="grp-project_id"
+                label="Select languages for this form"
+                label-for="languages"
+            >
+                <vSelect
+                    name="languages"
+                    v-model="xlsform.languages"
+                    :options="languages"
+                    :reduce="language => language.id"
+                    label="name"
+                    multiple
+                />
+            </b-form-group>
+            <b-form-group
+                id="grp-default_language"
+                label="Select the default language:"
+                label-for="default_language"
+                class="required"
+            >
+                <vSelect
+                    name="default_language"
+                    v-model="xlsform.default_language"
+                    :options="languages.filter(lang => xlsform.languages.includes(lang.id))"
+                    :reduce="language => language.id"
+                    label="name"
+                />
+            </b-form-group>
+            <b-alert :show="hasErrors" variant="danger">The form could not be saved. Please review the error messages
+                above, and then resubmit.
+            </b-alert>
+            <b-button variant="primary" type="submit">Save and Continue</b-button>
+        </b-form>
     </div>
+
 </template>
 
 <script>
-import CoreFormInfo from "./CoreFormInfo";
 import ThemeSelect from "./ThemeSelect";
 import DragAndDropSelect from "./DragAndDropSelect";
 import Draggable from "vuedraggable";
+import vSelect from "vue-select";
+
 
 export default {
+    name: 'form-builder-stage-one',
     components: {
         DragAndDropSelect,
         ThemeSelect,
-        CoreFormInfo,
         Draggable,
+        vSelect,
     },
     props: {
         projects: {
@@ -111,10 +151,12 @@ export default {
                 themes: [],
                 modules: [],
                 moduleVersions: [],
-                project_id: null,
-                title: "",
+                project_name: null,
+                new_project_name: null,
+                name: "",
                 default_language: "",
-            }
+            },
+            errors: {},
         };
     },
     computed: {
@@ -127,11 +169,13 @@ export default {
         },
         selectedModuleIds() {
             return this.xlsform.modules.map(module => module.id);
+        },
+        hasErrors() {
+            return Object.keys(this.errors).length > 0;
         }
     },
 
     mounted() {
-
 
         // if creating (not editing) assign core modules to xlsform
         if (this.xlsformOriginal == null) {
@@ -147,6 +191,7 @@ export default {
     methods: {
         // Generic function to check if method should be store or update
         submit() {
+            this.errors = {}
             if (this.xlsform.id) {
                 this.update(this.xlsformId);
             } else {
@@ -163,16 +208,16 @@ export default {
 
             // prepare and send post request
             axios
-                .post("/admin/xlsform", this.xlsform)
+                .post("/xlsform", this.xlsform)
                 .then(res => {
-                    console.log(res)
-                    window.location = "/admin/xlsform/" + res.data.data.id + "/edit"
+                    window.location = "/xlsform/" + res.data.data.id + "/edit"
                 })
                 .catch(err => {
-                    if (err.message) {
-                        alert("Save error - " + err.message)
+                    // check for validation error
+                    console.log(err.response);
+                    if (err.response.status === 422) {
+                        this.errors = err.response.data.errors;
                     }
-                    console.log(err);
                 });
 
             // handle validation errors by showing errors + highlighting

@@ -16,7 +16,6 @@ class Xlsform extends Model
     protected $table = 'xlsforms';
     protected $guarded = [];
     public $incrementing = false;
-    protected $primaryKey = 'id';
     protected $keyType = 'string';
 
     public function setXlsfileAttribute($value)
@@ -29,7 +28,6 @@ class Xlsform extends Model
             $this->attributes['xlsfile'] = $value;
         }
     }
-
 
     /*
     |--------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
 
+import bootstrap from 'bootstrap';
 
 window.Popper = require('popper.js').default;
 window.$ = window.jQuery = require('jquery');
