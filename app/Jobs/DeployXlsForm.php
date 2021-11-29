@@ -42,7 +42,7 @@ class DeployXlsForm implements ShouldQueue
 
         if (!$this->xlsform->project->deployed) {
             $projectResponse = Http::withHeaders([
-                //'Authorization' => Auth::user()->jwt_token,
+                'Authorization' => Auth::user()->jwt_token,
             ])
                 ->post(
                     config('auth.auth_url') . '/api/projects/create',
