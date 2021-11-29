@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class XlsformRequest extends FormRequest
 {
@@ -28,7 +29,7 @@ class XlsformRequest extends FormRequest
         return [
             'new_project_name' => ['required_without:project_name','unique:projects,name'],
             'project_name' => ['required_without:new_project_name'],
-            'name' => ['required', 'unique:xlsforms,id'],
+            'name' => ['required', Rule::unique('xlsforms', 'name')->ignore(request()->input('name'), 'name')],
             'user_id' => 'required',
             'default_language' => 'required',
         ];

@@ -59,6 +59,7 @@ import CoreFormInfo from "./CoreFormInfo";
 import ThemeSelect from "./ThemeSelect";
 import DragAndDropSelect from "./DragAndDropSelect";
 import Draggable from "vuedraggable";
+import Noty from "noty";
 
 export default {
     components: {
@@ -97,7 +98,7 @@ export default {
                 languages: ['en'],
                 themes: [],
                 modules: [],
-                moduleVersions: [],
+                module_versions: [],
                 project_id: null,
                 title: "",
                 default_language: "",
@@ -127,57 +128,66 @@ export default {
             );
         } else {
             this.xlsform = {...this.xlsformOriginal};
-            this.xlsform.themes = this.xlsform.themes.map(theme => theme.id);
-            this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
+            this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
+            this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+            this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
+            this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
+
         }
     },
     methods: {
         // Generic function to check if method should be store or update
         submit() {
-            if (this.xlsform.id) {
-                this.update(this.xlsformId);
-            } else {
-                this.store();
-            }
+            this.xlsform.module_versions = this.xlsform.modules.map(
+                module => module.id
+            );
+            // At this point, should only ever be editing...
+            // if (this.xlsform.id) {
+                this.update();
+            // } else {
+            //    this.store();
+            // }
         },
         store() {
             console.log("👍", this.xlsform);
             this.xlsform.user_id = this.userId;
 
-            this.xlsform.moduleVersions = this.xlsform.modules.map(
-                module => module.id
-            );
-
             // prepare and send post request
             axios
-                .post("/admin/xlsform", this.xlsform)
+                .post("/xlsform", this.xlsform)
                 .then(res => {
-                    console.log(res)
-                    window.location = "/admin/xlsform/" + res.data.data.id + "/edit"
+                    console.log('ok', res.data);
+                    window.location.assign("/xlsform/" + res.data.name + "/edit")
                 })
                 .catch(err => {
-                    if (err.message) {
-                        alert("Save error - " + err.message)
+                    // check for validation error
+
+                    if (err.response && err.response.status === 422) {
+                        this.errors = err.response.data.errors;
                     }
-                    console.log(err);
                 });
 
             // handle validation errors by showing errors + highlighting
 
             // on success, redirect user back to form list page.
         },
-        update($id) {
-            this.xlsform.moduleVersions = this.xlsform.modules.map(module => module.id);
+        update() {
 
-            axios.put("/admin/xlsform/" + this.xlsform.id, this.xlsform)
+            axios.put("/xlsform/" + this.xlsform.name, this.xlsform)
                 .then(res => {
-                    window.location = "/admin/xlsform"
+                    console.log('ok', res.data);
+                    new Noty({
+                        'type': 'success',
+                        'text': '<h4>Success!</h4> Your survey form has been saved. The XLS Form is now being built. Once complete you will see it in the main RHoMIS app.'
+                    }).show();
+
                 })
                 .catch(err => {
-                    if (err.message) {
-                        alert("Save error - " + err.message)
+                    // check for validation error
+
+                    if (err.response && err.response.status === 422) {
+                        this.errors = err.response.data.errors;
                     }
-                    console.log(err);
                 });
         }
     }
@@ -188,5 +198,4 @@ export default {
 
 
 </script>
-
 

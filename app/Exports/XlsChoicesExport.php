@@ -21,7 +21,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
     public function collection()
     {
 
-        $coreOptionRows = ChoicesRow::where('module_id', null)->with('choicesLabels.language')->get();
+        $coreOptionRows = ChoicesRow::where('module_version_id', null)->with('choicesLabels.language')->get();
 
         $optionalModulesRows = $this->xlsform->moduleVersions->map(function($version) {
             return $version->choicesRows->load('choicesLabels.language');
@@ -39,7 +39,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
             foreach($labels as $label) {
                 // $header = $label->type . ":: " . $label->language->name . " (" . $label->language_id . ")";
 
-                if($label->language_id == "en" && $row->$header == '') {
+                if($label->language_id === "en" && $row->$header === '') {
                     $row->$header = $label->label;
                 }
             }

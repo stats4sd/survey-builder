@@ -16,6 +16,7 @@ class Xlsform extends Model
     protected $table = 'xlsforms';
     protected $guarded = [];
     public $incrementing = false;
+    protected $primaryKey = 'name';
     protected $keyType = 'string';
 
     public function setXlsfileAttribute($value)

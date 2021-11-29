@@ -16,12 +16,20 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        // post new project to RHoMIS Auth / System as current user:
-        Http::withHeaders([
-            "Authorization" => Auth::user()->jwt_token,
-        ])->post(config('auth.auth_url') . '/api/projects/create', [
-            'name' => $project->name,
-        ])->throw();
+//        \Log::info($project);
+//        // post new project to RHoMIS Auth / System as current user:
+//        $response = Http::withHeaders([
+//            'Authorization' => Auth::user()->jwt_token,
+//            'Content-Type' => 'application/json',
+//        ])->post(config('auth.auth_url') . '/api/projects/create', [
+//            'name' => $project->name,
+//            'description' => $project->name . '-test-description',
+//        ])->throw();
+//
+//        \Log::info('project created and observed: ' . $project->name);
+//        \Log::info($response->status());
+//        \Log::info($response->body());
+
 
     }
 

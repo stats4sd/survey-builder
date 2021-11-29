@@ -26,3 +26,7 @@ Route::group([
     Route::apiResource('project', ProjectController::class);
     //Route::apiResource('module', ModuleController::class);
 });
+
+Route::post('temp', function(Request $request) {
+   return $request->all();
+});

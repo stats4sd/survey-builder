@@ -23,13 +23,15 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Collection $rows;
+    public CoreVersion $coreVersion;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Collection $rows){
+    public function __construct(CoreVersion $coreVersion, Collection $rows){
+        $this->coreVersion = $coreVersion;
         $this->rows = $rows;
     }
 
@@ -52,9 +54,12 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
         $moduleSlug = $this->rows->first()['module_for_import'];
         $moduleVersion = ModuleVersion::whereHas('module', function($query) use ($moduleSlug) {
             $query->where('slug', $moduleSlug);
-        })->firstOrFail();
+        })
+            ->where('core_version_id', $this->coreVersion->id)
+            ->firstOrFail();
 
-        $moduleLocalisable = false;
+        // start by assuming the module version is not localisable
+        $moduleVersionLocalisable = false;
 
         foreach ($this->rows as $row) {
 
@@ -64,11 +69,9 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
             }
 
             $localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
-
             if($localisable) {
-                $moduleLocalisable = true;
+                $moduleVersionLocalisable = true;
             }
-
             $surveyRow = SurveyRow::create([
                 'module_version_id' => $moduleVersion->id,
                 'type' => $row['type'],
@@ -110,7 +113,7 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
         }
 
         $moduleVersion->update([
-            'is_localisable' => $moduleLocalisable
+            'is_localisable' => $moduleVersionLocalisable,
         ]);
 
         \Log::info('reached the end of module import for ' . $this->rows->first()['module_for_import']);

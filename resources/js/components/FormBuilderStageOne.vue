@@ -150,7 +150,7 @@ export default {
                 languages: ['en'],
                 themes: [],
                 modules: [],
-                moduleVersions: [],
+                module_versions: [],
                 project_name: null,
                 new_project_name: null,
                 name: "",
@@ -184,8 +184,10 @@ export default {
             );
         } else {
             this.xlsform = {...this.xlsformOriginal};
-            this.xlsform.themes = this.xlsform.themes.map(theme => theme.id);
-            this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
+            this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
+            this.xlsform.module_versions = this.xlsform.modules ? this.xlsform.themes.map(moduleVersion => moduleVersion.id) : []
+            this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
+            this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
         }
     },
     methods: {
@@ -193,7 +195,7 @@ export default {
         submit() {
             this.errors = {}
 
-            this.xlsform.moduleVersions = this.xlsform.modules.map(
+            this.xlsform.module_versions = this.xlsform.modules.map(
                 module => module.id
             );
 
@@ -205,18 +207,20 @@ export default {
         },
         store() {
             console.log("👍", this.xlsform);
+
             this.xlsform.user_id = this.userId;
 
             // prepare and send post request
             axios
                 .post("/xlsform", this.xlsform)
                 .then(res => {
-                    window.location = "/xlsform/" + res.data.data.id + "/edit"
+                    console.log('ok', res.data);
+                    window.location.assign("/xlsform/" + res.data.name + "/edit")
                 })
                 .catch(err => {
                     // check for validation error
-                    console.log(err.response);
-                    if (err.response.status === 422) {
+
+                    if (err.response && err.response.status === 422) {
                         this.errors = err.response.data.errors;
                     }
                 });
@@ -224,15 +228,17 @@ export default {
         },
         update($id) {
 
-            axios.put("/admin/xlsform/" + this.xlsform.id, this.xlsform)
+            axios.put("/xlsform/" + this.xlsform.id, this.xlsform)
                 .then(res => {
-                    window.location = "/admin/xlsform"
+                    console.log('ok', res.data);
+                    window.location.assign("/xlsform/" + res.data.name + "/edit")
                 })
                 .catch(err => {
-                    if (err.message) {
-                        alert("Save error - " + err.message)
+                    // check for validation error
+
+                    if (err.response && err.response.status === 422) {
+                        this.errors = err.response.data.errors;
                     }
-                    console.log(err);
                 });
         }
     }

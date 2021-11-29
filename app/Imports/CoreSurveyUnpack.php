@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Jobs\ImportCoreRowsToSurveysTable;
+use App\Models\CoreVersion;
 use App\Models\Module;
 use App\Models\Language;
 use App\Models\Xlsforms\SurveyRow;
@@ -13,12 +14,19 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class CoreSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
+
+    public CoreVersion $coreVersion;
+
+    public function __construct(CoreVersion $coreVersion)
+    {
+        $this->coreVersion = $coreVersion;
+    }
+
     /**
     * @param Collection $collection
     */
     public function collection(Collection $collection)
     {
-
         // split into modules
         $collection = $collection->groupBy('module_for_import');
 
@@ -26,7 +34,7 @@ class CoreSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
         \Log::info($collection);
 
         $collection->each(function($rows) {
-            ImportCoreRowsToSurveysTable::dispatch($rows);
+            ImportCoreRowsToSurveysTable::dispatch($this->coreVersion, $rows);
         });
     }
 }

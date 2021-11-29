@@ -28,8 +28,8 @@ class XlsSettingsExport implements FromCollection, WithTitle
                 'version',
             ],
             [
-                Str::slug($this->xlsform->title),
-                Str::slug($this->xlsform->title),
+                Str::slug($this->xlsform->name),
+                Str::slug($this->xlsform->name),
                 'English (en)',
                 'concat(${respondentname}," - ", ${village}," - ", ${starttime_auto})',
                 Str::slug(Carbon::now()->toISOString()),

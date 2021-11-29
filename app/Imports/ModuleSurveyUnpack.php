@@ -41,7 +41,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
             }
 
             $surveyRow = SurveyRow::create([
-                'module_id' => $this->moduleVersion->id,
+                'module_version_id' => $this->moduleVersion->id,
                 'type' => $row['type'],
                 'name' => $row['name'],
                 'constraint' => $row['constraint'],

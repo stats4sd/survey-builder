@@ -37,6 +37,7 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
             }
             return $row;
         });
+
     }
 
     public function map ($surveyRow): array
@@ -48,8 +49,8 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
         return [
             '-',
-            $surveyRow->module->slug,
-            $surveyRow->module->slug,
+            $surveyRow->moduleVersion->module->slug,
+            $surveyRow->moduleVersion->module->slug,
             $surveyRow->type,
             $surveyRow->name,
             $surveyRow->$labelHeader,
