@@ -50,7 +50,7 @@ class DeployXlsForm implements ShouldQueue
                         'name' => $this->xlsform->project_name,
                         'description' => $this->xlsform->project_name . ' description'
                     ]
-                );
+                )
                 ->throw();
 
             Log::info($projectResponse);
