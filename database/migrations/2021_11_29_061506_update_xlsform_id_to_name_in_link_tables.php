@@ -33,6 +33,11 @@ class UpdateXlsformIdToNameInLinkTables extends Migration
             $table->string('xlsform_name');
         });
 
+        Schema::table('xlsforms', function (Blueprint $table) {
+            $table->primary('name');
+        });
+    })
+
     }
 
     /**
@@ -60,6 +65,10 @@ class UpdateXlsformIdToNameInLinkTables extends Migration
         Schema::table('theme_xlsform', function (Blueprint $table) {
             $table->dropColumn('xlsform_name');
             $table->foreignId('xlsform_id');
+        });
+
+        Schema::table('xlsforms', function (Blueprint $table) {
+            $table->dropPrimary('name');
         });
     }
 }
