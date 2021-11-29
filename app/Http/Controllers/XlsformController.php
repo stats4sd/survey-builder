@@ -64,11 +64,15 @@ class XlsformController extends CrudController
         // TODO: check if we need to slugify the form name...
         $attributes['id'] = $attributes['name'];
 
+        // TODO: followup on use of "name" as the primary key.
+        // Keeping 'id' for now as I'm betting on this changing...
+        unset($attributes['name']);
+
         $xlsform = Xlsform::create($attributes);
 
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-        $xlsform->moduleVersions()->sync($request->input('modules'));
+        $xlsform->moduleVersions()->sync($request->input('moduleVersions'));
         $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 

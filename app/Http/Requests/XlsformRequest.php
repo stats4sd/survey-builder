@@ -28,7 +28,7 @@ class XlsformRequest extends FormRequest
         return [
             'new_project_name' => ['required_without:project_name','unique:projects,name'],
             'project_name' => ['required_without:new_project_name'],
-            'name' => 'required',
+            'name' => ['required', 'unique:xlsforms,id'],
             'user_id' => 'required',
             'default_language' => 'required',
         ];

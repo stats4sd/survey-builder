@@ -23,7 +23,7 @@
     <div id="app">
         <b-card no-body class="border-dark border-top-0 rounded-top rounded-lg">
             <b-tabs card nav-class="bg-dark rounded-top rounded-sm flex-nowrap" nav-wrapper-class="px-2" lazy>
-                <b-tab title="Stage 1 - Create">
+                <b-tab title="Stage 1 - Create" active>
                     <form-builder-stage-one
                         :countries="{{$countries->toJson() }}"
                         :languages="{{ $languages->toJson() }}"

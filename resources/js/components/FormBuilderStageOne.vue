@@ -192,6 +192,11 @@ export default {
         // Generic function to check if method should be store or update
         submit() {
             this.errors = {}
+
+            this.xlsform.moduleVersions = this.xlsform.modules.map(
+                module => module.id
+            );
+
             if (this.xlsform.id) {
                 this.update(this.xlsformId);
             } else {
@@ -201,10 +206,6 @@ export default {
         store() {
             console.log("👍", this.xlsform);
             this.xlsform.user_id = this.userId;
-
-            this.xlsform.moduleVersions = this.xlsform.modules.map(
-                module => module.id
-            );
 
             // prepare and send post request
             axios
@@ -220,12 +221,8 @@ export default {
                     }
                 });
 
-            // handle validation errors by showing errors + highlighting
-
-            // on success, redirect user back to form list page.
         },
         update($id) {
-            this.xlsform.moduleVersions = this.xlsform.modules.map(module => module.id);
 
             axios.put("/admin/xlsform/" + this.xlsform.id, this.xlsform)
                 .then(res => {
