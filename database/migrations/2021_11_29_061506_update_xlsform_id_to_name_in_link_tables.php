@@ -36,8 +36,6 @@ class UpdateXlsformIdToNameInLinkTables extends Migration
         Schema::table('xlsforms', function (Blueprint $table) {
             $table->primary('name');
         });
-    })
-
     }
 
     /**
