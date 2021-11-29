@@ -24,7 +24,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="container-lg px-5 px-xl-0">
+            <main class="mx-auto px-5" style="max-width:1200px">
                 @yield('content')
             </main>
         </div>
