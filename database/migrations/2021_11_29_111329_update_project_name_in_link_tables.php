@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNameToXlsformsTable extends Migration
+class UpdateProjectNameInLinkTables extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddNameToXlsformsTable extends Migration
      */
     public function up()
     {
-        Schema::table('xlsforms', function (Blueprint $table) {
-            $table->string('name');
+        Schema::table('project_user', function (Blueprint $table) {
+            $table->renameColumn('project_id', 'project_name');
         });
     }
 
@@ -25,8 +25,8 @@ class AddNameToXlsformsTable extends Migration
      */
     public function down()
     {
-        Schema::table('xlsforms', function (Blueprint $table) {
-            $table->dropColumn('name');
+        Schema::table('project_user', function (Blueprint $table) {
+            $table->renameColumn('project_name', 'project_id');
         });
     }
 }
