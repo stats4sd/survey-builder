@@ -16,6 +16,7 @@ Route::group([
 ], function () { // custom admin routes
 
 
+
     Route::crud('theme', 'ThemeCrudController');
     Route::crud('module', 'ModuleCrudController');
 

@@ -39,5 +39,10 @@ Route::group(
 
 
         Route::resource('xlsform', XlsformController::class);
+
+        // redirect xlsform crud users to front-end
+        Route::get('admin/xlsform/create', function(){
+            return redirect('xlsform/create');
+        });
     }
 );
