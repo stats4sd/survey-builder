@@ -59,7 +59,7 @@ class LoginRequest extends FormRequest
             'Content-Type' => 'application/json',
         ])
             ->get(config('auth.auth_url') . '/api/meta-data')
-        ->throw()
+            ->throw()
             ->json();
 
         //If user is not in system, store:
