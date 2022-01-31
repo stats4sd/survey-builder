@@ -14,8 +14,12 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
 
-    public function __construct(public ModuleVersion $moduleVersion)
-    {}
+    public ModuleVersion $moduleVersion;
+
+    public function __construct(ModuleVersion $moduleVersion)
+    {
+        $this->moduleVersion = $moduleVersion;
+    }
 
 
     public function collection(Collection $rows)

@@ -14,8 +14,11 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
-    public function __construct(public ModuleVersion $moduleVersion)
+    public ModuleVersion $moduleVersion;
+
+    public function __construct(ModuleVersion $moduleVersion)
     {
+        $this->moduleVersion = $moduleVersion;
     }
 
 

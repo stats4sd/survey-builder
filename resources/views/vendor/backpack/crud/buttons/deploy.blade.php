@@ -5,7 +5,8 @@
 {{-- Button Javascript --}}
 {{-- - used right away in AJAX operations (ex: List) --}}
 {{-- - pushed to the end of the page, after jQuery is loaded, for non-AJAX operations (ex: Show) --}}
-@push('after_scripts') @if (request()->ajax()) @endpush @endif
+@if (request()->ajax())
+@push('after_scripts')
 <script>
 	if (typeof deployEntry != 'function') {
 	  $("[data-button-type=clone]").unbind('click');
@@ -47,4 +48,5 @@
 	// make it so that the function above is run after each DataTable draw event
 	// crud.addFunctionToDataTablesDrawEventQueue('cloneEntry');
 </script>
-@if (!request()->ajax()) @endpush @endif
+@endpush
+@endif

@@ -9,8 +9,12 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ModuleFileUnpack implements WithMultipleSheets
 {
-    public function __construct(public ModuleVersion $moduleVersion)
-    {}
+    public ModuleVersion $moduleVersion;
+
+    public function __construct(ModuleVersion $moduleVersion)
+    {
+        $this->moduleVersion = $moduleVersion;
+    }
 
 
     public function sheets(): array
