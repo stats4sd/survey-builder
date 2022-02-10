@@ -27,11 +27,14 @@ Route::group([
     Route::crud('project', 'ProjectCrudController');
 
     Route::post('project/{project}/deploy', 'ProjectCrudController@deploy');
-    Route::post('xlsform/{xlsform}/deploy', 'XlsformCrudController@deploy');
-    Route::get('xlsform/{xlsform}/build', 'XlsformCrudController@build');
+    //Route::post('xlsform/{xlsform}/deploy', 'XlsformCrudController@deploy');
+    //Route::get('xlsform/{xlsform}/build', 'XlsformCrudController@build');
 
     Route::post('user/{user}/newtoken', 'TokenController@store')->name('account.newtoken');
     Route::crud('moduleversion', 'ModuleVersionCrudController');
+    Route::get('moduleversion', function() {
+        return redirect(backpack_url('module'));
+    });
 
     Route::get('moduleversion/{moduleversion}/publish', 'ModuleVersionCrudController@publish')->name('moduleversion.publish');
     Route::crud('author', 'AuthorCrudController');
