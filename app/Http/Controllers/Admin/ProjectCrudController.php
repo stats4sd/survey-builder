@@ -68,7 +68,7 @@ class ProjectCrudController extends CrudController
         CRUD::field('embago')->label('Enter the standard embago time period for data collected with this project'); // make it a date?
         CRUD::field('global')->label('Should project data be included in the anonymised RHoMIS global dataset?'); // make it an opt-out?
         CRUD::field('authors')->label('Enter information of collaborators for the project. This information will be used to include authorship information for any published results based on this project\'s activities');
-        CRUD::field('users')->type('relationship')->label('Add users to the project')->pivot(true);
+        CRUD::field('users')->type('relationship')->label('Add users to the project')->pivot(true)->attribute('email');
     }
 
     /**
