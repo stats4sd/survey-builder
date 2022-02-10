@@ -1,54 +1,44 @@
 <x-guest-layout>
+
+    <div class="card bg-white">
+        <div class=" card-body d-flex align-items-center">
+            <h5 class="mr-3 mb-0">Sign in through the RHoMIS System:</h5>
+            <a href="{{ config('auth.rhomis_url') }}" class="btn btn-primary">Sign in</a>
+        </div>
+    </div>
+
+
     <x-auth-card>
         <x-slot name="logo">
-            <a href="/" class="d-flex justify-content-center mb-4">
-                <x-application-logo width=64 height=64 />
-            </a>
+            <div class="d-flex justify-content-center">
+                <span></span>
         </x-slot>
 
         <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+        <x-auth-session-status class="mb-4" :status="session('status')"/>
 
         <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+        <x-auth-validation-errors class="mb-4" :errors="$errors"/>
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            <h5>Sign in via Email and Password</h5>
+            <h5>Or sign in via email and password</h5>
             <div>
-                <x-label for="email" :value="__('Email')" />
+                <x-label for="email" :value="__('Email')"/>
 
-                <x-input id="email" class="" name="email" :value="old('email')" required autofocus />
+                <x-input id="email" class="" name="email" :value="old('email')" required autofocus/>
             </div>
 
-             <!-- Password -->
+            <!-- Password -->
             <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
+                <x-label for="password" :value="__('Password')"/>
 
                 <x-input id="password" class=""
-                                type="password"
-                                name="password"
-                                required/>
+                         type="password"
+                         name="password"
+                         required/>
             </div>
-
-            <h5 class="mt-4">To Manually test Token authentication:</h5>
-{{--            <!-- Email Address -->--}}
-{{--            <div>--}}
-{{--                <x-label for="token" :value="__('Token')" />--}}
-
-{{--                <x-input id="token" class="" name="token" :value="old('token')" required autofocus />--}}
-{{--            </div>--}}
-
-{{--            <!-- Password -->--}}
-{{--            <div class="mt-4">--}}
-{{--                <x-label for="redirect_url" :value="__('Redirect Url')" />--}}
-
-{{--                <x-input id="redirect_url" class=""--}}
-{{--                                type="redirect_url"--}}
-{{--                                name="redirect_url"--}}
-{{--                                required/>--}}
-{{--            </div>--}}
 
             <!-- Remember Me -->
             <div class="mt-3 form-check">
@@ -60,7 +50,8 @@
 
             <div class="d-flex justify-content-end mt-4">
                 @if (Route::has('password.request'))
-                    <a class="text-muted" href="{{ route('password.request') }}" style="margin-right: 15px; margin-top: 15px;">
+                    <a class="text-muted" href="{{ route('password.request') }}"
+                       style="margin-right: 15px; margin-top: 15px;">
                         {{ __('Forgot your password?') }}
                     </a>
                 @endif

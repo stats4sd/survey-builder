@@ -22,11 +22,11 @@ class AuthenticatedSessionController extends Controller
     public function create()
     {
         // for local testing, allow manual login with token
-        if(app()->environment('local')) {
+        //if(app()->environment('local')) {
             return view('auth.login');
-        } else {
-            return redirect(config('auth.rhomis_url'));
-        }
+        //} else {
+        //    return redirect(config('auth.rhomis_url'));
+        //}
     }
 
     /**
