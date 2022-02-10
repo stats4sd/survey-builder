@@ -56,8 +56,9 @@
             </li>
             <hr/>
             <li class="list-group-item d-flex bg-primary">
-                <h5 class="mb-0">Current Version:  {{ $entry->current_version_name }}</h5>
+                <h5 class="mb-0">Current Versions:</h5>
             </li>
+            @foreach($entry->moduleVersions)
             <li class="list-group-item d-flex">
                 <div class="w-50 text-right mr-4">Current Published File: </div>
                 <div class="{{ $entry->publishedVersions->count() > 0 ? 'text-success' : 'text-danger' }}">

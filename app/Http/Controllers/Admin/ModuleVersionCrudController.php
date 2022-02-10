@@ -64,7 +64,7 @@ class ModuleVersionCrudController extends CrudController
         CRUD::field('module_id')->type('relationship');
         CRUD::field('prev_version')->type('prev_module_version');
         CRUD::field('version_name')->type('text');
-        CRUD::field('mini')->type('checkbox');
+        CRUD::field('mini')->type('checkbox')->label('Is this a "reduced" version of the module?');
         CRUD::field('file')->type('upload')->upload(true);
     }
 

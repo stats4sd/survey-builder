@@ -39,32 +39,7 @@ class ModuleCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/module');
         CRUD::setEntityNameStrings('module', 'modules');
 
-        // CRUD::set('import.importer', CoreFileImport::class);
     }
-
-    // protected function setupImportOperation()
-    // {
-    //     CRUD::setValidation(CoreImportRequest::class);
-
-    //     CRUD::field('import_instructions')->type('custom_html')->value('
-    //         <div class="alert">
-    //             <h3>Instructions</h3>
-    //             Please upload the Excel file containing all the core modules.
-    //             <ul>
-    //                 <li>The file should include a "modules" column to show which module each row is intended for. Match the modules using the "slug" field.</li>
-    //                 <li>The modules must exist within the platform before importing.</li>
-    //                 <li>Once complete, a new version of each core module within the file will be created using the details supplied here.</li>
-    //             </ul>
-    //         </div>
-    //     ');
-
-    //     // Assume that core modules are updated together
-    //     // Find a core module and get the latest version to display
-    //     CRUD::field('module_id')->type('hidden')->default(Module::firstWhere('core', true)->id);
-    //     CRUD::field('prev_version')->type('prev_module_version_core');
-    //     CRUD::field('version_name')->type('text');
-    //     CRUD::field('mini')->type('checkbox');
-    // }
 
     protected function setupReorderOperation()
     {
@@ -121,8 +96,6 @@ class ModuleCrudController extends CrudController
         CRUD::field('slug')->label('No-spaces unique string to identify modules in compiled XLSforms');
         CRUD::field('minutes')->label('Approx. time to complete this part of the survey (in minutes)');
 
-        CRUD::field('modifier-info')->type('section-title')->content('Modifiers are ways to define variants of a module. For example, if this module should have a "reduced" version that is different from the main version, add the "reduced" modifier.');
-        CRUD::field('modifiers')->type('relationship')->attribute('title');
 
         CRUD::field('property-info')->type('section-title')->title('Module Properties');
         CRUD::field('authors')->type('relationship');
@@ -131,11 +104,10 @@ class ModuleCrudController extends CrudController
         CRUD::field('languages')->type('relationship');
 
 
-        CRUD::field('core')->type('checkbox');
+        CRUD::field('core')->type('checkbox')->label('Is this module part of the core RHoMIS?');
 
 
-
-        CRUD::field('live')->type('checkbox');
+        CRUD::field('live')->type('checkbox')->label('Is this module live and available for use?');
     }
 
     /**

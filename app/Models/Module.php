@@ -42,15 +42,6 @@ class Module extends Model
         return null;
     }
 
-    public function getCurrentFileAttribute()
-    {
-        if ($this->publishedVersions->count() > 0) {
-            return $this->current_version->file;
-        }
-
-        return null;
-    }
-
     public function theme()
     {
         return $this->belongsTo(Theme::class);
@@ -74,11 +65,6 @@ class Module extends Model
     public function xlsforms()
     {
         return $this->belongsToMany(Xlsform::class);
-    }
-
-    public function modifiers()
-    {
-        return $this->belongsToMany(Modifier::class);
     }
 
     public function authors()
