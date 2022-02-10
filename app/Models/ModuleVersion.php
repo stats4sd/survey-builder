@@ -64,7 +64,9 @@ class ModuleVersion extends Model
         $this->choicesRows()->delete();
 
         // import the new file + unpack into ODK survey + choices tables
-        Excel::import(new ModuleFileUnpack($this), $this->file);
+        (new ModuleFileUnpack($this))->import($this->file);
+
+
 
         //remove 'is_current' flag from previous versions. If full - only change other full. if 'mini', change other minis
         $mini = $this->mini;
