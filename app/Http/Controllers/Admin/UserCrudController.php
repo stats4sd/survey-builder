@@ -25,9 +25,8 @@ class UserCrudController extends CrudController
     {
         $this->crud->addColumns([
             [
-                'name'  => 'name',
-                'label' => trans('backpack::permissionmanager.name'),
-                'type'  => 'text',
+                'name' => 'id',
+                'label' => 'ID Code from main RHoMIS Database',
             ],
             [
                 'name'  => 'email',
@@ -146,11 +145,6 @@ class UserCrudController extends CrudController
     protected function addUserFields()
     {
         $this->crud->addFields([
-            [
-                'name'  => 'name',
-                'label' => trans('backpack::permissionmanager.name'),
-                'type'  => 'text',
-            ],
             [
                 'name'  => 'email',
                 'label' => trans('backpack::permissionmanager.email'),
