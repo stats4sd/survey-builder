@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\ModuleVersionUpdateRequest;
 use App\Models\Module;
 use Illuminate\Support\Facades\Route;
 use App\Http\Requests\ModuleVersionRequest;
@@ -77,6 +78,7 @@ class ModuleVersionCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+        CRUD::setValidation(ModuleVersionUpdateRequest::class);
     }
 
 

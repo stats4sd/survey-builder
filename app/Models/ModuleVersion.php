@@ -63,11 +63,13 @@ class ModuleVersion extends Model
         $this->surveyRows()->delete();
         $this->choicesRows()->delete();
 
-        // import the new
-        Excel::import(new ModuleFileUnpack($this->module), $this->file);
+        // import the new file + unpack into ODK survey + choices tables
+        Excel::import(new ModuleFileUnpack($this), $this->file);
 
-        //remove 'is_current' flag from previous versions;
-        $this->module->moduleVersions()->update(['is_current' => false]);
+        //remove 'is_current' flag from previous versions. If full - only change other full. if 'mini', change other minis
+        $mini = $this->mini;
+
+        $this->module->moduleVersions()->where('mini', $mini)->update(['is_current' => false]);
 
 
         $this->update(['published_at' => Carbon::now(), 'is_current' => true]);

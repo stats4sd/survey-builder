@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Language;
 use App\Models\Module;
+use App\Models\ModuleVersion;
 use App\Models\Xlsforms\SurveyLabel;
 use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;

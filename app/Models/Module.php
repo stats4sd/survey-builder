@@ -18,29 +18,6 @@ class Module extends Model
 
     protected $table = 'modules';
     protected $guarded = ['id'];
-    protected $appends = [
-        'current_version_name',
-        'current_version',
-    ];
-
-    // ****** Latest Published Version ********* //
-    public function getCurrentVersionAttribute()
-    {
-        if ($this->publishedVersions->count() > 0) {
-            return $this->publishedVersions()->orderBy('created_at', 'desc')->first();
-        }
-
-        return null;
-    }
-
-    public function getCurrentVersionNameAttribute()
-    {
-        if ($this->publishedVersions->count() > 0) {
-            return $this->current_version->version_name;
-        }
-
-        return null;
-    }
 
     public function theme()
     {
@@ -60,6 +37,12 @@ class Module extends Model
     public function publishedVersions()
     {
         return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null)->orderBy('published_at', 'desc');
+    }
+
+    //published versions filtered to show only the ones that are 'current'
+    public function currentVersions()
+    {
+        return $this->hasMany(ModuleVersion::class)->where('published_at', '!=', null)->where('is_current', 1)->orderBy('published_at', 'desc');
     }
 
     public function xlsforms()
