@@ -128,6 +128,11 @@ class LoginRequest extends FormRequest
             ->throw()
             ->json();
 
+
+        // check for existing users with that email;
+        // for now, simply delete them! (May do something more clever later)
+        $user = User::where('email', $decoded->email)->delete();
+
         //If user is not in system, store:
         $user = User::updateOrCreate(
             ['id' => $decoded->_id],
