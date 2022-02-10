@@ -78,6 +78,15 @@ class ModuleVersion extends Model
         return $this->published_at;
     }
 
+    public function unpublish()
+    {
+        $this->surveyRows()->delete();
+        $this->choicesRows()->delete();
+
+        $this->update(['published_at' => null, 'is_current' => false]);
+        return true;
+    }
+
     public function getFileNameAttribute()
     {
         return $this->file;

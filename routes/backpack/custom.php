@@ -37,6 +37,7 @@ Route::group([
     });
 
     Route::get('moduleversion/{moduleversion}/publish', 'ModuleVersionCrudController@publish')->name('moduleversion.publish');
+    Route::get('moduleversion/{moduleversion}/unpublish', 'ModuleVersionCrudController@unpublish')->name('moduleversion.unpublish');
     Route::crud('author', 'AuthorCrudController');
     Route::crud('core-version', 'CoreVersionCrudController');
 

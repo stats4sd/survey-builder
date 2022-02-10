@@ -67,9 +67,12 @@
                 @foreach($entry->currentVersions as $currentVersion)
                     <li class="list-group-item d-flex">
                         <div class="w-50 text-right mr-4">{{ $currentVersion->version_name }} {{ $currentVersion->mini ? '(reduced)' : '' }}:</div>
-                        <div class="text-success">
+                        <div class="text-success mr-3">
                             <a href="{{ Storage::url($currentVersion->file) }}">{{ $currentVersion->file }}</a>
                         </div>
+                        <form action="{{ backpack_url('moduleversion/'.$currentVersion->id.'/unpublish') }}">
+                            <button type='submit' class="btn btn-sm btn-danger">Make draft</button>
+                        </form>
                     </li>
                 @endforeach
             @endif

@@ -130,4 +130,19 @@ class ModuleVersionCrudController extends CrudController
 
         return back();
     }
+
+    public function unpublish(ModuleVersion $moduleversion)
+    {
+        // check (have any forms used this yet?)
+        if($moduleversion->xlsforms && $moduleversion->xlsforms->count() > 0 ) {
+            \Alert::add('danger', 'Warning - Module version '.$moduleversion->version_name.' is currently used in  '. $moduleversion->xlsforms->count() . ' ODK forms created by users. Therefore it cannot be unpublished.')->flash();
+            return back();
+        }
+
+        $unpublished = $moduleversion->unpublish();
+
+        \Alert::add('success', 'Module Version ' . $moduleversion->version_name . ' has bee successfully unpublished. It is no longer available for users within the survey builder.')->flash();
+        return back();
+    }
+
 }
