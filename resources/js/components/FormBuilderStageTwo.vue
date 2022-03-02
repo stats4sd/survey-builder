@@ -50,14 +50,12 @@
                             <i class="la la-spinner la-spin" v-if="processing"></i>
                             Save Form
                         </b-button>
-                        <span v-if="processing" :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
-                        <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
-                        <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
-                        <span v-if="complete" class="ml-2">...success!</span>
+                        <span v-if="processing && !deploying" class="ml-2">...your XLSX file is being generated...</span>
+                        <a :href="xlsform.download_url" class="btn btn-link mx-2" v-if="deploying">Download XLS Form File</a>
+                        <span v-if="deploying && !complete" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
+                        <a :href="'https://app.l-gorman.com/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-link" v-if="complete">View Xlsform in RHoMIS App</a>
 
                     </b-form-group>
-                    <a :href="xlsform.download_url" class="btn btn-info" v-if="deploying">Download XLS Form File</a>
-                    <a :href="'https://app.l-gorman.com/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success" v-if="complete">View Xlsform in RHoMIS App</a>
                 </b-form>
             </div>
         </div>
@@ -198,10 +196,12 @@ export default {
             .listen("BuildXlsFormComplete", payload => {
                 this.deploying = true;
 
+                this.xlsform.download_url = payload.xlsform.download_url
+
                 new Noty({
                     type: "info",
                     text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>"+
-                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally <a href='"+payload.xlsform.download_url+"'>here</a>.",
+                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally using the link below.",
                     timeout: false,
                 }).show();
             })
@@ -211,8 +211,7 @@ export default {
 
                 new Noty({
                     type: "success",
-                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect: <br/><br/>" +
-                        ""
+                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect",
                 }).show()
             })
             .listen("BuildXlsFormFailed", payload => {
