@@ -45,7 +45,7 @@
                         name="module_ids"
                     />
                     <b-form-group class="d-flex">
-                        <b-button type="submit" variant="primary" :disabled="processing"
+                        <b-button type="submit" variant="primary" :disabled="processing || complete"
                         >
                             <i class="la la-spinner la-spin" v-if="processing"></i>
                             Save Form
