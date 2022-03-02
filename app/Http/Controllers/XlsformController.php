@@ -54,7 +54,8 @@ class XlsformController extends CrudController
 
 
         // If the user has entered a 'new' project name, create the project:
-        if(isset($attributes['new_project_name'])) {
+        if(isset($attributes['new_project_name']) && $attributes['new_project_name']) {
+
             $project = Project::create([
                 'name' => $attributes['new_project_name'],
                 'global' => 0,
@@ -62,7 +63,11 @@ class XlsformController extends CrudController
 
             $attributes['project_name'] = $project->name;
             unset($attributes['new_project_name']);
-        };
+        } else {
+            unset($attributes['new_project_name']);
+        }
+
+
 
         $xlsform = Xlsform::create($attributes);
 
@@ -81,9 +86,15 @@ class XlsformController extends CrudController
         // store and post to RHOMIS app
         $attributes = $request->validated();
 
+        $moduleVersions = [];
+        foreach($request->input('module_versions') as $key => $value) {
+            $moduleVersions[$value] = [
+                'order' => $key,
+                ];
+        }
 
         // If the user has entered a 'new' project name, create the project:
-        if(isset($attributes['new_project_name'])) {
+        if(isset($attributes['new_project_name']) && $attributes['new_project_name']) {
             $project = Project::create([
                 'name' => $attributes['new_project_name'],
                 'global' => 0,
@@ -96,17 +107,18 @@ class XlsformController extends CrudController
         $xlsform->update($attributes);
 
 
+
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-        $xlsform->moduleVersions()->sync($request->input('module_versions'));
         $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 
-        // build and deploy form in background
-        // TODO: when front-end is setup to listen, swap this to background queue
-        BuildXlsForm::dispatchSync($xlsform);
-        DeployXlsForm::dispatchSync($xlsform);
+        // include ordering of module versions
+        $xlsform->moduleVersions()->sync($moduleVersions);
 
+        // build and deploy form in background
+        BuildXlsForm::dispatch($xlsform->name, Auth::user());
+        // DeployXlsForm::dispatch($xlsform->name, Auth::user());
 
         return $xlsform->toJson();
     }
@@ -123,7 +135,7 @@ class XlsformController extends CrudController
         $modules = ModuleVersion::with('module')->where('is_current', true)->get();
 
         if ($xlsform) {
-            $xlsform->modules = $xlsform->moduleVersions->load('module');
+            $xlsform->modules = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
             $xlsform->load('themes', 'countries', 'languages');
         }
 

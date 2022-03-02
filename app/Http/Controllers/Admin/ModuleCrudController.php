@@ -78,6 +78,20 @@ class ModuleCrudController extends CrudController
         ]);
         CRUD::column('minutes');
         CRUD::column('core')->type('boolean');
+
+        CRUD::filter('optional')
+            ->label('Show only optional modules')
+            ->type('simple')
+            ->whenActive(function($value) {
+                CRUD::addClause('where', 'core', 0);
+            });
+
+        CRUD::filter('core')
+            ->label('Show only core modules')
+            ->type('simple')
+            ->whenActive(function($value) {
+                CRUD::addClause('where', 'core', 1);
+            });
     }
 
     /**

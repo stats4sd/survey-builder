@@ -48,7 +48,6 @@ class ModuleFileValidation implements ToCollection, WithHeadingRow, WithValidati
             'module_for_import' => [
                 Rule::in([$this->moduleVersion->module->slug])
             ],
-            'name' => 'required',
             'type' => 'required',
         ];
     }

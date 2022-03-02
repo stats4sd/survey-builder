@@ -2,6 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Events\BuildXlsFormFailed;
+use App\Events\DeployXlsFormComplete;
+use App\Events\DeployXlsFormFailed;
+use App\Models\User;
 use App\Models\Xlsform;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -14,21 +18,23 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 class DeployXlsForm implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Xlsform $xlsform;
-
+    public ?User $user;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Xlsform $xlsform)
+    public function __construct($xlsform, User $user = null)
     {
-        $this->xlsform = $xlsform;
+        $this->xlsform = Xlsform::find($xlsform);
+        $this->user = $user;
     }
 
     /**
@@ -40,9 +46,16 @@ class DeployXlsForm implements ShouldQueue
     {
         $file = file_get_contents(Storage::path($this->xlsform->xlsfile));
 
-        if (!$this->xlsform->project->deployed) {
+        // check if project has been deployed or not
+        $userCheck = Http::withHeaders([
+            'Authorization' => $this->user->jwt_token,
+        ])
+            ->get(config('auth.auth_url') . '/api/meta-data')
+            ->json();
+
+        if($userCheck['user'] && $userCheck['user']['projects'] && collect($userCheck['user']['projects'])->doesntContain($this->xlsform->project_name)) {
             $projectResponse = Http::withHeaders([
-                'Authorization' => Auth::user()->jwt_token,
+                'Authorization' => $this->user->jwt_token,
             ])
                 ->post(
                     config('auth.auth_url') . '/api/projects/create',
@@ -58,13 +71,15 @@ class DeployXlsForm implements ShouldQueue
             // TODO: update this if API is updated to properly return errors
             if ($projectResponse->body() === "Project Saved") {
                 $this->xlsform->project->update(['deployed' => 1]);
+            } else {
+                $this->fail();
             }
         }
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Authorization' => Auth::user()->jwt_token,
-            'X-XlsForm-FormId-Fallback' => Str::slug($this->xlsform->name),
+            'Authorization' => $this->user->jwt_token,
+            // 'X-XlsForm-FormId-Fallback' => Str::slug($this->xlsform->name),
         ])
             ->withBody($file, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->post(
@@ -77,6 +92,12 @@ class DeployXlsForm implements ShouldQueue
             ->throw();
 
         Log::info($response);
+        DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
 
+    }
+
+    public function failed(Throwable $exception): void
+    {
+        DeployXlsFormFailed::dispatch($this->xlsform->name, $this->user);
     }
 }

@@ -28,7 +28,7 @@ class ModuleRequest extends FormRequest
         return [
             'theme_id' => 'required|exists:themes,id',
             'title' => 'required|string',
-
+            'minutes' => 'required|numeric'
         ];
     }
 

@@ -121,7 +121,7 @@ class ModuleVersion extends Model
 
     public function xlsforms()
     {
-        return $this->belongsToMany(Xlsform::class);
+        return $this->belongsToMany(Xlsform::class)->withPivot(['order']);
     }
 
     public function coreVersion ()

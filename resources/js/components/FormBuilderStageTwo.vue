@@ -32,8 +32,10 @@
                                 class="text-small"
                             >
                                 (core)
-                            </span>
+                            </span><br/>
+                            <small>
                             - Version: {{ props.element.version_name }}
+                            </small>
                         </template>
                     </drag-and-drop-select>
 
@@ -42,12 +44,20 @@
                         :value="selectedModuleIds"
                         name="module_ids"
                     />
-                    <b-form-group>
-                        <b-button type="submit" variant="primary"
-                        >Save Form
-                        </b-button
+                    <b-form-group class="d-flex">
+                        <b-button type="submit" variant="primary" :disabled="processing"
                         >
+                            <i class="la la-spinner la-spin" v-if="processing"></i>
+                            Save Form
+                        </b-button>
+                        <span v-if="processing" :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
+                        <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
+                        <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
+                        <span v-if="complete" class="ml-2">...success!</span>
+
                     </b-form-group>
+                    <a :href="xlsform.download_url" class="btn btn-info" v-if="deploying">Download XLS Form File</a>
+                    <a :href="'https://app.l-gorman.com/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success" v-if="complete">View Xlsform in RHoMIS App</a>
                 </b-form>
             </div>
         </div>
@@ -102,7 +112,14 @@ export default {
                 project_id: null,
                 title: "",
                 default_language: "",
-            }
+            },
+            // is the form being processed in the background?
+            processing: false,
+
+            // stages of processing:
+            building: false,
+            deploying: false,
+            complete: false,
         };
     },
     computed: {
@@ -132,8 +149,9 @@ export default {
             this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
             this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
             this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
-
         }
+
+        this.setupListeners()
     },
     methods: {
         // Generic function to check if method should be store or update
@@ -141,35 +159,9 @@ export default {
             this.xlsform.module_versions = this.xlsform.modules.map(
                 module => module.id
             );
-            // At this point, should only ever be editing...
-            // if (this.xlsform.id) {
-                this.update();
-            // } else {
-            //    this.store();
-            // }
-        },
-        store() {
-            console.log("👍", this.xlsform);
-            this.xlsform.user_id = this.userId;
-
-            // prepare and send post request
-            axios
-                .post("/xlsform", this.xlsform)
-                .then(res => {
-                    console.log('ok', res.data);
-                    window.location.assign("/xlsform/" + res.data.name + "/edit")
-                })
-                .catch(err => {
-                    // check for validation error
-
-                    if (err.response && err.response.status === 422) {
-                        this.errors = err.response.data.errors;
-                    }
-                });
-
-            // handle validation errors by showing errors + highlighting
-
-            // on success, redirect user back to form list page.
+            this.reset();
+            this.processing = true;
+            this.update();
         },
         update() {
 
@@ -181,6 +173,8 @@ export default {
                         'text': '<h4>Success!</h4> Your survey form has been saved. The XLS Form is now being built. Once complete you will see it in the main RHoMIS app.'
                     }).show();
 
+                    this.building = true;
+
                 })
                 .catch(err => {
                     // check for validation error
@@ -188,8 +182,59 @@ export default {
                     if (err.response && err.response.status === 422) {
                         this.errors = err.response.data.errors;
                     }
+
+                    this.reset()
                 });
+        },
+
+        reset() {
+            this.processing = this.building = this.deploying = this.complete = false;
+        },
+
+        // create listeners for Laravel Events
+        setupListeners() {
+            this.$echo
+            .private("App.Models.User." + this.userId)
+            .listen("BuildXlsFormComplete", payload => {
+                this.deploying = true;
+
+                new Noty({
+                    type: "info",
+                    text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>"+
+                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally <a href='"+payload.xlsform.download_url+"'>here</a>.",
+                    timeout: false,
+                }).show();
+            })
+            .listen("DeployXlsFormComplete", payload => {
+                this.complete = true;
+                this.processing = false;
+
+                new Noty({
+                    type: "success",
+                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect: <br/><br/>" +
+                        ""
+                }).show()
+            })
+            .listen("BuildXlsFormFailed", payload => {
+                this.reset()
+
+                new Noty({
+                    type: "error",
+                    text: "Building your XLSform file failed. Please check the logs or contact the IT administrator",
+                    timeout: false,
+                }).show();
+            })
+            .listen("DeployXlsFormFailed", payload => {
+                this.reset()
+
+                new Noty({
+                    type: "error",
+                    text: "Deploying your XLSform file failed. Please check the logs or contact the IT administrator",
+                    timeout: false,
+                }).show()
+            })
         }
+
     }
 };
 
@@ -198,4 +243,3 @@ export default {
 
 
 </script>
-

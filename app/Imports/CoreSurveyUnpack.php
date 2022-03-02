@@ -2,12 +2,14 @@
 
 namespace App\Imports;
 
+use App\Events\ImportCoreRowsToSurveysTableComplete;
 use App\Jobs\ImportCoreRowsToSurveysTable;
 use App\Models\CoreVersion;
 use App\Models\Module;
 use App\Models\Language;
 use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
@@ -36,5 +38,7 @@ class CoreSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
         $collection->each(function($rows) {
             ImportCoreRowsToSurveysTable::dispatch($this->coreVersion, $rows);
         });
+
+        ImportCoreRowsToSurveysTableComplete::dispatch($this->coreVersion->id, Auth::user());
     }
 }

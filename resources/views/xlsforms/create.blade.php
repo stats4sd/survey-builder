@@ -27,7 +27,7 @@
                     <form-builder-stage-one
                         :countries="{{$countries->toJson() }}"
                         :languages="{{ $languages->toJson() }}"
-                        :projects="{{ $projects->toJson() }}"
+                        :projects-start="{{ $projects->toJson() }}"
                         :modules="{{ $modules->toJson() }}"
                         :themes="{{ $themes->toJson() }}"
                         user-id="{{ Auth::id() }}"

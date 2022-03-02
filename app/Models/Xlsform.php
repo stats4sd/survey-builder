@@ -7,6 +7,7 @@ use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Xlsform extends Model
 {
@@ -18,6 +19,24 @@ class Xlsform extends Model
     public $incrementing = false;
     protected $primaryKey = 'name';
     protected $keyType = 'string';
+    protected $appends = [
+        'download_url',
+    ];
+
+    public function getDownloadUrlAttribute()
+    {
+        if($this->xlsfile) {
+            return 'download' . $this->xlsfile;
+        }
+        return null;
+    }
+
+    public function getRhomisAppUrl()
+    {
+        if($this->xlsfile) {
+            return config('auth.rhomis_url');
+        }
+    }
 
     public function setXlsfileAttribute($value)
     {
@@ -53,7 +72,7 @@ class Xlsform extends Model
 
     public function moduleVersions()
     {
-        return $this->belongsToMany(ModuleVersion::class);
+        return $this->belongsToMany(ModuleVersion::class)->withPivot(['order']);
     }
 
     public function languages()

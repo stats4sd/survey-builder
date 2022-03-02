@@ -26,6 +26,7 @@ class XlsSettingsExport implements FromCollection, WithTitle
                 'default_language',
                 'instance_name',
                 'version',
+                'allow_choice_duplicates',
             ],
             [
                 Str::slug($this->xlsform->name),
@@ -33,6 +34,7 @@ class XlsSettingsExport implements FromCollection, WithTitle
                 'English (en)',
                 'concat(${respondentname}," - ", ${village}," - ", ${starttime_auto})',
                 Str::slug(Carbon::now()->toISOString()),
+                'yes',
             ],
         ]);
     }

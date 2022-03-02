@@ -2,7 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Events\BuildXlsFormComplete;
+use App\Events\BuildXlsFormFailed;
 use App\Exports\XlsFormExport;
+use App\Models\User;
 use App\Models\Xlsform;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -13,21 +16,23 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class BuildXlsForm implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public Xlsform $xlsform;
-
+    public ?User $user;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Xlsform $xlsform)
+    public function __construct($xlsform, User $user = null)
     {
-        $this->xlsform = $xlsform;
+        $this->xlsform = Xlsform::find($xlsform);
+        $this->user = $user;
     }
 
     /**
@@ -37,12 +42,27 @@ class BuildXlsForm implements ShouldQueue
      */
     public function handle()
     {
-        $path = $this->xlsform->id . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $this->xlsform->name . '.xlsx';
+        $path = $this->xlsform->name . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $this->xlsform->name . '.xlsx';
 
-        $file = Excel::store(new XlsFormExport($this->xlsform), $path);
+        try {
+            $file = Excel::store(new XlsFormExport($this->xlsform), $path);
+        } catch (Exception | \PhpOffice\PhpSpreadsheet\Exception $e) {
+            $this->fail();
+        }
 
         $this->xlsform->update([
             'xlsfile' => $path
         ]);
+
+        // broadcast completion of xlsfile
+        BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+        DeployXlsForm::dispatch($this->xlsform->name, $this->user);
     }
+
+    public function failed()
+    {
+        BuildXlsFormFailed::dispatch($this->xlsform->name, $this->user);
+    }
+
+
 }

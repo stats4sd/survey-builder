@@ -8,28 +8,28 @@
                 id="grp-project_name"
                 label="Select project for this form:"
                 label-for="project_name"
-                class="required"
                 :invalid-feedback="errors.project_name ? errors.project_name.join(', ') : ''"
                 :state="!errors.project_name"
             >
                 <b-form-select
                     v-model="xlsform.project_name"
                     :options="projects"
-                    value-field="id"
+                    value-field="name"
                     text-field="name"
                     name="project_name"
                 />
             </b-form-group>
             <b-form-group
                 id="grp-new_project"
-                label="Please enter the project name."
+                label="If you wish to create a new project, select 'new' in the dropdown above and enter the name here."
                 label-for="project_name"
-                class="required"
+                :class="projects.length === 0 ? 'required' : ''"
                 :invalid-feedback="errors.new_project_name ? errors.new_project_name.join(', ') : ''"
                 :state="!errors.new_project_name"
 
             >
                 <b-form-input
+                    :disabled="(xlsform.project_name && xlsform.project_name!=='new') || !xlsform.project_name"
                     v-model="xlsform.new_project_name"
                     name="new_project_name"
                 />
@@ -121,7 +121,7 @@ export default {
         vSelect,
     },
     props: {
-        projects: {
+        projectsStart: {
             default: []
         },
         modules: {
@@ -145,6 +145,7 @@ export default {
     },
     data() {
         return {
+            projects: [],
             xlsform: {
                 countries: [],
                 languages: ['en'],
@@ -189,6 +190,9 @@ export default {
             this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
             this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
         }
+
+        this.projects = this.projectsStart
+        this.projects.push({'name':'new'});
     },
     methods: {
         // Generic function to check if method should be store or update
@@ -249,5 +253,3 @@ export default {
 
 
 </script>
-
-

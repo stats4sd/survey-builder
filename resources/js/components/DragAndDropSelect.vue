@@ -10,23 +10,25 @@
                 <slot name="selectedinfo">Drag to reorder the {{ itemsName }}.</slot>
             </p>
 
-            <draggable
-                class="list-group flex-grow-1"
-                :value="selected"
-                :group="itemsName"
-                @input="updateSelected"
-            >
-                <b-list-group-item
-
-                    :variant="element.required ? 'light' : 'primary'"
-                    v-for="element in selected"
-                    :key="element.id"
+            <div style="height:75vh; overflow-y: scroll">
+                <draggable
+                    class="list-group flex-grow-1"
+                    :value="selected"
+                    :group="itemsName"
+                    @input="updateSelected"
                 >
-                    <slot name="listItem" v-bind:element="element">
-                        {{ element.title || (element.label || 'item ID: ' + element.id) }}
-                    </slot>
-                </b-list-group-item>
-            </draggable>
+                    <b-list-group-item
+
+                        :variant="element.module.core ? 'light' : 'primary'"
+                        v-for="element in selected"
+                        :key="element.id"
+                    >
+                        <slot name="listItem" v-bind:element="element">
+                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
+                        </slot>
+                    </b-list-group-item>
+                </draggable>
+            </div>
         </b-card>
         <b-card
             class="col-6 d-flex flex-column"
@@ -39,23 +41,25 @@
                     Select {{ itemsName }} by dragging them into the select list on the left.
                 </slot>
             </p>
+            <div style="height:75vh; overflow-y: scroll">
 
-            <draggable
-                class="list-group flex-grow-1"
-                :value="available"
-                :group="itemsName"
+                <draggable
+                    class="list-group flex-grow-1"
+                    :value="available"
+                    :group="itemsName"
 
-            >
-                <b-list-group-item
-                    :variant="element.required ? 'light' : 'primary'"
-                    v-for="element in available"
-                    :key="element.id"
                 >
-                    <slot name="listItem" v-bind:element="element">
-                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
-                    </slot>
-                </b-list-group-item>
-            </draggable>
+                    <b-list-group-item
+                        :variant="element.required ? 'light' : 'primary'"
+                        v-for="element in available"
+                        :key="element.id"
+                    >
+                        <slot name="listItem" v-bind:element="element">
+                                {{ element.title || (element.label || 'item ID: ' + element.id) }}
+                        </slot>
+                    </b-list-group-item>
+                </draggable>
+            </div>
         </b-card>
     </b-row>
 </template>

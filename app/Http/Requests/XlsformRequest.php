@@ -27,8 +27,8 @@ class XlsformRequest extends FormRequest
     public function rules()
     {
         return [
-            'new_project_name' => ['required_without:project_name','unique:projects,name'],
-            'project_name' => ['required_without:new_project_name'],
+            'new_project_name' => ['required_without:project_name','unique:projects,name','nullable'],
+            'project_name' => ['required_without:new_project_name', 'nullable'],
             'name' => ['required', Rule::unique('xlsforms', 'name')->ignore(request()->input('name'), 'name')],
             'user_id' => 'required',
             'default_language' => 'required',

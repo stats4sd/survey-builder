@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
+        "ext-json": "*",
         "backpack/crud": "^4.1",
         "backpack/permissionmanager": "^6.0",
         "fideloper/proxy": "^4.4",
@@ -19,8 +20,8 @@
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
         "orangehill/iseed": "^3.0",
-        "tymon/jwt-auth": "^1.0",
-        "ext-json": "*"
+        "pusher/pusher-php-server": "^7.0",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "backpack/generators": "^3.1",
