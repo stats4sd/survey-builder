@@ -100,6 +100,8 @@ class XlsformController extends CrudController
                 'global' => 0,
             ]);
 
+            $project->users()->sync([Auth::id()]);
+
             $attributes['project_name'] = $project->name;
             unset($attributes['new_project_name']);
         };

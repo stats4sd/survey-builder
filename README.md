@@ -21,6 +21,6 @@ This template comes with Laravel Backpack to help quickly build CRUD panels for 
 
 In this default setup, **any authenticated user can access the admin panel**. We often stick with this setup as our platforms are mostly or entirely within the admin panel. Given this, please make good use of CRUD::denyAccess() within the platform's Crud Controllers.
 
-TODO: send project / user link info to authentication server;
-TODO: plan out form builder + user flow
-TODO: update module versioning rules? Semantic versioning?
+
+TODO: fix project name - either select an existing project OR add a new project! 
+TODO: add information to user that the form is being saved + build as xlsxform... and then deployed! 
