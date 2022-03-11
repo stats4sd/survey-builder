@@ -27,6 +27,7 @@ class DeployXlsForm implements ShouldQueue
 
     public Xlsform $xlsform;
     public ?User $user;
+
     /**
      * Create a new job instance.
      *
@@ -48,20 +49,21 @@ class DeployXlsForm implements ShouldQueue
     {
         $file = file_get_contents(Storage::path($this->xlsform->xlsfile));
 
-        // check if project has been deployed or not
+        // get existing user project + form metadata
         $metaData = Http::withHeaders([
             'Authorization' => $this->user->jwt_token,
         ])
             ->get(config('auth.auth_url') . '/api/meta-data')
-            ->throw(function($response) {
+            ->throw(function ($response) {
                 RhomisApiService::handleApiFailure($response, $this->user);
             })
             ->json();
 
-        //check the correct response is given
-        $projects = $metaData['projects'] ?? [];
+        $projects = $metaData['user']['projects'] ?? [];
+        $forms = $metaData['user']['forms'] ?? [];
 
-        if(collect($projects)->doesntContain($this->xlsform->project_name)) {
+        // if the project doesn't exist on RHOMIS, create it...
+        if (collect($projects)->doesntContain($this->xlsform->project_name)) {
 
             $projectResponse = Http::withHeaders([
                 'Authorization' => $this->user->jwt_token,
@@ -73,31 +75,39 @@ class DeployXlsForm implements ShouldQueue
                         'description' => $this->xlsform->project_name . ' description'
                     ]
                 )
-                ->throw(function($response) {
+                ->throw(function ($response) {
                     RhomisApiService::handleApiFailure($response, $this->user);
                 });
+        }
+
+        // if the form doesn't exist on RHOMIS, create it...
+        if (collect($forms)->doesntContain($this->xlsform->name)) {
+            $postUrl = 'new';
+                } else {
+            $postUrl = 'new-draft';
         }
 
         $xlsformResponse = Http::withHeaders([
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Authorization' => $this->user->jwt_token,
-            // 'X-XlsForm-FormId-Fallback' => Str::slug($this->xlsform->name),
         ])
             ->withBody($file, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->post(
                 config('auth.auth_url') .
-                "/api/forms/new?form_name=" . Str::slug($this->xlsform->name) .
+                "/api/forms/".$postUrl."?form_name=" . Str::slug($this->xlsform->name) .
                 "&project_name=" . urlencode($this->xlsform->project->name) .
                 "&publish=false" .
-                "&form_version=1.0"
+                "&form_version=" . ($this->xlsform->form_version + 1)
             )
-            ->throw(function($response) {
+            ->throw(function ($response) {
                 RhomisApiService::handleApiFailure($response, $this->user);
             });
 
-        if($xlsformResponse->successful()) {
+
+        if ($xlsformResponse->successful()) {
             $this->xlsform->update([
                 'draft' => 1,
+                'form_version' => $this->xlsform->form_version+1
             ]);
         }
 
@@ -107,6 +117,6 @@ class DeployXlsForm implements ShouldQueue
 
     public function failed(Throwable $e): void
     {
-        DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
+        //DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
     }
 }

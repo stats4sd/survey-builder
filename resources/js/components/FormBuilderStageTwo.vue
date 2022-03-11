@@ -34,7 +34,7 @@
                                 (core)
                             </span><br/>
                             <small>
-                            - Version: {{ props.element.version_name }}
+                                - Version: {{ props.element.version_name }}
                             </small>
                         </template>
                     </drag-and-drop-select>
@@ -50,14 +50,31 @@
                             <i class="la la-spinner la-spin" v-if="processing"></i>
                             Save Form
                         </b-button>
+                        <a
+                            v-if="xlsform.download_url"
+                            :href="!processing ? xlsform.download_url : ''"
+                            class="btn btn-primary"
+                            :class="processing ? 'disabled' : ''"
+                        >
+                            <i class="la la-spinner la-spin" v-if="processing"></i>
+                            Download XLS Form File
+                        </a>
+                        <a
+                            v-if="xlsform.draft || xlsform.complete"
+                            :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name"
+                            class="btn btn-success"
+                            :class="processing ? 'disabled' : ''"
+                        >
+                            <i class="la la-spinner la-spin" v-if="processing"></i>
+                            View Xlsform in RHoMIS App
+                        </a>
+                    </b-form-group>
+                    <div class="d-flex">
                         <span v-if="processing" :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
                         <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
                         <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
                         <span v-if="complete" class="ml-2">...success!</span>
-                        <a v-if="xlsform.download_url" :href="xlsform.download_url" class="btn btn-primary" >Download XLS Form File</a>
-                        <a v-if="xlsform.draft || xlsform.complete" :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success">View Xlsform in RHoMIS App</a>
-
-                    </b-form-group>
+                    </div>
                 </b-form>
             </div>
         </div>
@@ -197,62 +214,62 @@ export default {
         // create listeners for Laravel Events
         setupListeners() {
             this.$echo
-            .private("App.Models.User." + this.userId)
-            .listen("BuildXlsFormComplete", payload => {
-                this.deploying = true;
+                .private("App.Models.User." + this.userId)
+                .listen("BuildXlsFormComplete", payload => {
+                    this.deploying = true;
 
-                this.xlsform.download_url = payload.xlsform.download_url
+                    this.xlsform.download_url = payload.xlsform.download_url
 
-                new Noty({
-                    type: "info",
-                    text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>"+
-                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally using the link below.</a>.",
-                    timeout: false,
-                }).show();
-            })
-            .listen("DeployXlsFormComplete", payload => {
+                    new Noty({
+                        type: "info",
+                        text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>" +
+                            "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally using the link below.</a>.",
+                        timeout: false,
+                    }).show();
+                })
+                .listen("DeployXlsFormComplete", payload => {
 
-                this.reset();
+                    this.reset();
 
-                new Noty({
-                    type: "success",
-                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect.",
-                }).show()
-            })
-            .listen("BuildXlsFormFailed", payload => {
-                this.reset()
-                console.log(payload)
-                new Noty({
-                    type: "error",
-                    text: `Building your XLSform file failed with the following code and message:
+                    new Noty({
+                        type: "success",
+                        text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect.",
+                    }).show()
+                })
+                .listen("BuildXlsFormFailed", payload => {
+                    this.reset()
+                    console.log(payload)
+                    new Noty({
+                        type: "error",
+                        text: `Building your XLSform file failed with the following code and message:
                             Code: ${payload.code}
                             Message: ${payload.message}`,
-                    timeout: false,
-                }).show();
-            })
-            .listen("DeployXlsFormFailed", payload => {
-                this.reset()
+                        timeout: false,
+                    }).show();
+                })
+                .listen("DeployXlsFormFailed", payload => {
+                    this.reset()
 
-                new Noty({
-                    type: "error",
-                    text: `Deploying your XLSform file failed with the following code and message:
+                    new Noty({
+                        type: "error",
+                        text: `Deploying your XLSform file failed with the following code and message:
                             Code: ${payload.code}
                             Message: ${payload.message}`,
-                    timeout: false,
-                }).show()
-            })
-            .listen("RhomisAPiCallDidFail", payload => {
-                this.reset()
+                        timeout: false,
+                    }).show()
+                })
+                .listen("RhomisAPiCallDidFail", payload => {
+                    this.reset()
 
-                new Noty({
-                    type: "error",
-                    text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
+                    new Noty({
+                        type: "error",
+                        text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
                             URL: ${payload.requestUrl}
                             Status: ${payload.code}
                             Message: ${payload.body}`,
-                    timeout: false,
-                }).show()
-            })
+                        timeout: false,
+                    }).show()
+                })
         }
 
     }
