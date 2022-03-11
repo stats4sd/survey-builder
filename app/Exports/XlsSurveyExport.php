@@ -21,8 +21,14 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     public function collection()
     {
         // get module versions in correct order
-        $collection = $this->xlsform->moduleVersions->map(function($version) {
-            return $version->surveyRows;
+       // dd($this->xlsform->moduleVersions->sortBy('pivot.order')->pluck('module_id'));
+        $collection = $this->xlsform->moduleVersions->sortBy('pivot.order')->map(function($version) {
+            return $version->surveyRows->map(function($row) use ($version) {
+                $row->order = $version->pivot->order;
+                return $row;
+            });
+
+
         })->flatten()
         // merge in language labels:
         ->map(function($row) {
@@ -38,7 +44,10 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
             return $row;
         })->groupBy('name');
 
+       //ddd($collection['HFIAS_module'], $collection['crops_all'], $collection['food_environments_module']);
 
+        // handle duplicate question names:
+        // -
         $collection = $collection->map(function($name) {
             // include all entries where name is unique
             if(count($name) === 1) {
@@ -55,9 +64,18 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
                 if(str_starts_with($row['type'], 'begin') || str_starts_with($row['type'], 'end')) {
                     return true;
                 }
-                return $key === 0;
+
+                // if the row is from a core module, it should be overridden by the row from the optional module.
+                // if multiple rows with the same name are from optional modules, all will be returned - this will result in an XLSform compilation error, but it should continue to highlight the error to the user + Rhomis team.
+                if($row['is_core']) {
+                    return false;
+                }
+                return true;
             });
-        })->flatten()->sortBy('id');
+        })->flatten()->sortBy([
+            ['order', 'asc'],
+            ['id', 'asc'],
+        ]);
 
         return $collection;
 

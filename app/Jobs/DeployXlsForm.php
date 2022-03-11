@@ -117,6 +117,6 @@ class DeployXlsForm implements ShouldQueue
 
     public function failed(Throwable $e): void
     {
-        //DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
+        DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
     }
 }
