@@ -3,8 +3,13 @@
         <h2 class="mb-3">Stage 1 - Create a Survey</h2>
         <b-form @submit.prevent="submit">
             <slot name="csrf"></slot>
+            <div class="font-weight-bold mb-4" v-if="xlsformOriginal && xlsformOriginal.hasOwnProperty('project_name')">
+                <b>Project: </b> {{ xlsform.project_name}}<br/>
+                This form has been saved to this project. To change the project or the form name, please <a @click.prevent="destroy()" href="#">click here</a> to create a new form. Note this will reset your progress for this form.
+            </div>
+
             <b-form-group
-                v-if="projects.length > 0"
+                v-if="projects.length > 0 && (!xlsformOriginal || !xlsformOriginal.hasOwnProperty('project_name'))"
                 id="grp-project_name"
                 label="Select project for this form:"
                 label-for="project_name"
@@ -17,16 +22,19 @@
                     value-field="name"
                     text-field="name"
                     name="project_name"
+                    :disabled="xlsformOriginal && !xlsformOriginal.hasOwnProperty('project_name')"
                 />
             </b-form-group>
+
+
             <b-form-group
+                v-if="!xlsformOriginal || !xlsformOriginal.hasOwnProperty('project_name')"
                 id="grp-new_project"
                 label="If you wish to create a new project, select 'new' in the dropdown above and enter the name here."
                 label-for="project_name"
                 :class="projects.length === 0 ? 'required' : ''"
                 :invalid-feedback="errors.new_project_name ? errors.new_project_name.join(', ') : ''"
                 :state="!errors.new_project_name"
-
             >
                 <b-form-input
                     :disabled="(xlsform.project_name && xlsform.project_name!=='new') || !xlsform.project_name"
@@ -45,6 +53,7 @@
                     name="name"
                     v-model="xlsform.name"
                     required
+                    :disabled="xlsformOriginal && xlsformOriginal.hasOwnProperty('name')"
                 />
             </b-form-group>
             <b-form-group
@@ -122,13 +131,13 @@ export default {
     },
     props: {
         projectsStart: {
-            default: []
+            default: () => []
         },
         modules: {
-            default: []
+            default: () => []
         },
         themes: {
-            default: []
+            default: () => []
         },
         xlsformOriginal: {
             default: null
@@ -203,8 +212,8 @@ export default {
                 module => module.id
             );
 
-            if (this.xlsform.id) {
-                this.update(this.xlsformId);
+            if (this.xlsformOriginal && this.xlsformOriginal.hasOwnProperty('name')) {
+                this.update();
             } else {
                 this.store();
             }
@@ -230,9 +239,9 @@ export default {
                 });
 
         },
-        update($id) {
+        update() {
 
-            axios.put("/xlsform/" + this.xlsform.id, this.xlsform)
+            axios.put("/xlsform/" + this.xlsform.name, this.xlsform)
                 .then(res => {
                     console.log('ok', res.data);
                     window.location.assign("/xlsform/" + res.data.name + "/edit")
@@ -244,6 +253,18 @@ export default {
                         this.errors = err.response.data.errors;
                     }
                 });
+        },
+
+        // destroys the current form and lets the user start again.
+        // used for letting the user change the project or form name.
+        destroy() {
+            axios.delete("/xlsform/"+this.xlsform.name)
+            .then(res => {
+                window.location.assign("/xlsform/create")
+            })
+            .catch(err => {
+                alert('This form could not be deleted. Please take a screenshot of this error message and contact the system administrator. Error: ' + err.message);
+            })
         }
     }
 };

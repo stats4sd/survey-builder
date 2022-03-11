@@ -26,7 +26,7 @@ class Xlsform extends Model
     public function getDownloadUrlAttribute()
     {
         if($this->xlsfile) {
-            return 'download' . $this->xlsfile;
+            return url('download/' . $this->xlsfile);
         }
         return null;
     }

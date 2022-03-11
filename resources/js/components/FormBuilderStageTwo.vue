@@ -54,10 +54,10 @@
                         <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
                         <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
                         <span v-if="complete" class="ml-2">...success!</span>
+                        <a v-if="xlsform.download_url" :href="xlsform.download_url" class="btn btn-primary" >Download XLS Form File</a>
+                        <a v-if="xlsform.draft || xlsform.complete" :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success">View Xlsform in RHoMIS App</a>
 
                     </b-form-group>
-                    <a :href="xlsform.download_url" class="btn btn-info" v-if="deploying">Download XLS Form File</a>
-                    <a :href="'https://app.l-gorman.com/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success" v-if="complete">View Xlsform in RHoMIS App</a>
                 </b-form>
             </div>
         </div>
@@ -100,6 +100,9 @@ export default {
         languages: {
             default: () => [],
         },
+        rhomisAppUrl: {
+            default: "",
+        }
     },
     data() {
         return {
@@ -169,8 +172,8 @@ export default {
                 .then(res => {
                     console.log('ok', res.data);
                     new Noty({
-                        'type': 'success',
-                        'text': '<h4>Success!</h4> Your survey form has been saved. The XLS Form is now being built. Once complete you will see it in the main RHoMIS app.'
+                        'type': 'info',
+                        'text': 'Your survey form has been saved. The XLS file is now being built. Once complete it will be deployed to the RHoMIS ODK System.'
                     }).show();
 
                     this.building = true;
@@ -198,29 +201,32 @@ export default {
             .listen("BuildXlsFormComplete", payload => {
                 this.deploying = true;
 
+                this.xlsform.download_url = payload.xlsform.download_url
+
                 new Noty({
                     type: "info",
                     text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>"+
-                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally <a href='"+payload.xlsform.download_url+"'>here</a>.",
+                        "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally using the link below.</a>.",
                     timeout: false,
                 }).show();
             })
             .listen("DeployXlsFormComplete", payload => {
-                this.complete = true;
-                this.processing = false;
+
+                this.reset();
 
                 new Noty({
                     type: "success",
-                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect: <br/><br/>" +
-                        ""
+                    text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect.",
                 }).show()
             })
             .listen("BuildXlsFormFailed", payload => {
                 this.reset()
-
+                console.log(payload)
                 new Noty({
                     type: "error",
-                    text: "Building your XLSform file failed. Please check the logs or contact the IT administrator",
+                    text: `Building your XLSform file failed with the following code and message:
+                            Code: ${payload.code}
+                            Message: ${payload.message}`,
                     timeout: false,
                 }).show();
             })
@@ -229,7 +235,21 @@ export default {
 
                 new Noty({
                     type: "error",
-                    text: "Deploying your XLSform file failed. Please check the logs or contact the IT administrator",
+                    text: `Deploying your XLSform file failed with the following code and message:
+                            Code: ${payload.code}
+                            Message: ${payload.message}`,
+                    timeout: false,
+                }).show()
+            })
+            .listen("RhomisAPiCallDidFail", payload => {
+                this.reset()
+
+                new Noty({
+                    type: "error",
+                    text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
+                            URL: ${payload.requestUrl}
+                            Status: ${payload.code}
+                            Message: ${payload.body}`,
                     timeout: false,
                 }).show()
             })

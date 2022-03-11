@@ -45,23 +45,28 @@ class BuildXlsForm implements ShouldQueue
         $path = $this->xlsform->name . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $this->xlsform->name . '.xlsx';
 
         try {
+
             $file = Excel::store(new XlsFormExport($this->xlsform), $path);
+
+            $this->xlsform->update([
+                'xlsfile' => $path
+            ]);
+
+            // broadcast completion of xlsfile
+            BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+            DeployXlsForm::dispatch($this->xlsform->name, $this->user);
+
         } catch (Exception | \PhpOffice\PhpSpreadsheet\Exception $e) {
-            $this->fail();
+            $this->fail($e);
+        } catch (\RuntimeException $e) {
+            $this->fail($e);
         }
 
-        $this->xlsform->update([
-            'xlsfile' => $path
-        ]);
-
-        // broadcast completion of xlsfile
-        BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
-        DeployXlsForm::dispatch($this->xlsform->name, $this->user);
     }
 
-    public function failed()
+    public function failed($e): void
     {
-        BuildXlsFormFailed::dispatch($this->xlsform->name, $this->user);
+        BuildXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
     }
 
 

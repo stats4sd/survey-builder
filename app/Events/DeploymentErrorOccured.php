@@ -2,8 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\User;
-use App\Models\Xlsform;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -12,28 +10,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DeployXlsFormFailed implements ShouldBroadcast
+class DeploymentErrorOccured
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-        public string $message;
-    public int $code;
-    public Xlsform $xlsform;
-    public ?User $user;
+    public $response;
+    public $e;
 
     /**
-     * Create a new job instance.
+     * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $message, int $code, $xlsform, User $user = null)
+    public function __construct($response, $e)
     {
-        $this->message = $message;
-        $this->code = $code;
-
-        $this->xlsform = Xlsform::find($xlsform);
-        $this->user = $user;
-
+        $this->response = $response;
+        $this->e = $e;
     }
 
     /**
@@ -43,7 +35,6 @@ class DeployXlsFormFailed implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        $channel = $this->user ? $this->user->id : 'admin';
-        return new PrivateChannel("App.Models.User.{$channel}");
+        return new PrivateChannel('channel-name');
     }
 }

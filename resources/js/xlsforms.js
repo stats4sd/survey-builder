@@ -8,10 +8,10 @@ window.Pusher = require('pusher-js');
 import FormBuilderStageOne from "./components/FormBuilderStageOne"
 import FormBuilderStageTwo from "./components/FormBuilderStageTwo"
 import FormBuilderStageThree from "./components/FormBuilderStageThree"
-import TestComponent from "./components/TestComponent"
+import FormKeyDetailsView from "./components/FormKeyDetailsView";
 
 
-Vue.component('TestComponent', TestComponent)
+Vue.component('FormKeyDetailsView', FormKeyDetailsView)
 Vue.component('FormBuilderStageOne', FormBuilderStageOne)
 Vue.component('FormBuilderStageTwo', FormBuilderStageTwo)
 Vue.component('FormBuilderStageThree', FormBuilderStageThree)

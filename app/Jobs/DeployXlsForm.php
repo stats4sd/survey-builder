@@ -7,6 +7,7 @@ use App\Events\DeployXlsFormComplete;
 use App\Events\DeployXlsFormFailed;
 use App\Models\User;
 use App\Models\Xlsform;
+use App\Services\RhomisApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,19 +42,27 @@ class DeployXlsForm implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \Illuminate\Http\Client\RequestException
      */
     public function handle()
     {
         $file = file_get_contents(Storage::path($this->xlsform->xlsfile));
 
         // check if project has been deployed or not
-        $userCheck = Http::withHeaders([
+        $metaData = Http::withHeaders([
             'Authorization' => $this->user->jwt_token,
         ])
             ->get(config('auth.auth_url') . '/api/meta-data')
+            ->throw(function($response) {
+                RhomisApiService::handleApiFailure($response, $this->user);
+            })
             ->json();
 
-        if($userCheck['user'] && $userCheck['user']['projects'] && collect($userCheck['user']['projects'])->doesntContain($this->xlsform->project_name)) {
+        //check the correct response is given
+        $projects = $metaData['projects'] ?? [];
+
+        if(collect($projects)->doesntContain($this->xlsform->project_name)) {
+
             $projectResponse = Http::withHeaders([
                 'Authorization' => $this->user->jwt_token,
             ])
@@ -64,19 +73,12 @@ class DeployXlsForm implements ShouldQueue
                         'description' => $this->xlsform->project_name . ' description'
                     ]
                 )
-                ->throw();
-
-            Log::info($projectResponse);
-
-            // TODO: update this if API is updated to properly return errors
-            if ($projectResponse->body() === "Project Saved") {
-                $this->xlsform->project->update(['deployed' => 1]);
-            } else {
-                $this->fail();
-            }
+                ->throw(function($response) {
+                    RhomisApiService::handleApiFailure($response, $this->user);
+                });
         }
 
-        $response = Http::withHeaders([
+        $xlsformResponse = Http::withHeaders([
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Authorization' => $this->user->jwt_token,
             // 'X-XlsForm-FormId-Fallback' => Str::slug($this->xlsform->name),
@@ -89,15 +91,22 @@ class DeployXlsForm implements ShouldQueue
                 "&publish=false" .
                 "&form_version=1.0"
             )
-            ->throw();
+            ->throw(function($response) {
+                RhomisApiService::handleApiFailure($response, $this->user);
+            });
 
-        Log::info($response);
+        if($xlsformResponse->successful()) {
+            $this->xlsform->update([
+                'draft' => 1,
+            ]);
+        }
+
         DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
 
     }
 
-    public function failed(Throwable $exception): void
+    public function failed(Throwable $e): void
     {
-        DeployXlsFormFailed::dispatch($this->xlsform->name, $this->user);
+        DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
     }
 }
