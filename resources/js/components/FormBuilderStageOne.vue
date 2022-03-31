@@ -48,6 +48,7 @@
                 label-for="name"
                 class="required"
                 :invalid-feedback="errors.name"
+                :state="!errors.name"
             >
                 <b-form-input
                     name="name"
@@ -60,6 +61,8 @@
                 id="grp-project_id"
                 label="Which country/ies will this form be used in?"
                 label-for="countries"
+                :invalid-feedback="errors.countries"
+                :state="!errors.countries"
             >
                 <vSelect
                     name="countries"
@@ -81,6 +84,8 @@
                 id="grp-project_id"
                 label="Select languages for this form"
                 label-for="languages"
+                :invalid-feedback="errors.languages"
+                :state="!errors.languages"
             >
                 <vSelect
                     name="languages"
@@ -96,6 +101,8 @@
                 label="Select the default language:"
                 label-for="default_language"
                 class="required"
+                :invalid-feedback="errors.default_language"
+                :state="!errors.default_language"
             >
                 <vSelect
                     name="default_language"
