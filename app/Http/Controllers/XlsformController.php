@@ -56,7 +56,11 @@ class XlsformController extends CrudController
         // If the user has entered a 'new' project name, create the project:
         if(isset($attributes['new_project_name']) && $attributes['new_project_name']) {
 
-            $project = Project::create([
+            if(!auth()->user()) {
+                abort(403);
+            }
+
+            $project = auth()->user()->projects()->create([
                 'name' => $attributes['new_project_name'],
                 'global' => 0,
             ]);
@@ -93,19 +97,6 @@ class XlsformController extends CrudController
                 ];
         }
 
-        // If the user has entered a 'new' project name, create the project:
-        if(isset($attributes['new_project_name']) && $attributes['new_project_name']) {
-            $project = Project::create([
-                'name' => $attributes['new_project_name'],
-                'global' => 0,
-            ]);
-
-            $project->users()->sync([Auth::id()]);
-
-            $attributes['project_name'] = $project->name;
-            unset($attributes['new_project_name']);
-        };
-
         $xlsform->update($attributes);
 
 
@@ -120,7 +111,7 @@ class XlsformController extends CrudController
 
         // build and deploy form in background
         BuildXlsForm::dispatch($xlsform->name, Auth::user());
-        // DeployXlsForm::dispatch($xlsform->name, Auth::user());
+//        DeployXlsForm::dispatch($xlsform->name, Auth::user());
 
         return $xlsform->toJson();
     }
@@ -149,6 +140,21 @@ class XlsformController extends CrudController
             'xlsform' => $xlsform,
             'modules' => $modules,
         ];
+    }
+
+    public function destroy(Xlsform $xlsform)
+    {
+        // check user is able to delete form
+        if(auth()->user()->projects->pluck('name')->doesntContain($xlsform->project_name)) {
+            abort(403, "You are not a member of this form's project, so you do not have permissions to delete the form");
+        }
+
+        if($xlsform->draft || $xlsform->complete) {
+            abort(400, "This form has been deployed to the main RHoMIS app, and so cannot be deleted from here. To manage your project forms, use the links in the header menu");
+        }
+
+        $xlsform->delete();
+        return response("form successfully deleted",200);
     }
 
 }

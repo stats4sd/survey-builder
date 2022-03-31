@@ -5,8 +5,15 @@
     <div id="app">
         <b-card class="border border-dark" no-body>
             <b-card-header role="tab" class="bg-dark border-0 p-0">
-                <b-button variant="link" block v-b-toggle.instructions-collapse class="text-white text-left p-4"><h3 class="mb-0">Survey Builder <i
-                            class="las la-question-circle"></i></h3></b-button>
+                <b-button
+
+                    variant="link"
+                    block
+                    v-b-toggle.instructions-collapse
+                    class="text-white text-left p-4"
+                >
+                    <h3 class="mb-0">Survey Builder <i class="las la-question-circle"></i> <small>Click for instructions</small></h3>
+                </b-button>
             </b-card-header>
             <b-collapse id="instructions-collapse">
                 <b-card-body>
@@ -29,33 +36,7 @@
             </b-collapse>
         </b-card>
 
-        <b-card class="border-0" header-bg-variant="dark" header-text-variant="white">
-            <template #header>
-                <h4 class="mb-0">Editing Form {{ $xlsform->name }}</h4>
-            </template>
-            <b-list-group flush>
-                <b-list-group-item class="d-flex justify-content-start align-items-center">
-                    <span class="w-50 w-lg-25">Project Name:</span>
-                    <b>{{ $xlsform->project_name }}</b>
-                </b-list-group-item>
-                <b-list-group-item class="d-flex justify-content-start align-items-center">
-                    <span class="w-50 w-lg-25">Form Name:</span>
-                    <b>{{ $xlsform->name }}</b>
-                </b-list-group-item>
-                <b-list-group-item class="d-flex justify-content-start align-items-center">
-                    <span class="w-50 w-lg-25">Default Language:</span>
-                    <b>{{ $xlsform->default_language }}</b>
-                </b-list-group-item>
-                <b-list-group-item class="d-flex justify-content-start align-items-center">
-                    <span class="w-50 w-lg-25">Languages:</span>
-                    <b>{{ $xlsform->languages->pluck('name')->join(', ') }}</b>
-                </b-list-group-item>
-                <b-list-group-item class="d-flex justify-content-start align-items-center">
-                    <span class="w-50 w-lg-25">Countries:</span>
-                    <b>{{ $xlsform->countries->pluck('name')->join(', ') }}</b>
-                </b-list-group-item>
-            </b-list-group>
-        </b-card>
+        <form-key-details-view :xlsform="{{ $xlsform->toJson() }}" rhomis-app-url="{{ config('auth.rhomis_url') }}"></form-key-details-view>
 
         <b-card no-body class="border-dark border-top-0 rounded-top rounded-lg">
             <b-tabs card nav-class="bg-dark rounded-top rounded-sm flex-nowrap" nav-wrapper-class="px-2" lazy>
@@ -81,6 +62,7 @@
                         :themes="{{ $themes->toJson() }}"
                         user-id="{{ Auth::id() }}"
                         :xlsform-original="{{ $xlsform->toJson() }}"
+                        rhomis-app-url="{{ config('auth.rhomis_url') }}"
                     >
                         <template v-slot:csrf>@csrf</template>
                     </form-builder-stage-two>

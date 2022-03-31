@@ -7,6 +7,7 @@ use App\Events\DeployXlsFormComplete;
 use App\Events\DeployXlsFormFailed;
 use App\Models\User;
 use App\Models\Xlsform;
+use App\Services\RhomisApiService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +27,7 @@ class DeployXlsForm implements ShouldQueue
 
     public Xlsform $xlsform;
     public ?User $user;
+
     /**
      * Create a new job instance.
      *
@@ -41,19 +43,28 @@ class DeployXlsForm implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \Illuminate\Http\Client\RequestException
      */
     public function handle()
     {
         $file = file_get_contents(Storage::path($this->xlsform->xlsfile));
 
-        // check if project has been deployed or not
-        $userCheck = Http::withHeaders([
+        // get existing user project + form metadata
+        $metaData = Http::withHeaders([
             'Authorization' => $this->user->jwt_token,
         ])
             ->get(config('auth.auth_url') . '/api/meta-data')
+            ->throw(function ($response) {
+                RhomisApiService::handleApiFailure($response, $this->user);
+            })
             ->json();
 
-        if($userCheck['user'] && $userCheck['user']['projects'] && collect($userCheck['user']['projects'])->doesntContain($this->xlsform->project_name)) {
+        $projects = $metaData['user']['projects'] ?? [];
+        $forms = $metaData['user']['forms'] ?? [];
+
+        // if the project doesn't exist on RHOMIS, create it...
+        if (collect($projects)->doesntContain($this->xlsform->project_name)) {
+
             $projectResponse = Http::withHeaders([
                 'Authorization' => $this->user->jwt_token,
             ])
@@ -64,40 +75,48 @@ class DeployXlsForm implements ShouldQueue
                         'description' => $this->xlsform->project_name . ' description'
                     ]
                 )
-                ->throw();
-
-            Log::info($projectResponse);
-
-            // TODO: update this if API is updated to properly return errors
-            if ($projectResponse->body() === "Project Saved") {
-                $this->xlsform->project->update(['deployed' => 1]);
-            } else {
-                $this->fail();
-            }
+                ->throw(function ($response) {
+                    RhomisApiService::handleApiFailure($response, $this->user);
+                });
         }
 
-        $response = Http::withHeaders([
+        // if the form doesn't exist on RHOMIS, create it...
+        if (collect($forms)->doesntContain($this->xlsform->name)) {
+            $postUrl = 'new';
+                } else {
+            $postUrl = 'new-draft';
+        }
+
+        $xlsformResponse = Http::withHeaders([
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Authorization' => $this->user->jwt_token,
-            // 'X-XlsForm-FormId-Fallback' => Str::slug($this->xlsform->name),
         ])
             ->withBody($file, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->post(
                 config('auth.auth_url') .
-                "/api/forms/new?form_name=" . Str::slug($this->xlsform->name) .
+                "/api/forms/".$postUrl."?form_name=" . Str::slug($this->xlsform->name) .
                 "&project_name=" . urlencode($this->xlsform->project->name) .
                 "&publish=false" .
-                "&form_version=1.0"
+                "&form_version=" . ($this->xlsform->form_version + 1)
             )
-            ->throw();
+            ->throw(function ($response) {
+                RhomisApiService::handleApiFailure($response, $this->user);
+            });
 
-        Log::info($response);
+
+        if ($xlsformResponse->successful()) {
+            $this->xlsform->update([
+                'draft' => 1,
+                'form_version' => $this->xlsform->form_version+1
+            ]);
+        }
+
         DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
 
     }
 
-    public function failed(Throwable $exception): void
+    public function failed(Throwable $e): void
     {
-        DeployXlsFormFailed::dispatch($this->xlsform->name, $this->user);
+        DeployXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
     }
 }

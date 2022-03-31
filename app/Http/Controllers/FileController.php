@@ -16,7 +16,7 @@ class FileController extends Controller
      * @param String $disk // the disk used to store the file (default = local)
      * @return void
      */
-    public function download(String $path, String $disk = 'local')
+    public function download(String $path, String $disk = 'public')
     {
         return Storage::disk($disk)->download($path);
     }

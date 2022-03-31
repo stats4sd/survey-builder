@@ -17,17 +17,24 @@ class BuildXlsFormFailed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public string $message;
+    public int $code;
     public Xlsform $xlsform;
     public ?User $user;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($xlsform, User $user = null)
+    public function __construct(string $message, int $code, $xlsform, User $user = null)
     {
+        $this->message = $message;
+        $this->code = $code;
+
         $this->xlsform = Xlsform::find($xlsform);
         $this->user = $user;
+
     }
 
     /**
