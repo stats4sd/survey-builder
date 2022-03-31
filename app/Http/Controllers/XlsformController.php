@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\XlsformCreateRequest;
+use App\Http\Requests\XlsformUpdateRequest;
 use App\Jobs\BuildXlsForm;
 use App\Jobs\DeployXlsForm;
 use App\Models\Country;
@@ -47,7 +49,7 @@ class XlsformController extends CrudController
         return view('xlsforms.edit', $data);
     }
 
-    public function store(XlsformRequest $request)
+    public function store(XlsformCreateRequest $request)
     {
         // store and post to Rhomis app
         $attributes = $request->validated();
@@ -85,7 +87,7 @@ class XlsformController extends CrudController
 
     }
 
-    public function update(XlsformRequest $request, XLsform $xlsform)
+    public function update(XlsformUpdateRequest $request, XLsform $xlsform)
     {
         // store and post to RHOMIS app
         $attributes = $request->validated();
