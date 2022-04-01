@@ -6,7 +6,7 @@ use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class XlsformRequest extends FormRequest
+class XlsformCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class XlsformRequest extends FormRequest
         return [
             'new_project_name' => ['required_without:project_name','unique:projects,name','nullable'],
             'project_name' => ['required_without:new_project_name', 'nullable'],
-            'name' => ['required', Rule::unique('xlsforms', 'name')->ignore(request()->input('name'), 'name')],
+            'name' => ['required', Rule::unique('xlsforms', 'name')],
             'user_id' => 'required',
             'default_language' => 'required',
         ];

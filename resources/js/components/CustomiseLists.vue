@@ -60,7 +60,7 @@ export default {
                     return null;
                 }
 
-                // filter each list to only show 'available' entries (compare with the selectedChoiceRows
+                // filter each list to only show 'available' entries (compare with the selectedChoiceRows)
                 if (this.selectedChoicesRows.hasOwnProperty(key)) {
                     return list.filter(item => !this.selectedChoicesRows[key].includes(item));
                 }

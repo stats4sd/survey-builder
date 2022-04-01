@@ -10,9 +10,9 @@
         "production": "mix --production",
         "queue-watch": "php artisan queue:work",
         "soketi-server": "soketi start",
-        "auth-api": "cd ../../Packages/rhomis-authenticator && npm run start-dev",
-        "data-api": "cd ../../Packages/rhomis-api && npm run start-dev",
-        "rhomis-app": "cd ../../Packages/rhomis-data-app && npm run start"
+        "auth-api": "cd ../../Projects/rhomis/rhomis-authenticator && npm run start-dev",
+        "data-api": "cd ../../Projects/rhomis/rhomis-api && npm run start-dev",
+        "rhomis-app": "cd ../../Projects/rhomis/rhomis-data-app && npm run start"
     },
     "devDependencies": {
         "@coreui/coreui": "^2.1.16",
@@ -29,7 +29,8 @@
         "sass": "^1.20.1",
         "sass-loader": "^8.0.0",
         "vue": "^2.6.14",
-        "vue-loader": "^15.9.6"
+        "vue-loader": "^15.9.6",
+        "vue-template-compiler": "^2.6.14"
     },
     "dependencies": {
         "bootstrap-vue": "^2.21.2",

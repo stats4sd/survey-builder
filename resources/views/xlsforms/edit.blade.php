@@ -68,7 +68,10 @@
                     </form-builder-stage-two>
                 </b-tab>
                 <b-tab title="Stage 3 - Customise" lazy>
-                    <b-card class="secondary">Please save your form before continuing</b-card>
+                    <form-builder-stage-three
+                    :xlsform-original="{{ $xlsform->toJson() }}"
+                    user-id="{{ Auth::id() }}"
+                    >
                 </b-tab>
                 <b-tab title="Stage 4 - Review" lazy>
                     <b-card class="secondary">Please save your form before continuing</b-card>
