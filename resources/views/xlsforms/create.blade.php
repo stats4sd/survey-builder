@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>RHoMIS XLS Form Builder</h2>
+
     <div class="card border border-dark">
-        <div class="card-header bg-dark text-light"><h3>Survey Builder</h3></div>
+        <div class="card-header bg-dark text-light"><h3>RHoMIS XLS Form Survey Builder</h3></div>
         <div class="card-body">
             This tool will help you build your own, customised RHoMIS ODK Survey form. The pages below will guide you
             through each stage in the process. Please read each instruction carefully.<br/><br/>

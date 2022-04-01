@@ -17,18 +17,25 @@
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased app aside-menu-fixed">
         <div class="min-h-screen">
-            <header class="mb-4">
+            <header class="">
                 @include('layouts.header')
             </header>
 
-            <!-- Page Content -->
-            <main class="mx-auto px-5" style="max-width:1200px">
-                @yield('content')
-            </main>
+            <div class="app-body pt-4 bg-white">
+                <!-- Sidebar -->
+                @include('layouts.sidebar-front-end')
+
+                <!-- Page Content -->
+                <main class="main mx-auto px-5" style="max-width:1200px">
+                    @yield('content')
+                </main>
+            </div>
         </div>
     </body>
+    @yield('before_scripts')
+
     @yield('after_scripts')
 
 </html>
