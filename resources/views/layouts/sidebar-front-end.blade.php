@@ -11,8 +11,6 @@
                     <button class="nav-link border-0 w-100" type="submit"><i class="la la-lock"></i> {{ trans('backpack::base.logout') }}</button>
                 </form>
             </li>
-
-
         </ul>
     </nav>
 </div>

@@ -23,12 +23,12 @@
                 @include('layouts.header')
             </header>
 
-            <div class="app-body pt-4 bg-white">
+            <div class="app-body">
                 <!-- Sidebar -->
                 @include('layouts.sidebar-front-end')
 
                 <!-- Page Content -->
-                <main class="main mx-auto px-5" style="max-width:1200px">
+                <main class="main mx-auto px-5 pt-5" style="max-width:1200px; background-color: #1b8697 !important">
                     @yield('content')
                 </main>
             </div>
