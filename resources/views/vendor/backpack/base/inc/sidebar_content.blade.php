@@ -12,8 +12,12 @@
 
 <h4 class="nav-item pl-3 py-4">Modules</h4>
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('core-version') }}'><i class='nav-icon la la-digital-tachograph'></i> Core Versions</a></li>
-
 <li class='nav-item'><a class='nav-link' href='{{ backpack_url('module') }}'><i class='nav-icon la la-puzzle-piece'></i> All Modules</a></li>
+
+<h4 class="nav-item pl-3 py-4">Choice Lists</h4>
+
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('choice-list') }}'><i class='nav-icon la la-question'></i> Choice lists</a></li>
+<li class='nav-item'><a class='nav-link' href='{{ backpack_url('choices-row') }}'><i class='nav-icon la la-question'></i> Choices</a></li>
 
 
 <h4 class="nav-item pl-3 py-4">User Section</h4>

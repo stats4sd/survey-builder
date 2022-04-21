@@ -84,14 +84,4 @@ class Xlsform extends Model
     {
         return $this->belongsToMany(Country::class, 'country_xlsform');
     }
-
-    public function compiledSurveyRows()
-    {
-        return $this->hasMany(CompiledSurveyRow::class);
-    }
-
-    public function compiledChoicesRows()
-    {
-        return $this->hasMany(CompiledChoicesRow::class);
-    }
 }

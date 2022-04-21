@@ -4,7 +4,7 @@ This installation is a 'default' Laravel 8.X installation for Stats4SD projects 
 It includes the following composer packages:
 
 - Laravel Backpack (backpack/crud)
-- Backpack's version of the Spatie Permission Manager (backpack/permissionmanager)
+- Backpack's version of the Spatie Permission Manager (backpack/ b)
 - Laravel Telescope
 
 And the following dev packages for scaffolding and code helpers:
@@ -24,3 +24,7 @@ In this default setup, **any authenticated user can access the admin panel**. We
 
 TODO: fix project name - either select an existing project OR add a new project! 
 TODO: add information to user that the form is being saved + build as xlsxform... and then deployed! 
+
+
+TODO: remove countries field;
+TODO: add in module information to main build page
