@@ -56,7 +56,13 @@ class ChoiceListCrudController extends CrudController
                 CRUD::addClause('where', 'is_localisable', '=', 1);
             });
 
+        CRUD::filter('show_location_lists')
+            ->type('simple')
+            ->whenActive(fn() => CRUD::addClause('where', 'is_locations', '=', 1));
 
+        CRUD::filter('show_unit_lists')
+            ->type('simple')
+            ->whenActive(fn() => CRUD::addClause('where', 'is_units', '=', 1));
     }
 
 
@@ -70,10 +76,10 @@ class ChoiceListCrudController extends CrudController
     {
         CRUD::setValidation(ChoiceListRequest::class);
 
-        CRUD::field('created_at');
-        CRUD::field('id');
         CRUD::field('list_name');
-        CRUD::field('updated_at');
+        CRUD::field('is_localisable')->type('checkbox');
+        CRUD::field('is_locations')->type('checkbox');
+        CRUD::field('is_units')->type('checkbox');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:

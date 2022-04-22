@@ -66,9 +66,17 @@ class CoreVersion extends Model
     public function publish ()
     {
         // delete survey rows for each core module:
+        // TODO: decide if it's worth deleting old versions!
         $this->moduleVersions->each(function($moduleVersion) {
-            $moduleVersion->surveyRows()->delete();
-            $moduleVersion->module->moduleVersions()->update(['is_current' => false]);
+
+            // find the moduleVersions from old 'published' versions of the modules;
+            $oldVersions = $moduleVersion->module->moduleVersions()->where('is_current', 1)->get();
+
+            // go through each old version (there should ideally only be 1!) and unpublish it
+            foreach ($oldVersions as $oldVersion) {
+                $oldVersion->surveyRows()->delete();
+                $oldVersion->module->moduleVersions()->update(['is_current' => false]);
+            }
         });
 
         // choices rows without a module are linked to core

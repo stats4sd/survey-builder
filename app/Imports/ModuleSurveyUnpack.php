@@ -57,7 +57,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'read_only' => $row['read_only'],
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
-                'localisable' => $localisable,
+                'is_localisable' => $localisable,
                 'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
 
             ]);

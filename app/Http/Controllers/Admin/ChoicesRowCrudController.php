@@ -7,6 +7,8 @@ use App\Models\Xlsforms\ChoicesLabel;
 use App\Models\Xlsforms\ChoicesRow;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\app\Library\Widget;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
 /**
  * Class ChoicesRowCrudController
@@ -38,9 +40,23 @@ class ChoicesRowCrudController extends CrudController
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
-    protected function setupListOperation()
+protected function setupListOperation()
     {
         CRUD::setDefaultPageLength(25);
+
+        $content = '';
+       if(isset($_GET['list_name'])) {
+           $listName = $_GET['list_name'];
+           CRUD::setHeading("<h4>Showing Choice list: ${listName}</h4>");
+       }
+
+        Widget::add()
+            ->to('before_content')
+            ->type('card')
+            ->content([
+                'body' => "<a href='" . backpack_url('choice-list') . "'><- return to choice lists</a>",
+                ],
+            );
 
         CRUD::column('list_name');
         CRUD::column('name');

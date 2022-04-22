@@ -68,8 +68,8 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 continue;
             }
 
-            $localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
-            if($localisable) {
+            $is_localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
+            if($is_localisable) {
                 $moduleVersionLocalisable = true;
             }
             $surveyRow = SurveyRow::create([
@@ -85,7 +85,7 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 'read_only' => $row['read_only'],
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
-                'localisable' => $localisable,
+                'is_localisable' => $is_localisable,
                 'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
             ]);
 
