@@ -6,6 +6,7 @@ use App\Http\Requests\CoreVersionRequest;
 use App\Models\CoreVersion;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CoreVersionCrudController
@@ -41,8 +42,12 @@ class CoreVersionCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('version_name');
-        CRUD::column('mini');
-        CRUD::column('file');
+        CRUD::column('mini')->type('boolean');
+        CRUD::column('file')->wrapper([
+            'href' => function($crud, $column, $entry) {
+                return Storage::url($entry->file);
+            }
+        ]);
         CRUD::column('published_at');
         CRUD::button('publish')->view('backpack::crud.buttons.publish')->stack('line');
 

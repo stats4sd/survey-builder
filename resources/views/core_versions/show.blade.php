@@ -23,7 +23,15 @@
                 <div>
                     @foreach($coreVersion->moduleVersions as $moduleVersion)
                         <div class="list-group">
-                            <div class="list-group-item"><h6>{{ $moduleVersion->module->title }}</h6></div>
+                            <div class="list-group-item">
+                                <h6>{{ $moduleVersion->module->title }}</h6>
+                                <ul>
+                                    <li>Theme: <b>{{ $moduleVersion->module->theme->title }}</b></li>
+                                    <li>Avg. Time of Interview: <b>{{ $moduleVersion->module->minutes }}</b></li>
+                                    <li>SDG Indicators: <b>{{ $moduleVersion->module->sdgs->pluck('name')->join(', ') }}</b></li>
+                                </ul>
+
+                            </div>
                         </div>
                     @endforeach
 

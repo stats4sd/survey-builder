@@ -18,7 +18,7 @@ class ChoiceListCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -47,8 +47,15 @@ class ChoiceListCrudController extends CrudController
             }
         ]);
         CRUD::column('is_localisable')->type('boolean');
-        CRUD::column('is_units')->type('boolean');
-        CRUD::column('is_locations')->type('boolean');
+        CRUD::column('is_units')->type('boolean')->label('Is list of units?');
+        CRUD::column('is_locations')->type('boolean')->label('Is a list of locations?');
+
+        CRUD::filter('localisable')
+            ->type('simple')
+            ->whenActive(function() {
+                CRUD::addClause('where', 'is_localisable', '=', 1);
+            });
+
 
     }
 

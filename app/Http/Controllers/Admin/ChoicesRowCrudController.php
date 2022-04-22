@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ChoicesRowRequest;
+use App\Models\Xlsforms\ChoicesLabel;
 use App\Models\Xlsforms\ChoicesRow;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -18,7 +19,6 @@ class ChoicesRowCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -44,13 +44,11 @@ class ChoicesRowCrudController extends CrudController
 
         CRUD::column('list_name');
         CRUD::column('name');
-        CRUD::column('localisable');
-
-        CRUD::filter('localisable')
-            ->type('simple')
-            ->whenActive(function() {
-                CRUD::addClause('where', 'localisable', '=', 1);
-            });
+        CRUD::column('choicesLabels')
+            ->type('select_multiple')
+            ->label('labels')
+            ->attribute('display_label')
+        ->separator("<br/>");
 
         CRUD::filter('list_name')
             ->type('select2_ajax')
