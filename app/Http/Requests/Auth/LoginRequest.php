@@ -124,7 +124,7 @@ class LoginRequest extends FormRequest
             'Authorization' => $token,
             'Content-Type' => 'application/json',
         ])
-            ->get(config('auth.auth_url') . '/api/meta-data')
+            ->post(config('auth.auth_url') . '/api/meta-data')
             ->throw()
             ->json();
 
