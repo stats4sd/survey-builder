@@ -80,7 +80,7 @@ class XlsformController extends CrudController
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
         $xlsform->moduleVersions()->sync($request->input('module_versions'));
-        $xlsform->countries()->sync($request->input('countries'));
+//        $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 
         return $xlsform->toJson();
@@ -105,7 +105,7 @@ class XlsformController extends CrudController
 
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-        $xlsform->countries()->sync($request->input('countries'));
+//        $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 
         // include ordering of module versions

@@ -10,9 +10,9 @@
         "production": "mix --production",
         "queue-watch": "php artisan queue:work",
         "soketi-server": "soketi start",
-        "auth-api": "cd ../../Packages/rhomis-authenticator && npm run start-dev",
-        "data-api": "cd ../../Packages/rhomis-api && npm run start-dev",
-        "rhomis-app": "cd ../../Packages/rhomis-data-app && npm run start"
+        "auth-api": "cd ../../projects/rhomis/rhomis-authenticator && npm run start-dev",
+        "data-api": "cd ../../projects/rhomis/rhomis-api && npm run start-dev",
+        "rhomis-app": "cd ../../projects/rhomis/rhomis-data-app && npm run start"
     },
     "devDependencies": {
         "@coreui/coreui": "^2.1.16",

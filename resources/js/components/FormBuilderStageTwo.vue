@@ -1,6 +1,21 @@
 <template>
     <div class="container mt-2">
         <div class="row justify-content-center">
+
+            <div class="col-md-6 offset-3" v-if="needRelogin">
+                <a
+                    :href="rhomisAppUrl"
+                    target="_blank"
+                    class="btn btn-info"
+                    :class="processing ? 'disabled' : ''"
+                >
+                    <i class="la la-spinner la-spin" v-if="processing"></i>
+                    Re-authenticate with RHoMIS
+                </a>
+                <i class="las la-question-circle"
+                   title="We are working on improving the authentication flow for users of Rhomis. During this beta period, you may occasionally be logged out of the main app while using the Survey Builder. Please re-authenticate to continue"></i> >Why
+                    is this needed?
+            </div>
             <div class="col-md-12">
                 <h2 class="mb-3">Stage 1 - Build the Survey</h2>
                 <b-form @submit.prevent="submit">
@@ -26,16 +41,18 @@
                             left list to add it to your form.
                         </template>
                         <template #listItem="props">
-                            {{ props.element.module.title }}
-                            <span
-                                v-if="props.element.module.core"
-                                class="text-small"
-                            >
-                                (core)
-                            </span><br/>
-                            <small>
-                                - Version: {{ props.element.version_name }}
-                            </small>
+                            <div @click="selectModalModule(props.element)">
+                                {{ props.element.module.title }}
+                                <span
+                                    v-if="props.element.module.core"
+                                    class="text-small"
+                                >
+                                    (core)
+                                </span><br/>
+                                <small>
+                                    - Version: {{ props.element.version_name }} | {{ props.element.question_count }} questions
+                                </small>
+                            </div>
                         </template>
                     </drag-and-drop-select>
 
@@ -68,16 +85,43 @@
                             <i class="la la-spinner la-spin" v-if="processing"></i>
                             View Xlsform in RHoMIS App
                         </a>
+
                     </b-form-group>
                     <div class="d-flex">
-                        <span v-if="processing" :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
+                        <span v-if="processing"
+                              :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
                         <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
                         <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
                         <span v-if="complete" class="ml-2">...success!</span>
                     </div>
                 </b-form>
             </div>
+            <div class="col-md-6 offset-3" v-if="needRelogin">
+                <a
+                    :href="rhomisAppUrl"
+                    target="_blank"
+                    class="btn btn-info"
+                    :class="processing ? 'disabled' : ''"
+                >
+                    <i class="la la-spinner la-spin" v-if="processing"></i>
+                    Re-authenticate with RHoMIS
+                </a>
+                <i class="fas fa-question-circle"
+                   title="We are working on improving the authentication flow for users of Rhomis. During this beta period, you may occasionally be logged out of the main app while using the Survey Builder. Please re-authenticate to continue">Why
+                    is this needed?</i>
+            </div>
         </div>
+
+
+        <b-modal size="xl" id="module-modal" hide-footer scrollable :title="modalModule ? modalModule.module.title : ''">
+            <div v-if="modalModule">
+                <b-table :fields="odkSurveyColumns" :items="modalModuleQuestions" :tbody-tr-class="questionRowClass">
+                    <template #cell(is_localisable)="row">
+                        <span :class="row.item.is_localisable ? 'text-bold text-warning' : ''">{{ row.item.is_localisable ? 'Yes' : '-'}}</span>
+                    </template>
+                </b-table>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -140,6 +184,19 @@ export default {
             building: false,
             deploying: false,
             complete: false,
+            needRelogin: false,
+            modalModule: null,
+            modalModuleQuestions: null,
+            odkSurveyColumns: [
+                'type',
+                'name',
+                'english_label',
+                {
+                    key: 'is_localisable',
+                    label: 'Can be customised to your context?',
+                }
+
+            ],
         };
     },
     computed: {
@@ -208,7 +265,7 @@ export default {
         },
 
         reset() {
-            this.processing = this.building = this.deploying = this.complete = false;
+            this.processing = this.building = this.deploying = this.complete = this.needRelogin = false;
         },
 
         // create listeners for Laravel Events
@@ -231,6 +288,9 @@ export default {
 
                     this.reset();
 
+                    this.xlsform.draft = payload.xlsform.draft
+                    this.xlsform.complete = payload.xlsform.complete
+
                     new Noty({
                         type: "success",
                         text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect.",
@@ -250,28 +310,81 @@ export default {
                 .listen("DeployXlsFormFailed", payload => {
                     this.reset()
 
-                    new Noty({
-                        type: "error",
-                        text: `Deploying your XLSform file failed with the following code and message:
+
+                    // send reauth-message
+                    if (payload.code == 401) {
+
+                        this.needRelogin = true;
+                        new Noty({
+                            type: "error",
+                            text: "Sorry - it looks like your session has timed out. Your form has been saved. To continue, please the link at the top of the page to re-login.",
+                            timeout: false,
+                        }).show();
+                    } else {
+                        new Noty({
+                            type: "error",
+                            text: `Deploying your XLSform file failed with the following code and message:
                             Code: ${payload.code}
                             Message: ${payload.message}`,
-                        timeout: false,
-                    }).show()
+                            timeout: false,
+                        }).show()
+                    }
                 })
                 .listen("RhomisAPiCallDidFail", payload => {
                     this.reset()
 
-                    new Noty({
-                        type: "error",
-                        text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
+                    // send reauth-message
+                    if (payload.code == 401) {
+
+                        this.needRelogin = true;
+                        new Noty({
+                            type: "error",
+                            text: "Sorry - it looks like your session has timed out. Your form has been saved. To continue, please the link at the top of the page to re-login.",
+                            timeout: false,
+                        }).show();
+                    } else {
+
+                        new Noty({
+                            type: "error",
+                            text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
                             URL: ${payload.requestUrl}
                             Status: ${payload.code}
                             Message: ${payload.body}`,
-                        timeout: false,
-                    }).show()
+                            timeout: false,
+                        }).show()
+                    }
                 })
-        }
+        },
 
+        selectModalModule(moduleVersion) {
+            this.modalModule = moduleVersion
+            this.$bvModal.show('module-modal')
+
+            axios.get('/module-version/'+moduleVersion.id+'/xls-survey-rows')
+            .then(res => {
+                this.modalModuleQuestions = res.data;
+            });
+        },
+
+        // get the row formatting for showing ODK survey questions
+        questionRowClass(item, type) {
+            if(!item || type !== 'row') return;
+
+            switch (item.type) {
+                case 'note':
+                    return 'table-secondary';
+
+                case 'begin repeat':
+                case 'end repeat':
+                    return 'table-warning';
+
+                case 'begin group':
+                case 'end group':
+                    return 'table-primary';
+
+            }
+
+        }
     }
 };
 

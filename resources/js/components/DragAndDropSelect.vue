@@ -2,36 +2,6 @@
     <b-row>
         <b-card
             class="col-6 d-flex flex-column"
-            bg-variant="light"
-            border-variant="success"
-        >
-            <h4>Selected {{ itemsName }}</h4>
-            <p>
-                <slot name="selectedinfo">Drag to reorder the {{ itemsName }}.</slot>
-            </p>
-
-            <div style="height:75vh; overflow-y: scroll">
-                <draggable
-                    class="list-group flex-grow-1"
-                    :value="selected"
-                    :group="itemsName"
-                    @input="updateSelected"
-                >
-                    <b-list-group-item
-
-                        :variant="element.module.core ? 'light' : 'primary'"
-                        v-for="element in selected"
-                        :key="element.id"
-                    >
-                        <slot name="listItem" v-bind:element="element">
-                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
-                        </slot>
-                    </b-list-group-item>
-                </draggable>
-            </div>
-        </b-card>
-        <b-card
-            class="col-6 d-flex flex-column"
             bg-varant="light"
             border-variant="info"
         >
@@ -56,6 +26,36 @@
                     >
                         <slot name="listItem" v-bind:element="element">
                                 {{ element.title || (element.label || 'item ID: ' + element.id) }}
+                        </slot>
+                    </b-list-group-item>
+                </draggable>
+            </div>
+        </b-card>
+        <b-card
+            class="col-6 d-flex flex-column"
+            bg-variant="light"
+            border-variant="success"
+        >
+            <h4>Selected {{ itemsName }}</h4>
+            <p>
+                <slot name="selectedinfo">Drag to reorder the {{ itemsName }}.</slot>
+            </p>
+
+            <div style="height:75vh; overflow-y: scroll">
+                <draggable
+                    class="list-group flex-grow-1"
+                    :value="selected"
+                    :group="itemsName"
+                    @input="updateSelected"
+                >
+                    <b-list-group-item
+
+                        :variant="element.module.core ? 'light' : 'primary'"
+                        v-for="element in selected"
+                        :key="element.id"
+                    >
+                        <slot name="listItem" v-bind:element="element">
+                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
                         </slot>
                     </b-list-group-item>
                 </draggable>

@@ -57,22 +57,6 @@
                     :disabled="xlsformOriginal && xlsformOriginal.hasOwnProperty('name')"
                 />
             </b-form-group>
-            <b-form-group
-                id="grp-project_id"
-                label="Which country/ies will this form be used in?"
-                label-for="countries"
-                :invalid-feedback="errors.countries"
-                :state="!errors.countries"
-            >
-                <vSelect
-                    name="countries"
-                    v-model="xlsform.countries"
-                    :options="countries"
-                    :reduce="country => country.id"
-                    label="name"
-                    multiple
-                />
-            </b-form-group>
             <b-alert variant="info" show>Please select the language(s) that should be available in your ODK
                 form. All RHoMIS
                 forms must have English as a language. You can also choose a default language. This should be
@@ -152,9 +136,7 @@ export default {
         userId: {
             default: null
         },
-        countries: {
-            default: () => [],
-        },
+
         languages: {
             default: () => [],
         },
@@ -163,7 +145,6 @@ export default {
         return {
             projects: [],
             xlsform: {
-                countries: [],
                 languages: ['en'],
                 themes: [],
                 modules: [],
@@ -203,7 +184,6 @@ export default {
             this.xlsform = {...this.xlsformOriginal};
             this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
             this.xlsform.module_versions = this.xlsform.modules ? this.xlsform.themes.map(moduleVersion => moduleVersion.id) : []
-            this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
             this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
         }
 

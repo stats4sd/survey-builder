@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\XlsChoicesController;
 use App\Http\Controllers\XlsformController;
+use App\Http\Controllers\XlsSurveyRowController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -48,6 +49,8 @@ Route::group(
         Route::get('admin/xlsform/create', function(){
             return redirect('xlsform/create');
         });
+
+        Route::get('module-version/{moduleversion}/xls-survey-rows', [XlsSurveyRowController::class, 'getQuestionsForModule']);
     }
 );
 
