@@ -42,11 +42,32 @@ class XlsformController extends CrudController
         return view('xlsforms.create', $data);
     }
 
-    public function edit(Xlsform $xlsform)
+    public function editOne(Xlsform $xlsform)
     {
         $data = $this->setupView($xlsform);
 
-        return view('xlsforms.edit', $data);
+        return view('xlsforms.edit-one', $data);
+    }
+
+    public function editTwo(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-two', $data);
+    }
+
+    public function editThree(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-three', $data);
+    }
+
+    public function editFour(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-four', $data);
     }
 
     public function store(XlsformCreateRequest $request)
@@ -106,7 +127,8 @@ class XlsformController extends CrudController
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
 //        $xlsform->countries()->sync($request->input('countries'));
-        $xlsform->languages()->sync($request->input('languages'));
+
+        $xlsform->languages()->sync($request->input('languageList'));
 
         // include ordering of module versions
         $xlsform->moduleVersions()->sync($moduleVersions);

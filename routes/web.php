@@ -44,13 +44,17 @@ Route::group(
 
 
         Route::resource('xlsform', XlsformController::class);
+        Route::get('xlsform/{xlsform}/edit-one', [XlsformController::class,  'editOne']);
+        Route::get('xlsform/{xlsform}/edit-two', [XlsformController::class,  'editTwo']);
+        Route::get('xlsform/{xlsform}/edit-three', [XlsformController::class,  'editThree']);
+        Route::get('xlsform/{xlsform}/edit-four', [XlsformController::class,  'editFour']);
 
         // redirect xlsform crud users to front-end
         Route::get('admin/xlsform/create', function(){
             return redirect('xlsform/create');
         });
 
-        Route::get('module-version/{moduleversion}/xls-survey-rows', [XlsSurveyRowController::class, 'getQuestionsForModule']);
+        Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
     }
 );
 

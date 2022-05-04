@@ -13,11 +13,12 @@
                     Re-authenticate with RHoMIS
                 </a>
                 <i class="las la-question-circle"
-                   title="We are working on improving the authentication flow for users of Rhomis. During this beta period, you may occasionally be logged out of the main app while using the Survey Builder. Please re-authenticate to continue"></i> >Why
-                    is this needed?
+                   title="We are working on improving the authentication flow for users of Rhomis. During this beta period, you may occasionally be logged out of the main app while using the Survey Builder. Please re-authenticate to continue"></i>
+                >Why
+                is this needed?
             </div>
             <div class="col-md-12">
-                <h2 class="mb-3">Stage 1 - Build the Survey</h2>
+                <h2 class="mb-3">Stage 2 - Build the Survey</h2>
                 <b-form @submit.prevent="submit">
                     <!-- ##################### STEP 2 ######################## -->
                     <b-alert show variant="link" class="text-danger"
@@ -50,7 +51,8 @@
                                     (core)
                                 </span><br/>
                                 <small>
-                                    - Version: {{ props.element.version_name }} | {{ props.element.question_count }} questions
+                                    - Version: {{ props.element.version_name }} | {{ props.element.question_count }}
+                                    questions
                                 </small>
                             </div>
                         </template>
@@ -61,32 +63,61 @@
                         :value="selectedModuleIds"
                         name="module_ids"
                     />
-                    <b-form-group class="d-flex">
-                        <b-button type="submit" variant="primary" :disabled="processing || complete"
-                        >
-                            <i class="la la-spinner la-spin" v-if="processing"></i>
-                            Save Form
-                        </b-button>
-                        <a
-                            v-if="xlsform.download_url"
-                            :href="!processing ? xlsform.download_url : ''"
-                            class="btn btn-primary"
-                            :class="processing ? 'disabled' : ''"
-                        >
-                            <i class="la la-spinner la-spin" v-if="processing"></i>
-                            Download XLS Form File
-                        </a>
-                        <a
-                            v-if="xlsform.draft || xlsform.complete"
-                            :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name"
-                            class="btn btn-success"
-                            :class="processing ? 'disabled' : ''"
-                        >
-                            <i class="la la-spinner la-spin" v-if="processing"></i>
-                            View Xlsform in RHoMIS App
-                        </a>
 
-                    </b-form-group>
+                    <b-button type="submit" variant="primary" :disabled="processing || complete"
+                    >
+                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                        Save Form
+                    </b-button>
+                </b-form>
+
+                    <hr/>
+                    <h4>Next Steps</h4>
+                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save the form, new
+                        options will appear below.
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-9">
+                            <ul class="w-100">
+                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">1. Try out the Form in ODK Collect:</span>
+                                    <a
+
+                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                        class="btn btn-link"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Collect data
+                                    </a>
+                                </li>
+                                <li v-if="xlsform.download_url" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">2. Review the ODK Form in Excel:</span>
+                                    <a
+                                        :href="!processing ? xlsform.download_url : ''"
+                                        class="btn btn-link"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Download XLS Form
+                                    </a>
+                                </li>
+                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
+                                    <button
+                                        @click="$emit('jump-to-3')"
+                                        class="btn btn-primary"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Continue to Customise
+                                    </button>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+
                     <div class="d-flex">
                         <span v-if="processing"
                               :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
@@ -94,7 +125,6 @@
                         <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
                         <span v-if="complete" class="ml-2">...success!</span>
                     </div>
-                </b-form>
             </div>
             <div class="col-md-6 offset-3" v-if="needRelogin">
                 <a
@@ -113,11 +143,22 @@
         </div>
 
 
-        <b-modal size="xl" id="module-modal" hide-footer scrollable :title="modalModule ? modalModule.module.title : ''">
+        <b-modal size="xl" id="module-modal" hide-footer scrollable
+                 :title="modalModule ? modalModule.module.title : ''">
             <div v-if="modalModule">
+                <h3>Module Summary</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex">
+                        <span class="w-25 text-right pr-4">Indicators that can be calculated from this module:</span>
+                        <span>{{ modalModule.indicator_list.join(', ') }}</span>
+                    </li>
+                </ul>
+
+                <h3>XLS Form Questions:</h3>
                 <b-table :fields="odkSurveyColumns" :items="modalModuleQuestions" :tbody-tr-class="questionRowClass">
                     <template #cell(is_localisable)="row">
-                        <span :class="row.item.is_localisable ? 'text-bold text-warning' : ''">{{ row.item.is_localisable ? 'Yes' : '-'}}</span>
+                        <span
+                            :class="row.item.is_localisable ? 'text-bold text-dark bg-warning w-100' : ''">{{ row.item.is_localisable ? 'Yes' : '-' }}</span>
                     </template>
                 </b-table>
             </div>
@@ -360,15 +401,16 @@ export default {
             this.modalModule = moduleVersion
             this.$bvModal.show('module-modal')
 
-            axios.get('/module-version/'+moduleVersion.id+'/xls-survey-rows')
-            .then(res => {
-                this.modalModuleQuestions = res.data;
-            });
+            axios.get('/module-version/' + moduleVersion.id + '/get-details')
+                .then(res => {
+                    this.modalModuleQuestions = res.data.survey_rows;
+                    this.modalModule = res.data;
+                });
         },
 
         // get the row formatting for showing ODK survey questions
         questionRowClass(item, type) {
-            if(!item || type !== 'row') return;
+            if (!item || type !== 'row') return;
 
             switch (item.type) {
                 case 'note':

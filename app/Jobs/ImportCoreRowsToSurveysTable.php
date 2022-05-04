@@ -78,13 +78,14 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
             }
 
 
-            $choiceList = '';
+            $choiceList = null;
             // for select questions, extract the choice list to allow linking
             if(Str::contains($row['type'], ['select_one', 'select_multiple'])) {
-                $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
+
+                    $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
                 // check choice list exists in database:
                 if($choiceLists->pluck('list_name')->doesntContain($choiceList)) {
-                    ChoiceList::create(['list_name' => $choiceList]);
+                    ChoiceList::updateOrCreate(['list_name' => $choiceList]);
                 }
 
             }

@@ -116,3 +116,8 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
         margin-left: -15rem;
     }
 }
+
+.bg-light-success {
+    background-color: #b9efd0 !important;
+    color: $success !important;
+}

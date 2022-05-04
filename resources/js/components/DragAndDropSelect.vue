@@ -25,8 +25,14 @@
                         :key="element.id"
                     >
                         <slot name="listItem" v-bind:element="element">
-                                {{ element.title || (element.label || 'item ID: ' + element.id) }}
+                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
                         </slot>
+                    </b-list-group-item>
+                    <b-list-group-item
+                        v-if="available.length === 0"
+                        style="min-height: 15px" class="bg-white"
+                    >
+                        ~~ Drag items here to remove from list ~~
                     </b-list-group-item>
                 </draggable>
             </div>
@@ -57,6 +63,12 @@
                         <slot name="listItem" v-bind:element="element">
                             {{ element.title || (element.label || 'item ID: ' + element.id) }}
                         </slot>
+                    </b-list-group-item>
+                    <b-list-group-item
+                        v-if="selected.length === 0"
+                        style="min-height: 15px" class="bg-white"
+                    >
+                        ~~ Drag new items here ~~
                     </b-list-group-item>
                 </draggable>
             </div>

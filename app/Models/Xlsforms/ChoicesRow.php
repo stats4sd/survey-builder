@@ -18,7 +18,7 @@ class ChoicesRow extends Model
 
     public function choiceList()
     {
-        return $this->belongsTo(ChoiceList::class, 'list_name');
+        return $this->belongsTo(ChoiceList::class, 'list_name', 'list_name');
     }
 
     public function choicesLabels()

@@ -14,6 +14,11 @@ class ChoiceList extends Model
 
     public function choicesRows()
     {
-        return $this->hasMany(ChoicesRow::class);
+        return $this->hasMany(ChoicesRow::class, 'list_name', 'list_name');
+    }
+
+    public function surveyRows()
+    {
+        return $this->hasMany(SurveyRow::class, 'choice_list', 'list_name');
     }
 }
