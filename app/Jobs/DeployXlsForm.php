@@ -53,7 +53,7 @@ class DeployXlsForm implements ShouldQueue
         $metaData = Http::withHeaders([
             'Authorization' => $this->user->jwt_token,
         ])
-            ->get(config('auth.auth_url') . '/api/meta-data')
+            ->post(config('auth.auth_url') . '/api/meta-data')
             ->throw(function ($response) {
                 RhomisApiService::handleApiFailure($response, $this->user);
             })
