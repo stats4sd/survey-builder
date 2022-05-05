@@ -52,7 +52,6 @@ export default {
         return {
             xlsform: {
                 countries: [],
-                languageList: ['en'],
                 languages: [],
                 themes: [],
                 modules: [],
@@ -60,9 +59,9 @@ export default {
                 project_id: null,
                 title: "",
                 default_language: "",
-                region_label: "region",
-                subregion_label: "subregion",
-                village_label: "village",
+                region_label: {"en": "region"},
+                subregion_label: {"en": "subregion"},
+                village_label: {"en": "village"},
                 location_file: null,
                 hasHouseholdList: null,
             },
@@ -75,7 +74,8 @@ export default {
         this.xlsform.themes = this.xlsform.themes.map(theme => theme.id);
 
         this.xlsform.module_versions = this.xlsform.modules ? this.xlsform.themes.map(moduleVersion => moduleVersion.id) : []
-        this.xlsform.languageList = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
+
+        // keep languages as an array of objects as that's the best format for this page.
 
         this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
 
@@ -89,16 +89,27 @@ export default {
     },
     methods: {
         submit() {
-            this.xlsform.module_versions = this.xlsform.modules.map(
-                module => module.id
-            );
             this.reset();
             this.processing = true;
             this.update();
         },
 
         update() {
-            axios.put('/xlsform/' + this.xlsform.name, this.xlsform)
+
+            //setup FormData object to enable posting the file along with data
+            var formData = new FormData();
+            formData.append("location_file", this.xlsform.location_file);
+            formData.append("region_label", JSON.stringify(this.xlsform.region_label));
+            formData.append("subregion_label", JSON.stringify(this.xlsform.subregion_label));
+            formData.append("village_label", JSON.stringify(this.xlsform.village_label));
+            formData.append("hasHouseholdList", -this.xlsform.hasHouseholdList);
+            formData.append("_method", 'PUT');
+
+            axios.post('/xlsform/' + this.xlsform.name +'/customise', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
             .then(res => {
                 console.log('save ok', res.data)
                 new Noty({

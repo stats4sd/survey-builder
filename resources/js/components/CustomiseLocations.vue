@@ -134,17 +134,17 @@ export default {
         updateRegionLabel(regionLabel, lang) {
             let labels = {...this.regionLabel};
             labels[lang] = regionLabel
-            this.$emit('update:regionLabels', labels);
+            this.$emit('update:regionLabel', labels);
         },
         updateSubregionLabel(subregionLabel, lang) {
             let labels = {...this.subregionLabel};
             labels[lang] = subregionLabel
-            this.$emit('update:subregionLabel', subregionLabel);
+            this.$emit('update:subregionLabel', labels);
         },
         updateVillageLabel(villageLabel, lang) {
             let labels = {...this.villageLabel};
             labels[lang] = villageLabel
-            this.$emit('update:villageLabel', villageLabel);
+            this.$emit('update:villageLabel', labels);
         },
 
         updateHasHouseholdLIst(hasHouseholdList) {

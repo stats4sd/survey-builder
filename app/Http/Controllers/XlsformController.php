@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\XlsformCreateRequest;
+use App\Http\Requests\XlsformCustomiseUpdateRequest;
 use App\Http\Requests\XlsformUpdateRequest;
 use App\Jobs\BuildXlsForm;
 use App\Jobs\DeployXlsForm;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use App\Models\Theme;
 use App\Models\Module;
 use App\Models\Xlsform;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ModuleVersion;
@@ -108,6 +110,12 @@ class XlsformController extends CrudController
 
     }
 
+    /**
+     * Handles the update requests from Stage 1 and Stage 2.
+     * @param XlsformUpdateRequest $request
+     * @param Xlsform $xlsform
+     * @return string
+     */
     public function update(XlsformUpdateRequest $request, XLsform $xlsform)
     {
         // store and post to RHOMIS app
@@ -128,7 +136,7 @@ class XlsformController extends CrudController
         $xlsform->themes()->sync($request->input('themes'));
 //        $xlsform->countries()->sync($request->input('countries'));
 
-        $xlsform->languages()->sync($request->input('languageList'));
+        $xlsform->languages()->sync($request->input('languages'));
 
         // include ordering of module versions
         $xlsform->moduleVersions()->sync($moduleVersions);
@@ -139,6 +147,21 @@ class XlsformController extends CrudController
 
         return $xlsform->toJson();
     }
+
+    /**
+     * Handle updates to Stage 3 edit
+     * @param XlsformCustomiseUpdateRequest $request
+     * @param Xlsform $xlsform
+     */
+    public function updateCustomisations(Request $request, Xlsform $xlsform)
+    {
+        // store and post to RHOMIS app
+        // $attributes = $request->validated();
+        dd($request->all());
+
+    }
+
+
 
     public function setupView($xlsform = null)
     {
@@ -180,5 +203,7 @@ class XlsformController extends CrudController
         $xlsform->delete();
         return response("form successfully deleted",200);
     }
+
+
 
 }

@@ -44,10 +44,19 @@ Route::group(
 
 
         Route::resource('xlsform', XlsformController::class);
+
+        // redirect the core "edi" to the Build component
+        Route::get('xlsform/{xlsform}/edit', function($xlsform) {
+            return redirect('xlsform/'.$xlsform.'/edit-two');
+        });
+
         Route::get('xlsform/{xlsform}/edit-one', [XlsformController::class,  'editOne']);
         Route::get('xlsform/{xlsform}/edit-two', [XlsformController::class,  'editTwo']);
         Route::get('xlsform/{xlsform}/edit-three', [XlsformController::class,  'editThree']);
         Route::get('xlsform/{xlsform}/edit-four', [XlsformController::class,  'editFour']);
+
+        Route::put('xlsform/{xlsform}/customise', [XlsformController::class, 'updateCustomisations']);
+
 
         // redirect xlsform crud users to front-end
         Route::get('admin/xlsform/create', function(){

@@ -22,10 +22,10 @@
         <b-card no-body class="border-dark border-top-0 rounded-top rounded-lg" header-bg-variant="dark">
             <template #header>
                 <b-nav card-header tabs class="bg-dark rounded-top rounded-sm flex-nowrap px-0">
-                    <b-nav-item>Stage 1 - Create</b-nav-item>
+                    <b-nav-item  href="{{ url('xlsform/'.$xlsform->name.'/edit-one') }}">Stage 1 - Create</b-nav-item>
                     <b-nav-item href="{{ url('xlsform/'.$xlsform->name.'/edit-two') }}">Stage 2 - Build</b-nav-item>
                     <b-nav-item href="{{ url('xlsform/'.$xlsform->name.'/edit-three') }}">Stage 3 - Customise</b-nav-item>
-                    <b-nav-item active href="{{ url('xlsform/'.$xlsform->name.'/edit-four') }}">Stage 4 - Review</b-nav-item>
+                    <b-nav-item active>Stage 4 - Review</b-nav-item>
                 </b-nav>
             </template>
             <b-card-body>
