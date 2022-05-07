@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Module;
+use App\Models\ModuleVersion;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -61,5 +62,12 @@ class ModuleController extends Controller
     public function destroy(Module $module)
     {
         //
+    }
+
+    public function getDetails(ModuleVersion $moduleversion)
+    {
+        $module = $moduleversion->load(['surveyRows.surveyLabels','surveyRows.choiceList', 'module.indicators', 'module.authors', 'module.languages', 'module.sdgs']);
+        $module->indicator_list = $module->module->indicators->pluck('name')->toArray();
+        return $module;
     }
 }

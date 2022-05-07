@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\XlsformCreateRequest;
+use App\Http\Requests\XlsformCustomiseUpdateRequest;
 use App\Http\Requests\XlsformUpdateRequest;
 use App\Jobs\BuildXlsForm;
 use App\Jobs\DeployXlsForm;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use App\Models\Theme;
 use App\Models\Module;
 use App\Models\Xlsform;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\ModuleVersion;
@@ -42,11 +44,32 @@ class XlsformController extends CrudController
         return view('xlsforms.create', $data);
     }
 
-    public function edit(Xlsform $xlsform)
+    public function editOne(Xlsform $xlsform)
     {
         $data = $this->setupView($xlsform);
 
-        return view('xlsforms.edit', $data);
+        return view('xlsforms.edit-one', $data);
+    }
+
+    public function editTwo(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-two', $data);
+    }
+
+    public function editThree(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-three', $data);
+    }
+
+    public function editFour(Xlsform $xlsform)
+    {
+        $data = $this->setupView($xlsform);
+
+        return view('xlsforms.edit-four', $data);
     }
 
     public function store(XlsformCreateRequest $request)
@@ -80,13 +103,19 @@ class XlsformController extends CrudController
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
         $xlsform->moduleVersions()->sync($request->input('module_versions'));
-        $xlsform->countries()->sync($request->input('countries'));
+//        $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 
         return $xlsform->toJson();
 
     }
 
+    /**
+     * Handles the update requests from Stage 1 and Stage 2.
+     * @param XlsformUpdateRequest $request
+     * @param Xlsform $xlsform
+     * @return string
+     */
     public function update(XlsformUpdateRequest $request, XLsform $xlsform)
     {
         // store and post to RHOMIS app
@@ -105,7 +134,8 @@ class XlsformController extends CrudController
 
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-        $xlsform->countries()->sync($request->input('countries'));
+//        $xlsform->countries()->sync($request->input('countries'));
+
         $xlsform->languages()->sync($request->input('languages'));
 
         // include ordering of module versions
@@ -117,6 +147,21 @@ class XlsformController extends CrudController
 
         return $xlsform->toJson();
     }
+
+    /**
+     * Handle updates to Stage 3 edit
+     * @param XlsformCustomiseUpdateRequest $request
+     * @param Xlsform $xlsform
+     */
+    public function updateCustomisations(Request $request, Xlsform $xlsform)
+    {
+        // store and post to RHOMIS app
+        // $attributes = $request->validated();
+        dd($request->all());
+
+    }
+
+
 
     public function setupView($xlsform = null)
     {
@@ -158,5 +203,7 @@ class XlsformController extends CrudController
         $xlsform->delete();
         return response("form successfully deleted",200);
     }
+
+
 
 }

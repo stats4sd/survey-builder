@@ -5,9 +5,11 @@ namespace App\Imports;
 use App\Models\Language;
 use App\Models\Module;
 use App\Models\ModuleVersion;
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\SurveyLabel;
 use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -44,6 +46,19 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 $moduleLocalisable = true;
             }
 
+
+            $choiceLists = ChoiceList::all();
+
+            $choiceList = '';
+            // for select questions, extract the choice list to allow linking
+            if(Str::contains($row['type'], ['select_one', 'select_multiple'])) {
+                $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
+
+                if($choiceLists->pluck('list_name')->doesntContain($choiceList))) {
+                    ChoiceList::create(['list_name' => $choiceList]);
+                }
+            }
+
             $surveyRow = SurveyRow::create([
                 'module_version_id' => $this->moduleVersion->id,
                 'type' => $row['type'],
@@ -59,7 +74,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'choice_filter' => $row['choice_filter'],
                 'is_localisable' => $localisable,
                 'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
-
+                'choice_list' => $choiceList,
             ]);
 
             foreach ($row as $header => $value) {

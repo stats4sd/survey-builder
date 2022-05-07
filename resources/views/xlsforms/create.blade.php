@@ -2,25 +2,22 @@
 
 @section('content')
 
-    <div class="card border border-dark">
-        <div class="card-header bg-dark text-light"><h3>RHoMIS XLS Form Survey Builder</h3></div>
-        <div class="card-body">
-            This tool will help you build your own, customised RHoMIS ODK Survey form. The pages below will guide you
-            through each stage in the process. Please read each instruction carefully.<br/><br/>
-            The Process is divided into 4 stages:
-            <ol>
-                <li>First, you give some basic information about your survey project.</li>
-                <li>Second, you get to build the survey using the complete set of RHoMIS Core and Optional Modules.</li>
-                <li>Next, you can customise the questions and available responses to your specific context.</li>
-                <li>Finally, you can review the complete form and decide on the next steps.</li>
-            </ol>
 
-            Your progress is saved after each stage, and you may go back to change any entry until you mark the form as
-            'finalised'. At that point, the form is locked and ready for live data collection.<br/>
-
-        </div>
-    </div>
+    <h3>RHoMIS XLS Form Survey Builder</h3>
     <div id="app">
+        <b-card class="border border-dark" no-body>
+            <b-card-header role="tab" class="bg-dark border-0 p-0">
+                <b-button
+
+                    variant="link"
+                    block
+                    v-b-toggle.instructions-collapse
+                    class="text-white text-left p-4"
+                >
+                    <h3 class="mb-0">Survey Builder</h3>
+                </b-button>
+            </b-card-header>
+        </b-card>
         <b-card no-body class="border-dark border-top-0 rounded-top rounded-lg">
             <b-tabs card nav-class="bg-dark rounded-top rounded-sm flex-nowrap" nav-wrapper-class="px-2" lazy>
                 <b-tab title="Stage 1 - Create" active>
