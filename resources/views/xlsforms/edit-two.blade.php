@@ -24,7 +24,7 @@
             <template #header>
                 <b-nav card-header tabs class="bg-dark rounded-top rounded-sm flex-nowrap">
                     <b-nav-item href="{{ url('xlsform/'.$xlsform->name.'/edit-one') }}">Stage 1 - Create</b-nav-item>
-                    <b-nav-item active">Stage 2 - Build</b-nav-item>
+                    <b-nav-item active>Stage 2 - Build</b-nav-item>
                     <b-nav-item href="{{ url('xlsform/'.$xlsform->name.'/edit-three') }}">Stage 3 - Customise</b-nav-item>
                     <b-nav-item href="{{ url('xlsform/'.$xlsform->name.'/edit-four') }}">Stage 4 - Review</b-nav-item>
                 </b-nav>

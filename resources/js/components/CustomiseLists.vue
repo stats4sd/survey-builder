@@ -96,7 +96,15 @@ export default {
                 if (list['is_localisable'] === 0 && list['is_units'] === 0) {
                     return null;
                 }
-            });
+
+                list.availableChoicesRows = list.choicesRows;
+
+                // filter to show only non-selected entries
+                if(this.selectedChoicesRows.hasOwnProperty(list.list_name)) {
+                    list.availableChoicesRows = list.choicesRows.filter(item => !this.selectedChoicesRows[list.list_name].includes(item));
+                }
+
+            }).filter(item => item !== null);
         },
         xlsChoicesOther() {
             return this.xlsChoicesLists.map(list => {
@@ -107,7 +115,7 @@ export default {
 
                 list.availableChoicesRows = list.choicesRows;
 
-                // filter each list to only show 'available' entries (compare with the selectedChoiceRows)
+                // filter to show only non-selected entries
                 if (this.selectedChoicesRows.hasOwnProperty(list.list_name)) {
                     list.availableChoicesRows = list.choicesRows.filter(item => !this.selectedChoicesRows[list.list_name].includes(item));
                 }

@@ -104,14 +104,14 @@
                                 </li>
                                 <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
                                     <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
-                                    <button
-                                        @click="$emit('jump-to-3')"
+                                    <a
+                                        :href="`/xlsform/${xlsform.name}/edit-three`"
                                         class="btn btn-primary"
                                         :class="processing ? 'disabled' : ''"
                                     >
                                         <i class="la la-spinner la-spin" v-if="processing"></i>
                                         Continue to Customise
-                                    </button>
+                                    </a>
                                 </li>
 
                             </ul>
