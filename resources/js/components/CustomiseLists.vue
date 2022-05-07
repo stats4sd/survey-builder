@@ -92,7 +92,7 @@ export default {
     },
     computed: {
         xlsChoicesUnits() {
-            return this.xlsChoiceLists.map(list => {
+            return this.xlsChoicesLists.map(list => {
                 if (list['is_localisable'] === 0 && list['is_units'] === 0) {
                     return null;
                 }
@@ -109,7 +109,7 @@ export default {
         xlsChoicesOther() {
             return this.xlsChoicesLists.map(list => {
 
-                if (list['is_localisable'] === 0 || list['is_location']) {
+                if (list['is_localisable'] === 0 || list['is_locations'] || list['is_units']) {
                     return null;
                 }
 
