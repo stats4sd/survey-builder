@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CustomChoicesRow extends Model
+class SelectedChoicesRow extends Model
 {
 
     protected $guarded = [];
-    protected $table = "xlsform_custom_choice_rows";
+    protected $table = "xlsform_selected_choice_rows";
 
-    public function customChoiceLabels(): hasMany
+    public function selectedChoicesLabels(): hasMany
     {
-        return $this->hasMany(CustomChoicesLabel::class);
+        return $this->hasMany(SelectedChoicesLabel::class, 'xlsform_selected_choice_row_id');
     }
 
     public function xlsform(): BelongsTo

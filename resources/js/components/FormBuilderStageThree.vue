@@ -18,6 +18,8 @@
 
                     <customise-lists
                         :languages="xlsform.languages"
+                        :selected-choices-rows-original="xlsform.selected_choices_rows"
+                        @form-choice-rows="updateSelectedChoicesRows"
                     ></customise-lists>
 
                     <b-button variant="primary" @click.prevent="submit">Save Form</b-button>
@@ -64,7 +66,9 @@ export default {
                 village_label: {"en": "village"},
                 location_file: null,
                 hasHouseholdList: null,
+                selected_choices_rows: [],
             },
+            updatedSelectedChoicesRows: {},
         };
     },
     mounted() {
@@ -102,7 +106,8 @@ export default {
             formData.append("region_label", JSON.stringify(this.xlsform.region_label));
             formData.append("subregion_label", JSON.stringify(this.xlsform.subregion_label));
             formData.append("village_label", JSON.stringify(this.xlsform.village_label));
-            formData.append("hasHouseholdList", -this.xlsform.hasHouseholdList);
+            formData.append("hasHouseholdList", this.xlsform.hasHouseholdList);
+            formData.append("selected_choices_rows", JSON.stringify(this.updatedSelectedChoicesRows));
             formData.append("_method", 'PUT');
 
             axios.post('/xlsform/' + this.xlsform.name +'/customise', formData, {
@@ -219,6 +224,11 @@ export default {
                     }
                 })
         },
+        updateSelectedChoicesRows(val) {
+            console.log(val)
+
+            this.updatedSelectedChoicesRows = val;
+        }
     }
 }
 </script>

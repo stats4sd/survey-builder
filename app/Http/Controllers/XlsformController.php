@@ -10,6 +10,8 @@ use App\Jobs\DeployXlsForm;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Project;
+use App\Models\Xlsforms\SelectedChoicesLabel;
+use App\Models\Xlsforms\SelectedChoicesRow;
 use Carbon\Carbon;
 use App\Models\Theme;
 use App\Models\Module;
@@ -79,9 +81,9 @@ class XlsformController extends CrudController
 
 
         // If the user has entered a 'new' project name, create the project:
-        if(isset($attributes['new_project_name']) && $attributes['new_project_name']) {
+        if (isset($attributes['new_project_name']) && $attributes['new_project_name']) {
 
-            if(!auth()->user()) {
+            if (!auth()->user()) {
                 abort(403);
             }
 
@@ -95,7 +97,6 @@ class XlsformController extends CrudController
         } else {
             unset($attributes['new_project_name']);
         }
-
 
 
         $xlsform = Xlsform::create($attributes);
@@ -122,14 +123,13 @@ class XlsformController extends CrudController
         $attributes = $request->validated();
 
         $moduleVersions = [];
-        foreach($request->input('module_versions') as $key => $value) {
+        foreach ($request->input('module_versions') as $key => $value) {
             $moduleVersions[$value] = [
                 'order' => $key,
-                ];
+            ];
         }
 
         $xlsform->update($attributes);
-
 
 
         // handle many-many relationships
@@ -157,10 +157,40 @@ class XlsformController extends CrudController
     {
         // store and post to RHOMIS app
         // $attributes = $request->validated();
-        dd($request->all());
+
+
+        // handle selected choices rows
+        // object in format [ 'list_name' => [ choicesRows ]  ]
+        $selectedChoicesRows = json_decode($request->input('selected_choices_rows'), true);
+
+        // purge existing form selected choices
+        $xlsform->selectedChoicesRows()->delete();
+
+        foreach ($selectedChoicesRows as $listName => $choicesRows) {
+
+            foreach ($choicesRows as $choicesRow) {
+                $selectedChoice = SelectedChoicesRow::create([
+                    'xlsform_name' => $xlsform->name,
+                    'xls_choices_rows_id' => $choicesRow['id'],
+                    'list_name' => $choicesRow['list_name'],
+                    'name' => $choicesRow['name'],
+                ]);
+
+                foreach ($choicesRow['choices_labels'] as $choicesLabel) {
+                    SelectedChoicesLabel::create([
+                        'xlsform_selected_choice_row_id' => $selectedChoice->id,
+                        'language_id' => $choicesLabel['language_id'],
+                        'label' => $choicesLabel['label'],
+                    ]);
+                }
+
+            }
+        }
+
+        return $xlsform->load('selectedChoicesRows');
+
 
     }
-
 
 
     public function setupView($xlsform = null)
@@ -176,7 +206,16 @@ class XlsformController extends CrudController
 
         if ($xlsform) {
             $xlsform->modules = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
-            $xlsform->load('themes', 'countries', 'languages');
+            $xlsform->load('themes', 'countries', 'languages', 'selectedChoicesRows.selectedChoicesLabels');
+
+
+            // organise selected choices rows as expected:
+            $xlsform->selectedChoicesRows = $xlsform->selectedChoicesRows->map(function ($choicesRow) {
+                $choicesRow->choices_labels_by_lang = $choicesRow->selectedChoicesLabels ? $choicesRow->selectedChoicesLabels->groupBy('language_id') : null;
+                $choicesRow->choices_labels = $choicesRow->selectedChoicesLabels;
+                return $choicesRow;
+            });
+
         }
 
         return [
@@ -192,18 +231,17 @@ class XlsformController extends CrudController
     public function destroy(Xlsform $xlsform)
     {
         // check user is able to delete form
-        if(auth()->user()->projects->pluck('name')->doesntContain($xlsform->project_name)) {
+        if (auth()->user()->projects->pluck('name')->doesntContain($xlsform->project_name)) {
             abort(403, "You are not a member of this form's project, so you do not have permissions to delete the form");
         }
 
-        if($xlsform->draft || $xlsform->complete) {
+        if ($xlsform->draft || $xlsform->complete) {
             abort(400, "This form has been deployed to the main RHoMIS app, and so cannot be deleted from here. To manage your project forms, use the links in the header menu");
         }
 
         $xlsform->delete();
-        return response("form successfully deleted",200);
+        return response("form successfully deleted", 200);
     }
-
 
 
 }

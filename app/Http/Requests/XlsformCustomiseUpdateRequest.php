@@ -29,7 +29,6 @@ class XlsformCustomiseUpdateRequest extends FormRequest
             'region_label' => ['array'],
             'subregion_label' => ['array',],
             'village_label' => ['array',],
-            'location_file' => ['file']
         ];
     }
 

@@ -35,6 +35,6 @@ class ChoicesRow extends Model
 
     public function customChoicesRow(): HasMany
     {
-        return $this->hasMany(CustomChoicesRow::class);
+        return $this->hasMany(SelectedChoicesRow::class);
     }
 }

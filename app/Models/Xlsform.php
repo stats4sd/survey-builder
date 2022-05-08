@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasUploadFields;
 use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
+use App\Models\Xlsforms\SelectedChoicesRow;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -83,5 +84,10 @@ class Xlsform extends Model
     public function countries()
     {
         return $this->belongsToMany(Country::class, 'country_xlsform');
+    }
+
+    public function selectedChoicesRows()
+    {
+        return $this->hasMany(SelectedChoicesRow::class);
     }
 }

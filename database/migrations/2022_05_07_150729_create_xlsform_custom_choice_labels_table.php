@@ -13,9 +13,10 @@ class CreateXlsformCustomChoiceLabelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('xlsform_custom_choice_labels', function (Blueprint $table) {
+        Schema::create('xlsform_selected_choice_labels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('xlsform_custom_choice_rows_table');
+            $table->foreignId('xlsform_selected_choice_row_id');
+            $table->foreign('xlsform_selected_choice_row_id', 'selected_choice_to_label')->on('xlsform_selected_choice_rows')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('language_id');
             $table->string('label');
             $table->timestamps();

@@ -13,9 +13,9 @@ class CreateXlsformCustomChoiceRowsTable extends Migration
      */
     public function up()
     {
-        Schema::create('xlsform_custom_choice_rows', function (Blueprint $table) {
+        Schema::create('xlsform_selected_choice_rows', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('xlsform_id');
+            $table->string('xlsform_name');
             $table->foreignId('xls_choices_rows_id')->nullable(); // if this is pulled from the 'default' list, this is the link
             $table->string('list_name');
             $table->string('name');
