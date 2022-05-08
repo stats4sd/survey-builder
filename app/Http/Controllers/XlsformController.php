@@ -169,9 +169,10 @@ class XlsformController extends CrudController
         foreach ($selectedChoicesRows as $listName => $choicesRows) {
 
             foreach ($choicesRows as $choicesRow) {
+
                 $selectedChoice = SelectedChoicesRow::create([
                     'xlsform_name' => $xlsform->name,
-                    'xls_choices_rows_id' => $choicesRow['id'],
+                    'xls_choices_rows_id' => $choicesRow['xls_choices_rows_id'] ?? $choicesRow['id'],
                     'list_name' => $choicesRow['list_name'],
                     'name' => $choicesRow['name'],
                 ]);
@@ -213,6 +214,7 @@ class XlsformController extends CrudController
             $xlsform->selectedChoicesRows = $xlsform->selectedChoicesRows->map(function ($choicesRow) {
                 $choicesRow->choices_labels_by_lang = $choicesRow->selectedChoicesLabels ? $choicesRow->selectedChoicesLabels->groupBy('language_id') : null;
                 $choicesRow->choices_labels = $choicesRow->selectedChoicesLabels;
+                $choicesRow->preselected = true;
                 return $choicesRow;
             });
 

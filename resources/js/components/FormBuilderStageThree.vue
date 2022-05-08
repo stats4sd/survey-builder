@@ -34,6 +34,8 @@
 import CustomiseLocations from "./CustomiseLocations";
 import CustomiseQuestionText from "./CustomiseQuestionText";
 import CustomiseLists from "./CustomiseLists";
+import Noty from "noty";
+
 
 export default {
     name: "FormBuilderStageThree",
@@ -119,10 +121,11 @@ export default {
                 console.log('save ok', res.data)
                 new Noty({
                     'type': 'info',
-                    'text': 'Your survey has been saved. The XLS file is now being rebuilt. Once complete it will be deployed to the RHoMIS ODK System.'
+                    'text': 'Your survey has been saved. To rebuild and deploy your form, please click the "build" button below',
+                    'timeout': false,
                 }).show();
 
-                this.building = true;
+                //this.building = true;
             })
                 .catch(err => {
                     // check for validation error

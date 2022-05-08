@@ -16,56 +16,115 @@
             <div v-if="isLoading" class="d-flex justify-content-middle align-items-center"><i
                 class="la la-spinner la-spin"> </i> Loading
             </div>
+            <div v-else>
 
-            <b-row v-for="list in xlsChoicesOther" :key="list.list_name">
-                <b-col cols="12">
-                    <hr/>
-                    <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
-                            :header-border-variant="list.complete ? 'success' : 'info'"
-                            :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
-                        <template #header>
-                            <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
-                                <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
-                            </b-button>
-                        </template>
-                        <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
-                            <b-card-body>
-                                <div class="w-100 d-flex justify-content-between mb-2">
-                                    <b-button variant="info" @click="selectAll(list.list_name)">Select All</b-button>
-                                    <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
-                                    </b-button>
-                                </div>
-                                <h5>Questions that use this list</h5>
-                                <ul>
-                                    <li v-for="question in list.survey_rows" :key="question.name">{{ question.name }}:
-                                        {{ question.english_label }}
-                                    </li>
-                                </ul>
-                                <drag-and-drop-select-table
-                                    :columns="listTableColumns"
-                                    :available="list.availableChoicesRows"
-                                    :selected.sync="selectedChoicesRows[list.list_name]"
-                                    items-name="option"
-                                >
-                                    <template #listItem="props">
-                                        <td>{{ props.element.name }}</td>
-                                        <td v-for="lang in languages">{{
-                                                props.element['choices_labels_by_lang'][lang.id][0]['label']
-                                            }}
-                                        </td>
-                                    </template>
-                                </drag-and-drop-select-table>
-                                <div class="d-flex justify-content-end">
-                                    <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
-                                        {{ list.complete ? 'Incomplete' : 'Complete' }}
-                                    </b-button>
-                                </div>
+                <h3>Customise Unit Choice Lists</h3>
+                <b-row v-for="list in xlsChoicesUnits" :key="list.list_name">
+                    <b-col cols="12">
+                        <hr/>
+                        <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
+                                :header-border-variant="list.complete ? 'success' : 'info'"
+                                :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
+                            <template #header>
+                                <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
+                                    <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
+                                </b-button>
+                            </template>
+                            <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
+                                <b-card-body>
+                                    <div class="w-100 d-flex justify-content-between mb-2">
+                                        <b-button variant="info" @click="selectAll(list.list_name)">Select All
+                                        </b-button>
+                                        <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
+                                        </b-button>
+                                    </div>
+                                    <h5>Questions that use this list:</h5>
+                                    <ul>
+                                        <li v-for="question in list.survey_rows" :key="question.name">
+                                            <b>{{ question.name }}</b>:
+                                            {{ question.english_label }}
+                                        </li>
+                                    </ul>
+                                    <drag-and-drop-select-table
+                                        :columns="listTableColumns"
+                                        :available="list.availableChoicesRows"
+                                        :selected.sync="selectedChoicesRows[list.list_name]"
+                                        items-name="option"
+                                    >
+                                        <template #listItem="props">
+                                            <td>{{ props.element.name }}</td>
+                                            <td v-for="lang in languages">{{
+                                                    props.element['choices_labels_by_lang'][lang.id][0]['label']
+                                                }}
+                                            </td>
+                                        </template>
+                                    </drag-and-drop-select-table>
+                                    <div class="d-flex justify-content-end">
+                                        <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
+                                            {{ list.complete ? 'Incomplete' : 'Complete' }}
+                                        </b-button>
+                                    </div>
 
-                            </b-card-body>
-                        </b-collapse>
-                    </b-card>
-                </b-col>
-            </b-row>
+                                </b-card-body>
+                            </b-collapse>
+                        </b-card>
+                    </b-col>
+                </b-row>
+
+                <h3>Customise Other Choice Lists</h3>
+                <b-row v-for="list in xlsChoicesOther" :key="list.list_name">
+                    <b-col cols="12">
+                        <hr/>
+                        <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
+                                :header-border-variant="list.complete ? 'success' : 'info'"
+                                :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
+                            <template #header>
+                                <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
+                                    <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
+                                </b-button>
+                            </template>
+                            <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
+                                <b-card-body>
+                                    <div class="w-100 d-flex justify-content-between mb-2">
+                                        <b-button variant="info" @click="selectAll(list.list_name)">Select All
+                                        </b-button>
+                                        <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
+                                        </b-button>
+                                    </div>
+                                    <h5>Questions that use this list</h5>
+                                    <ul>
+                                        <li v-for="question in list.survey_rows" :key="question.name">{{
+                                                question.name
+                                            }}:
+                                            {{ question.english_label }}
+                                        </li>
+                                    </ul>
+                                    <drag-and-drop-select-table
+                                        :columns="listTableColumns"
+                                        :available="list.availableChoicesRows"
+                                        :selected.sync="selectedChoicesRows[list.list_name]"
+                                        items-name="option"
+                                    >
+                                        <template #listItem="props">
+                                            <td>{{ props.element.name }}</td>
+                                            <td v-for="lang in languages">{{
+                                                    props.element['choices_labels_by_lang'][lang.id][0]['label']
+                                                }}
+                                            </td>
+                                        </template>
+                                    </drag-and-drop-select-table>
+                                    <div class="d-flex justify-content-end">
+                                        <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
+                                            {{ list.complete ? 'Incomplete' : 'Complete' }}
+                                        </b-button>
+                                    </div>
+
+                                </b-card-body>
+                            </b-collapse>
+                        </b-card>
+                    </b-col>
+                </b-row>
+            </div>
         </b-card>
 
 
@@ -129,7 +188,7 @@ export default {
     computed: {
         xlsChoicesUnits() {
             return this.xlsChoicesLists.map(list => {
-                if (list['is_localisable'] === 0 && list['is_units'] === 0) {
+                if (list['is_localisable'] === 0 || list['is_units'] === 0) {
                     return null;
                 }
 
@@ -137,9 +196,20 @@ export default {
 
                 // filter to show only non-selected entries
                 if (this.selectedChoicesRows.hasOwnProperty(list.list_name)) {
-                    list.availableChoicesRows = list.choicesRows.filter(item => !this.selectedChoicesRows[list.list_name].includes(item));
+
+                    list.availableChoicesRows = list.choicesRows.filter(item => {
+
+                        // first check for items selected in this session
+                        if (this.selectedChoicesRows[list.list_name].includes(item)) return false;
+
+                        // then check for items preselected
+                        if (this.selectedChoicesRows[list.list_name].find(selected => selected.xls_choices_rows_id === item.id)) return false;
+
+                        return true
+                    })
                 }
 
+                return list;
             }).filter(item => item !== null);
         },
         xlsChoicesOther() {
@@ -153,14 +223,14 @@ export default {
 
                 // filter to show only non-selected entries
                 if (this.selectedChoicesRows.hasOwnProperty(list.list_name)) {
-                    //
+
                     list.availableChoicesRows = list.choicesRows.filter(item => {
 
                         // first check for items selected in this session
-                        if(this.selectedChoicesRows[list.list_name].includes(item)) return false;
-                        // then check for items preselected
+                        if (this.selectedChoicesRows[list.list_name].includes(item)) return false;
 
-                        if(this.selectedChoicesRows[list.list_name].find(selected => selected.xls_choices_rows_id === item.id)) return false;
+                        // then check for items preselected
+                        if (this.selectedChoicesRows[list.list_name].find(selected => selected.xls_choices_rows_id === item.id)) return false;
 
                         return true
                     })
