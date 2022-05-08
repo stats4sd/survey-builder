@@ -69,7 +69,7 @@
                         class="pb-5"
                     >
                         <tr
-                            :variant="element.required ? 'light' : 'primary'"
+                            :class="element.is_custom ? 'bg-info' : ''"
                             v-for="element in selected"
                             :key="element.id"
                         >
@@ -88,6 +88,7 @@
                         </tr>
                     </draggable>
                 </table>
+                <slot name="addItemButton"></slot>
             </b-card>
         </b-col>
     </b-row>

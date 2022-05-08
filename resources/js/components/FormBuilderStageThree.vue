@@ -11,7 +11,9 @@
                         :subregion-label.sync="xlsform.subregion_label"
                         :village-label.sync="xlsform.village_label"
                         :location-file.sync="xlsform.location_file"
-                        :has-household-list.sync="xlsform.hasHouseholdList"
+                        :location-file-url="xlsform.location_file_url"
+                        :location-file-name="xlsform.location_file_name"
+                        :has-household-list.sync="xlsform.has_household_list"
                     />
                         <!-- Not yet in use -->
                         <!-- <customise-questions></customise-questions>-->
@@ -22,7 +24,8 @@
                         @form-choice-rows="updateSelectedChoicesRows"
                     ></customise-lists>
 
-                    <b-button variant="primary" @click.prevent="submit">Save Form</b-button>
+                    <b-button variant="primary" @click.prevent="submit">Save Choice Lists</b-button>
+                    <b-button variant="success" @click.prevent="build">Build Form</b-button>
 
                 </div>
             </div>
@@ -67,8 +70,10 @@ export default {
                 subregion_label: {"en": "subregion"},
                 village_label: {"en": "village"},
                 location_file: null,
-                hasHouseholdList: null,
+                has_household_list: null,
                 selected_choices_rows: [],
+                location_file_url: "",
+                location_file_name: "",
             },
             updatedSelectedChoicesRows: {},
         };
@@ -85,10 +90,15 @@ export default {
 
         this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
 
-        this.xlsform.region_label = this.xlsform.region_label ?? { "en": "region" }
-        this.xlsform.subregion_label = this.xlsform.subregion_label ?? { "en": "subregion"}
-        this.xlsform.village_label = this.xlsform.village_label ?? { "en": "village"}
+        this.xlsform.region_label = this.xlsform.region_label ? JSON.parse(this.xlsform.region_label) : { "en": "region" }
+        this.xlsform.subregion_label = this.xlsform.subregion_label ? JSON.parse(this.xlsform.subregion_label) : { "en": "subregion"}
+        this.xlsform.village_label = this.xlsform.village_label ? JSON.parse(this.xlsform.village_label) : { "en": "village"}
 
+        // if file exists, put string of file path into location_file_original;
+        if(this.xlsform.location_file instanceof String) {
+            this.xlsform.location_file_original = this.xlsform.location_file;
+            this.xlsform.location_file = ""
+        }
 
         this.setupListeners();
 
@@ -104,11 +114,14 @@ export default {
 
             //setup FormData object to enable posting the file along with data
             var formData = new FormData();
-            formData.append("location_file", this.xlsform.location_file);
+            if(this.xlsform.location_file instanceof File) {
+                formData.append("location_file", this.xlsform.location_file, 'locations.csv');
+            }
+
             formData.append("region_label", JSON.stringify(this.xlsform.region_label));
             formData.append("subregion_label", JSON.stringify(this.xlsform.subregion_label));
             formData.append("village_label", JSON.stringify(this.xlsform.village_label));
-            formData.append("hasHouseholdList", this.xlsform.hasHouseholdList);
+            formData.append("has_household_list", this.xlsform.has_household_list);
             formData.append("selected_choices_rows", JSON.stringify(this.updatedSelectedChoicesRows));
             formData.append("_method", 'PUT');
 

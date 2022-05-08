@@ -150,14 +150,35 @@ class XlsformController extends CrudController
 
     /**
      * Handle updates to Stage 3 edit
-     * @param XlsformCustomiseUpdateRequest $request
+     * @param Request $request
      * @param Xlsform $xlsform
      */
     public function updateCustomisations(Request $request, Xlsform $xlsform)
     {
+
         // store and post to RHOMIS app
         // $attributes = $request->validated();
+        $validated = $request->validate([
+            'region_label' => 'nullable|json',
+            'subregion_label' => 'nullable|json',
+            'village_label' => 'nullable|json',
+            'has_household_list' => 'nullable|boolean',
+        ]);
+//
+//        // quick hack fix for boolean being submitted as a string
+//        if($request->input('has_household_list') === "true") {
+//            $validated['has_household_list'] = 1;
+//        }
+//        if($request->input('has_household_list') === "false") {
+//            $validated['has_household_list'] = 0;
+//        }
 
+        // don't overwrite location_file unless a new file exists
+        if($request->input('location_file')) {
+            $validated['location_file'] = $request->input('location_file');
+        }
+
+        $xlsform->update($validated);
 
         // handle selected choices rows
         // object in format [ 'list_name' => [ choicesRows ]  ]
@@ -172,9 +193,11 @@ class XlsformController extends CrudController
 
                 $selectedChoice = SelectedChoicesRow::create([
                     'xlsform_name' => $xlsform->name,
-                    'xls_choices_rows_id' => $choicesRow['xls_choices_rows_id'] ?? $choicesRow['id'],
+                    'xls_choices_rows_id' => $choicesRow['xls_choices_rows_id'] ?? ($choicesRow['id'] ?? null),
                     'list_name' => $choicesRow['list_name'],
                     'name' => $choicesRow['name'],
+                    // if there is no ref to an existing choices_row, mark it as custom;
+                    'is_custom' => !(isset($choicesRow['xls_choices_rows_id']) || isset($choicesRow['id']))
                 ]);
 
                 foreach ($choicesRow['choices_labels'] as $choicesLabel) {

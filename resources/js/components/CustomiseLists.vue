@@ -58,7 +58,13 @@
                                                 }}
                                             </td>
                                         </template>
+                                        <template #addItemButton>
+                                            <p>Custom items are highlighted in blue. To delete them, drag them to the "available" list - they will disappear.</p>
+                                            <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New Item
+                                            </b-button>
+                                        </template>
                                     </drag-and-drop-select-table>
+
                                     <div class="d-flex justify-content-end">
                                         <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
                                             {{ list.complete ? 'Incomplete' : 'Complete' }}
@@ -112,6 +118,11 @@
                                                 }}
                                             </td>
                                         </template>
+                                        <template #addItemButton>
+                                            <p>Custom items are highlighted in blue. To delete them, drag them to the "available" list - they will disappear.</p>
+                                            <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New Item
+                                            </b-button>
+                                        </template>
                                     </drag-and-drop-select-table>
                                     <div class="d-flex justify-content-end">
                                         <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
@@ -126,6 +137,24 @@
                 </b-row>
             </div>
         </b-card>
+
+        <!-- new entry modal -->
+        <b-modal title="Create new entry" id="newEntryForm" ok-title="Save" @ok="storeNewEntry(currentList)">
+            <b-alert show variant="info">Create New entry for {{ currentList }}</b-alert>
+            <b-form-group
+                label="Enter the name of the entry:"
+                description="The value must start with a letter and include no spaces."
+            >
+                <b-form-input v-model="newEntry.name"></b-form-input>
+            </b-form-group>
+            <b-form-group
+                v-for="lang in languages"
+                :key="lang.id"
+                :label="'Enter the ' + lang.name + ' Label'"
+                description="This is what the enumerators will see in the list">
+                <b-form-input v-model="newEntry.choices_labels_by_lang[lang.id]"></b-form-input>
+            </b-form-group>
+        </b-modal>
 
 
     </div>
@@ -155,6 +184,11 @@ export default {
             selectedChoicesRows: [],
             xlsChoicesLists: [],
             isLoading: false,
+            newEntry: {
+                name: '',
+                choices_labels_by_lang: {},
+            },
+            currentList: '',
         }
     },
     watch: {
@@ -192,7 +226,6 @@ export default {
                     return null;
                 }
 
-                list.availableChoicesRows = list.choicesRows;
 
                 // filter to show only non-selected entries
                 if (this.selectedChoicesRows.hasOwnProperty(list.list_name)) {
@@ -288,7 +321,46 @@ export default {
             });
         },
 
+        createNewEntry(list_name) {
+            this.currentList = list_name;
+            this.$bvModal.show('newEntryForm')
+        },
 
+        storeNewEntry(list_name) {
+
+            let updateList = this.selectedChoicesRows[list_name];
+
+            let newLabels = Object.keys(this.newEntry.choices_labels_by_lang).map(key => {
+                return {
+                    language_id: key,
+                    label: this.newEntry.choices_labels_by_lang[key],
+                }
+            })
+
+            let newLabelsByLang = {}
+
+            Object.keys(this.newEntry.choices_labels_by_lang).forEach(key => {
+                newLabelsByLang[key] = [{
+                    language_id: key,
+                    label: this.newEntry.choices_labels_by_lang[key],
+                }]
+            });
+
+            updateList.push({
+                list_name: list_name,
+                name: this.newEntry.name,
+                choices_labels_by_lang: newLabelsByLang,
+                choices_labels: newLabels,
+                is_custom: true,
+            });
+
+            this.$set(this.selectedChoicesRows, list_name, updateList);
+
+            this.newEntry = {
+                name: '',
+                choices_labels_by_lang: {}
+            }
+        },
     }
 }
 </script>

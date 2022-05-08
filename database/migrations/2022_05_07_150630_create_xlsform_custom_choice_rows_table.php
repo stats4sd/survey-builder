@@ -19,6 +19,7 @@ class CreateXlsformCustomChoiceRowsTable extends Migration
             $table->foreignId('xls_choices_rows_id')->nullable(); // if this is pulled from the 'default' list, this is the link
             $table->string('list_name');
             $table->string('name');
+            $table->boolean('is_custom')->default(0);
             $table->timestamps();
         });
     }

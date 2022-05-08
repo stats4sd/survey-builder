@@ -79,7 +79,7 @@ gs
                 name="household-list-yn"
                 :value="hasHouseholdList"
                 :options="ynList"
-                @change="updateHasHouseholdLIst($event)"
+                @change="updateHasHouseholdList($event)"
             />
         </b-form-group>
 
@@ -101,7 +101,7 @@ gs
             @input="updateLocationFile($event)"
         ></b-form-file>
         <div class="mt-3">Selected file: {{ locationFile ? locationFile.name : '' }}</div>
-
+        <div class="mt-3" v-if="locationFileUrl">Current file: <a :href="locationFileUrl">{{ locationFileName }}</a></div>
     </b-card>
 </template>
 <script>
@@ -126,6 +126,8 @@ export default {
         hasHouseholdList: {
             default: false,
         },
+        locationFileUrl: '',
+        locationFileName: '',
         locationFile: {
             default: null,
         },
@@ -147,7 +149,7 @@ export default {
             this.$emit('update:villageLabel', labels);
         },
 
-        updateHasHouseholdLIst(hasHouseholdList) {
+        updateHasHouseholdList(hasHouseholdList) {
             this.$emit('update:hasHouseholdList', hasHouseholdList);
         },
         updateLocationFile(locationFile) {
@@ -157,8 +159,8 @@ export default {
     data() {
         return {
             ynList: [
-                {text: 'Yes', value: true},
-                {text: 'No', value: false},
+                {text: 'Yes', value: 1},
+                {text: 'No', value: 0},
             ],
         }
     }
