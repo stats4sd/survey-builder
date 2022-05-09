@@ -27,6 +27,7 @@ class AddFormVersionToXlsformsTable extends Migration
     {
         Schema::table('xlsforms', function (Blueprint $table) {
             $table->dropColumn('form_version');
+
         });
     }
 }

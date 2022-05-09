@@ -22,8 +22,8 @@ Vue.use(VueEcho, {
     broadcaster: 'pusher',
     key: process.env.MIX_PUSHER_APP_KEY,
     wsHost: process.env.MIX_PUSHER_HOST,
-    wsPort: process.env.MIX_PUSHER_PROXY_PORT,
-    wssPort: process.env.MIX_PUSHER_PROXY_PORT,
+    wsPort: process.env.MIX_PUSHER_PORT,
+    wssPort: process.env.MIX_PUSHER_PORT,
     disableStats: true,
     encrypted: true,
     forceTLS: false,
@@ -31,5 +31,10 @@ Vue.use(VueEcho, {
 });
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    data() {
+        return {
+            tabIndex: 3
+        }
+    },
 });

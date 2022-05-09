@@ -2,6 +2,43 @@
     <b-row>
         <b-card
             class="col-6 d-flex flex-column"
+            bg-varant="light"
+            border-variant="info"
+        >
+            <h4>Available {{ itemsName }}</h4>
+            <p>
+                <slot name="availableInfo">
+                    Select {{ itemsName }} by dragging them into the select list on the left.
+                </slot>
+            </p>
+            <div style="height:75vh; overflow-y: scroll">
+
+                <draggable
+                    class="list-group flex-grow-1"
+                    :value="available"
+                    :group="itemsName"
+
+                >
+                    <b-list-group-item
+                        :variant="element.required ? 'light' : 'primary'"
+                        v-for="element in available"
+                        :key="element.id"
+                    >
+                        <slot name="listItem" v-bind:element="element">
+                            {{ element.title || (element.label || 'item ID: ' + element.id) }}
+                        </slot>
+                    </b-list-group-item>
+                    <b-list-group-item
+                        v-if="available.length === 0"
+                        style="min-height: 15px" class="bg-white"
+                    >
+                        ~~ Drag items here to remove from list ~~
+                    </b-list-group-item>
+                </draggable>
+            </div>
+        </b-card>
+        <b-card
+            class="col-6 d-flex flex-column"
             bg-variant="light"
             border-variant="success"
         >
@@ -27,36 +64,11 @@
                             {{ element.title || (element.label || 'item ID: ' + element.id) }}
                         </slot>
                     </b-list-group-item>
-                </draggable>
-            </div>
-        </b-card>
-        <b-card
-            class="col-6 d-flex flex-column"
-            bg-varant="light"
-            border-variant="info"
-        >
-            <h4>Available {{ itemsName }}</h4>
-            <p>
-                <slot name="availableInfo">
-                    Select {{ itemsName }} by dragging them into the select list on the left.
-                </slot>
-            </p>
-            <div style="height:75vh; overflow-y: scroll">
-
-                <draggable
-                    class="list-group flex-grow-1"
-                    :value="available"
-                    :group="itemsName"
-
-                >
                     <b-list-group-item
-                        :variant="element.required ? 'light' : 'primary'"
-                        v-for="element in available"
-                        :key="element.id"
+                        v-if="selected.length === 0"
+                        style="min-height: 15px" class="bg-white"
                     >
-                        <slot name="listItem" v-bind:element="element">
-                                {{ element.title || (element.label || 'item ID: ' + element.id) }}
-                        </slot>
+                        ~~ Drag new items here ~~
                     </b-list-group-item>
                 </draggable>
             </div>

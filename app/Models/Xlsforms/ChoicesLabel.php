@@ -10,6 +10,12 @@ class ChoicesLabel extends Model
 {
     protected $table = 'xls_choices_labels';
     protected $guarded = ['id'];
+    protected $appends = ['display_label'];
+
+    public function getDisplayLabelAttribute()
+    {
+        return $this->language_id . ": " . $this->label;
+    }
 
 
     public function ChoicesRow()

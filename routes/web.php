@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\XlsChoicesController;
 use App\Http\Controllers\XlsformController;
+use App\Http\Controllers\XlsSurveyRowController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,10 +45,25 @@ Route::group(
 
         Route::resource('xlsform', XlsformController::class);
 
+        // redirect the core "edi" to the Build component
+        Route::get('xlsform/{xlsform}/edit', function($xlsform) {
+            return redirect('xlsform/'.$xlsform.'/edit-two');
+        });
+
+        Route::get('xlsform/{xlsform}/edit-one', [XlsformController::class,  'editOne']);
+        Route::get('xlsform/{xlsform}/edit-two', [XlsformController::class,  'editTwo']);
+        Route::get('xlsform/{xlsform}/edit-three', [XlsformController::class,  'editThree']);
+        Route::get('xlsform/{xlsform}/edit-four', [XlsformController::class,  'editFour']);
+
+        Route::put('xlsform/{xlsform}/customise', [XlsformController::class, 'updateCustomisations']);
+        Route::post('xlsform/{xlsform}/build', [XlsformController::class, 'buildForm']);
+
         // redirect xlsform crud users to front-end
         Route::get('admin/xlsform/create', function(){
             return redirect('xlsform/create');
         });
+
+        Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
     }
 );
 

@@ -6,6 +6,7 @@ use App\Models\CoreVersion;
 use App\Models\Module;
 use App\Models\Language;
 use App\Models\ModuleVersion;
+use App\Models\Xlsforms\ChoiceList;
 use Illuminate\Bus\Queueable;
 use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Support\Collection;
@@ -14,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Str;
 
 /** Accepts a collection of rows imported from an XLSform that have the SAME module_for_import value.
  * Will import the entire collection as new SurveyRow entries for the matching module
@@ -61,6 +63,8 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
         // start by assuming the module version is not localisable
         $moduleVersionLocalisable = false;
 
+        $choiceLists = ChoiceList::all();
+
         foreach ($this->rows as $row) {
 
             //ignore empty this->rows
@@ -68,10 +72,24 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 continue;
             }
 
-            $localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
-            if($localisable) {
+            $is_localisable = $row['localisable'] === "TRUE" ? true : ($row['localisable'] ?? false);
+            if($is_localisable) {
                 $moduleVersionLocalisable = true;
             }
+
+
+            $choiceList = null;
+            // for select questions, extract the choice list to allow linking
+            if(Str::contains($row['type'], ['select_one', 'select_multiple'])) {
+
+                    $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
+                // check choice list exists in database:
+                if($choiceLists->pluck('list_name')->doesntContain($choiceList)) {
+                    ChoiceList::updateOrCreate(['list_name' => $choiceList]);
+                }
+
+            }
+
             $surveyRow = SurveyRow::create([
                 'module_version_id' => $moduleVersion->id,
                 'type' => $row['type'],
@@ -85,8 +103,9 @@ class ImportCoreRowsToSurveysTable implements ShouldQueue
                 'read_only' => $row['read_only'],
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
-                'localisable' => $localisable,
+                'is_localisable' => $is_localisable,
                 'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
+                'choice_list' => $choiceList,
             ]);
 
             foreach ($row as $header => $value) {

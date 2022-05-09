@@ -42,4 +42,6 @@ Route::group([
     Route::crud('core-version', 'CoreVersionCrudController');
 
     Route::get('core-version/{coreversion}/publish', 'CoreVersionCrudController@publish')->name('coreversion.publish');
+    Route::crud('choice-list', 'ChoiceListCrudController');
+    Route::crud('choices-row', 'ChoicesRowCrudController');
 }); // this should be the absolute last line of this file

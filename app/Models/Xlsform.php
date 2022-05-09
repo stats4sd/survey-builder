@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasUploadFields;
 use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
+use App\Models\Xlsforms\SelectedChoicesRow;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -21,11 +22,19 @@ class Xlsform extends Model
     protected $keyType = 'string';
     protected $appends = [
         'download_url',
+        'location_file_url',
+        'location_file_name',
+    ];
+
+    protected $casts = [
+        'region_label' => 'array',
+        'subregion_label' => 'array',
+        'village_label' => 'array',
     ];
 
     public function getDownloadUrlAttribute()
     {
-        if($this->xlsfile) {
+        if ($this->xlsfile) {
             return url('download/' . $this->xlsfile);
         }
         return null;
@@ -33,7 +42,7 @@ class Xlsform extends Model
 
     public function getRhomisAppUrl()
     {
-        if($this->xlsfile) {
+        if ($this->xlsfile) {
             return config('auth.rhomis_url');
         }
     }
@@ -41,12 +50,21 @@ class Xlsform extends Model
     public function setXlsfileAttribute($value)
     {
         // if a file is not included, the file is being built on the server.
-        if(request()->hasFile('xlsfile')) {
+        if (request()->hasFile('xlsfile')) {
             $this->uploadFileWithNames($value, 'xlsfile', 'local', 'forms');
-        }
-        else {
+        } else {
             $this->attributes['xlsfile'] = $value;
         }
+    }
+
+    public function getLocationFileUrlAttribute()
+    {
+        return $this->location_file ? Storage::url($this->location_file) : '';
+    }
+
+    public function getLocationFileNameAttribute()
+    {
+        return $this->location_file ?? '';
     }
 
     /*
@@ -85,13 +103,19 @@ class Xlsform extends Model
         return $this->belongsToMany(Country::class, 'country_xlsform');
     }
 
-    public function compiledSurveyRows()
+    public function selectedChoicesRows()
     {
-        return $this->hasMany(CompiledSurveyRow::class);
+        return $this->hasMany(SelectedChoicesRow::class);
     }
 
-    public function compiledChoicesRows()
+    public function setLocationFileAttribute($value)
     {
-        return $this->hasMany(CompiledChoicesRow::class);
+
+        $attribute_name = "location_file";
+        $disk = "public";
+        $destination_path = $this->name;
+
+        $this->uploadFileWithNames($value, $attribute_name, $disk, $destination_path);
+
     }
 }

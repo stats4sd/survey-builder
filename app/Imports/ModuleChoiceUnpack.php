@@ -35,7 +35,7 @@ class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'module_version_id' => $this->moduleVersion->id,
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
-                'localisable' => $row['localisable'] ?? 0,
+                'is_localisable' => $row['is_localisable'] ?? 0,
                 'list_type' => $row['list_type'] ?? null,
             ]);
 
