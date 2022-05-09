@@ -75,6 +75,8 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
             $newRow[] = $choicesRow->$labelHeader;
         }
 
+        return $newRow;
+
     }
 
     public function headings(): array
@@ -92,8 +94,10 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         ];
 
         foreach ($labelHeaders as $labelHeader) {
-            $newRow[] = $labelHeader;
+            $headers[] = $labelHeader;
         }
+
+        return $headers;
     }
 
     public function title(): string
