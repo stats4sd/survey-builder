@@ -33,6 +33,12 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
         //
         $moduleLocalisable = false;
 
+        $this->moduleVersion->update(
+            [
+                'question_count' => $rows->count(),
+            ]
+        );
+
         foreach ($rows as $row) {
 
             //ignore empty rows
@@ -54,7 +60,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
             if(Str::contains($row['type'], ['select_one', 'select_multiple'])) {
                 $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
 
-                if($choiceLists->pluck('list_name')->doesntContain($choiceList))) {
+                if($choiceLists->pluck('list_name')->doesntContain($choiceList)) {
                     ChoiceList::create(['list_name' => $choiceList]);
                 }
             }
@@ -74,7 +80,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'choice_filter' => $row['choice_filter'],
                 'is_localisable' => $localisable,
                 'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR),
-                'choice_list' => $choiceList,
+                'choice_list' => ($choiceList !== '') ? $choiceList : null,
             ]);
 
             foreach ($row as $header => $value) {

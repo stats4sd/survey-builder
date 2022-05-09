@@ -18,18 +18,26 @@ class ModuleFileImport implements ToCollection
         $this->moduleVersion = $moduleVersion;
     }
 
-    /**
-    * @param Collection $collection
-    */
     public function collection(Collection $rows)
     {
-        if(!isset($rows['module_for_import']) || !$rows['module_for_import']) {
-            return;
-        }
+        dump($rows);
+        $this->moduleVersion->updateQuietly([
+            'question_count' => $rows->count(),
+        ]);
+        ddd($rows->count());
+    }
 
-        $this->moduleVersion->question_count = $rows->count();
-        $this->moduleVersion->save();
+    public function rules(): array
+    {
+        return [
+            'module_for_import' => ['exists:modules,slug'],
+        ];
+    }
 
-        return;
+    public function customValidationMessages()
+    {
+        return [
+            'module_for_import.exists' => 'The module_for_import cannot be found in the database.',
+        ];
     }
 }

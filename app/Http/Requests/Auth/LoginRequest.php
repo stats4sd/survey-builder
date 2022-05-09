@@ -133,13 +133,14 @@ class LoginRequest extends FormRequest
         // for now, simply delete them! (May do something more clever later)
         User::where('id', '!=', $decoded->_id)->where('email', $decoded->email)->delete();
 
+
         //If user is not in system, store:
         $user = User::updateOrCreate(
             ['id' => $decoded->_id],
             [
                 'email' => $decoded->email,
                 'jwt_token' => $token,
-                'is_admin' => $userMeta['roles']['administrator'] ?? 0,
+                'is_admin' => $userMeta['user']['roles']['administrator'] ?? 0,
             ],
         );
 

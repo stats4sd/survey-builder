@@ -28,3 +28,7 @@ TODO: update XLS form module(s) to use locations csv instead of choice_filters
 
 TODO: modify household question to be either select or string;
 TODO: add customise question text section;
+
+TODO: update optional modules with correct language column headers
+TODO: add rules to modules for ordering
+TODO: for non-finalised forms, link to modules instead of module versions, so the user always has access to the 'current' versions of each module? 

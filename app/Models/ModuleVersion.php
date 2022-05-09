@@ -39,21 +39,20 @@ class ModuleVersion extends Model
 
         });
 
-        // run importer to add question count to module Version
-        static::created(function($moduleVersion) {
-            if(!$moduleVersion->core_version_id) {
-
-                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
-            }
-        });
-
-        static::updated(function($moduleVersion) {
-            // if file is dirty
-
-            if(!$moduleVersion->core_version_id && $moduleVersion->wasChanged('file')) {
-                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
-            }
-        });
+//        // run importer to add question count to module Version
+//        static::created(function($moduleVersion) {
+//            if(!$moduleVersion->core_version_id) {
+//                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
+//            }
+//        });
+//
+//        static::updated(function($moduleVersion) {
+//            // if file is dirty
+//
+//            if(!$moduleVersion->core_version_id && $moduleVersion->wasChanged('file')) {
+//                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
+//            }
+//        });
     }
 
     public function publish()

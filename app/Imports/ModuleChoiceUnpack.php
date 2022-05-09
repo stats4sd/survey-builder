@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Language;
 use App\Models\Module;
 use App\Models\ModuleVersion;
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\ChoicesRow;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -35,9 +36,17 @@ class ModuleChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'module_version_id' => $this->moduleVersion->id,
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
-                'is_localisable' => $row['is_localisable'] ?? 0,
+                'is_localisable' => $row['localisable'] ?? 0,
                 'list_type' => $row['list_type'] ?? null,
             ]);
+
+            // update choice_list status if needed
+            if($row['localisable'] ?? false) {
+                ChoiceList::where('list_name', $row['list_name'])->update([
+                    'is_localisable' => 1,
+                ]);
+            }
+
 
 
 
