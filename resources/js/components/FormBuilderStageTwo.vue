@@ -91,7 +91,7 @@
                                         Collect data
                                     </a>
                                 </li>
-                                <li v-if="xlsform.download_url" class="d-flex align-items-center">
+                                <li v-if="xlsform.download_url && (xlsform.draft || xlsform.complete)" class="d-flex align-items-center">
                                     <span class="w-50 text-right mr-4">2. Review the ODK Form in Excel:</span>
                                     <a
                                         :href="!processing ? xlsform.download_url : ''"

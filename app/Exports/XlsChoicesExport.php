@@ -90,7 +90,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
 
         // merge in custom selected options;
-        return $selectedChoiceLists->merge($coreOptionRows);
+        return $selectedRows->merge($coreOptionRows);
 
     }
 

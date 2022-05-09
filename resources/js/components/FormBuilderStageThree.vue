@@ -108,6 +108,9 @@ export default {
         userId: {
             default: null,
         },
+        rhomisAppUrl: {
+            default: ''
+        }
     },
     data() {
         return {
@@ -193,7 +196,7 @@ export default {
                     console.log('save ok', res.data)
                     new Noty({
                         'type': 'info',
-                        'text': 'Your survey form has been saved. The XLS file is now being built. Once complete it will be deployed to the RHoMIS ODK System.'
+                        'text': 'Your survey form has been saved. The XLS file is now being built. Once complete it will be deployed to the RHoMIS ODK System.',
                         'timeout': false,
                     }).show();
 

@@ -226,6 +226,7 @@ export default {
                     return null;
                 }
 
+                list.availableChoicesRows = list.choicesRows;
 
                 // filter to show only non-selected entries
                 if (this.selectedChoicesRows.hasOwnProperty(list.list_name)) {

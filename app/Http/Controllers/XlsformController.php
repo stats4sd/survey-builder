@@ -160,7 +160,7 @@ class XlsformController extends CrudController
             'region_label' => 'nullable|json',
             'subregion_label' => 'nullable|json',
             'village_label' => 'nullable|json',
-            'has_household_list' => 'nullable|boolean',
+            'has_household_list' => 'nullable',
         ]);
 //
 //        // quick hack fix for boolean being submitted as a string
@@ -209,6 +209,7 @@ class XlsformController extends CrudController
             }
         }
 
+        $this->buildForm($xlsform);
         return $xlsform->load('selectedChoicesRows');
 
 
