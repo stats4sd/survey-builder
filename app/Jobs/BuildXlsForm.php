@@ -55,8 +55,8 @@ class BuildXlsForm implements ShouldQueue
 
             // broadcast completion of xlsfile
             BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
-            // DeployXlsForm::dispatch($this->xlsform->name, $this->user);
-            DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+            DeployXlsForm::dispatch($this->xlsform->name, $this->user);
+            //DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
         } catch (Exception | \PhpOffice\PhpSpreadsheet\Exception $e) {
             $this->fail($e);
         } catch (\RuntimeException $e) {
