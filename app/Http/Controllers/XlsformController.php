@@ -141,9 +141,7 @@ class XlsformController extends CrudController
         // include ordering of module versions
         $xlsform->moduleVersions()->sync($moduleVersions);
 
-        // build and deploy form in background
-        BuildXlsForm::dispatch($xlsform->name, Auth::user());
-//        DeployXlsForm::dispatch($xlsform->name, Auth::user());
+        $this->buildForm($xlsform);
 
         return $xlsform->toJson();
     }
@@ -266,6 +264,13 @@ class XlsformController extends CrudController
 
         $xlsform->delete();
         return response("form successfully deleted", 200);
+    }
+
+    public function buildForm(Xlsform $xlsform)
+    {
+        // build and deploy form in background
+        BuildXlsForm::dispatch($xlsform->name, Auth::user());
+        // DeployXlsForm::dispatch($xlsform->name, Auth::user());
     }
 
 

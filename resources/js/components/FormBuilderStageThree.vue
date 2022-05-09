@@ -15,8 +15,8 @@
                         :location-file-name="xlsform.location_file_name"
                         :has-household-list.sync="xlsform.has_household_list"
                     />
-                        <!-- Not yet in use -->
-                        <!-- <customise-questions></customise-questions>-->
+                    <!-- Not yet in use -->
+                    <!-- <customise-questions></customise-questions>-->
 
                     <customise-lists
                         :languages="xlsform.languages"
@@ -24,9 +24,63 @@
                         @form-choice-rows="updateSelectedChoicesRows"
                     ></customise-lists>
 
-                    <b-button variant="primary" @click.prevent="submit">Save Choice Lists</b-button>
-                    <b-button variant="success" @click.prevent="build">Build Form</b-button>
+                    <b-button variant="primary" @click.prevent="submit">Save Choice Lists and Build</b-button>
+<!--                    <b-button variant="success" @click.prevent="build">Build Form</b-button>-->
 
+                    <hr/>
+                    <h4>Next Steps</h4>
+                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save and build the form, new
+                        options will appear below.
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-9">
+                            <ul class="w-100">
+                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">1. Try out the Form in ODK Collect:</span>
+                                    <a
+
+                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                        class="btn btn-link"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Collect data
+                                    </a>
+                                </li>
+                                <li v-if="xlsform.download_url" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">2. Review the ODK Form in Excel:</span>
+                                    <a
+                                        :href="!processing ? xlsform.download_url : ''"
+                                        class="btn btn-link"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Download XLS Form
+                                    </a>
+                                </li>
+                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                    <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
+                                    <a
+                                        :href="`/xlsform/${xlsform.name}/edit-three`"
+                                        class="btn btn-primary"
+                                        :class="processing ? 'disabled' : ''"
+                                    >
+                                        <i class="la la-spinner la-spin" v-if="processing"></i>
+                                        Continue to Customise
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <span v-if="processing"
+                              :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
+                        <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
+                        <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
+                        <span v-if="complete" class="ml-2">...success!</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -76,6 +130,11 @@ export default {
                 location_file_name: "",
             },
             updatedSelectedChoicesRows: {},
+            processing: false,
+            building: false,
+            deploying: false,
+            complete: false,
+            needRelogin: false,
         };
     },
     mounted() {
@@ -90,12 +149,12 @@ export default {
 
         this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
 
-        this.xlsform.region_label = this.xlsform.region_label ? JSON.parse(this.xlsform.region_label) : { "en": "region" }
-        this.xlsform.subregion_label = this.xlsform.subregion_label ? JSON.parse(this.xlsform.subregion_label) : { "en": "subregion"}
-        this.xlsform.village_label = this.xlsform.village_label ? JSON.parse(this.xlsform.village_label) : { "en": "village"}
+        this.xlsform.region_label = this.xlsform.region_label ? JSON.parse(this.xlsform.region_label) : {"en": "region"}
+        this.xlsform.subregion_label = this.xlsform.subregion_label ? JSON.parse(this.xlsform.subregion_label) : {"en": "subregion"}
+        this.xlsform.village_label = this.xlsform.village_label ? JSON.parse(this.xlsform.village_label) : {"en": "village"}
 
         // if file exists, put string of file path into location_file_original;
-        if(this.xlsform.location_file instanceof String) {
+        if (this.xlsform.location_file instanceof String) {
             this.xlsform.location_file_original = this.xlsform.location_file;
             this.xlsform.location_file = ""
         }
@@ -114,7 +173,7 @@ export default {
 
             //setup FormData object to enable posting the file along with data
             var formData = new FormData();
-            if(this.xlsform.location_file instanceof File) {
+            if (this.xlsform.location_file instanceof File) {
                 formData.append("location_file", this.xlsform.location_file, 'locations.csv');
             }
 
@@ -125,21 +184,21 @@ export default {
             formData.append("selected_choices_rows", JSON.stringify(this.updatedSelectedChoicesRows));
             formData.append("_method", 'PUT');
 
-            axios.post('/xlsform/' + this.xlsform.name +'/customise', formData, {
+            axios.post('/xlsform/' + this.xlsform.name + '/customise', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             })
-            .then(res => {
-                console.log('save ok', res.data)
-                new Noty({
-                    'type': 'info',
-                    'text': 'Your survey has been saved. To rebuild and deploy your form, please click the "build" button below',
-                    'timeout': false,
-                }).show();
+                .then(res => {
+                    console.log('save ok', res.data)
+                    new Noty({
+                        'type': 'info',
+                        'text': 'Your survey form has been saved. The XLS file is now being built. Once complete it will be deployed to the RHoMIS ODK System.'
+                        'timeout': false,
+                    }).show();
 
-                //this.building = true;
-            })
+                    this.building = true;
+                })
                 .catch(err => {
                     // check for validation error
 
@@ -244,6 +303,25 @@ export default {
             console.log(val)
 
             this.updatedSelectedChoicesRows = val;
+        },
+
+        build() {
+            axios.post("/xlsform/" + this.xlsform.name + "/build")
+                .then(res => {
+                    new Noty({
+                        'type': 'info',
+                        'text': 'Your new XLS form is being built...',
+                    }).show();
+                })
+                .catch(err => {
+                    // check for validation error
+
+                    if (err.response && err.response.status === 422) {
+                        this.errors = err.response.data.errors;
+                    }
+
+                    this.reset()
+                });
         }
     }
 }

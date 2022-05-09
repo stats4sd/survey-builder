@@ -24,11 +24,35 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         $coreOptionRows = ChoicesRow::where('module_version_id', null)->with('choicesLabels.language')->get();
 
-        $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) {
-            return $version->choicesRows->load('choicesLabels.language');
+        // get any custom selected choice rows:
+        $selectedRows = $this->xlsform->selectedChoicesRows->load('selectedChoicesLabels')
+        ->map(function($row) {
+            $labels = $row->selectedChoicesLabels;
+
+            foreach($labels as $label) {
+                foreach($this->xlsform->languages as $language) {
+                    if($label->language_id === $language->id) {
+                        $header = "label::" . $language->name . " (" . $language->id . ")";
+                        $row->$header = $label->label;
+                    }
+                }
+            }
+
+            return $row;
+        });
+
+        $selectedChoiceLists = $selectedRows->pluck('list_name')->unique();
+
+
+        $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
+            return $version
+                ->choicesRows
+                // if any localisable lists have selected items, do not get the 'defaults' for that list.
+                ->whereNotIn('choice_list', $selectedChoiceLists)
+                ->load('choicesLabels.language');
         })->flatten();
 
-        return $coreOptionRows
+        $coreOptionRows = $coreOptionRows
             ->merge($optionalModulesRows)
             ->map(function ($row) {
 
@@ -40,7 +64,8 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
                 foreach ($labels as $label) {
                     foreach ($this->xlsform->languages as $language) {
                         if ($label->language_id === $language->id) {
-                            $row->$header = "label::" . $language->name . " (" . $language->id . ")";
+                            $header = "label::" . $language->name . " (" . $language->id . ")";
+                            $row->$header = $label->label;
 
                             // only need one language-specific header per language for choices sheet;
                             break;
@@ -54,6 +79,9 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
                 return $row['list_name'] . $row['name'];
             });
 
+
+        // merge in custom selected options;
+        return $selectedChoiceLists->merge($coreOptionRows);
 
     }
 
