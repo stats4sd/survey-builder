@@ -41,7 +41,15 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
             return $row;
         });
 
-        $selectedChoiceLists = $selectedRows->pluck('list_name')->unique();
+        $selectedChoiceLists = $selectedRows->pluck('list_name')->unique()->toArray();
+
+        // handle location lists
+        if($this->xlsform->location_file_url) {
+            $selectedChoiceLists[] = 'Country';
+            $selectedChoiceLists[] = 'region';
+            $selectedChoiceLists[] = 'subregion';
+            $selectedChoiceLists[] = 'village';
+        }
 
 
         $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
