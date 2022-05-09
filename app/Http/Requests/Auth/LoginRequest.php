@@ -129,9 +129,9 @@ class LoginRequest extends FormRequest
             ->json();
 
 
-        // check for existing users with that email;
+        // check for existing users with that email, but a different ID (suggests an error in keeping user data up to date)
         // for now, simply delete them! (May do something more clever later)
-        $user = User::where('email', $decoded->email)->delete();
+        User::where('id', '!=', $decoded->_id)->where('email', $decoded->email)->delete();
 
         //If user is not in system, store:
         $user = User::updateOrCreate(
@@ -139,6 +139,7 @@ class LoginRequest extends FormRequest
             [
                 'email' => $decoded->email,
                 'jwt_token' => $token,
+                'is_admin' => $userMeta['roles']['administrator'] ?? 0,
             ],
         );
 

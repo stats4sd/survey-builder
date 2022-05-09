@@ -24,7 +24,7 @@ In this default setup, **any authenticated user can access the admin panel**. We
 TODO: setup push to push locations csv file to Kobo
 TODO: update XLS form module(s) to use locations csv instead of choice_filters
 
-TODO: modify household question to be either select or string; 
 
 
+TODO: modify household question to be either select or string;
 TODO: add customise question text section;
