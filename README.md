@@ -21,10 +21,10 @@ This template comes with Laravel Backpack to help quickly build CRUD panels for 
 
 In this default setup, **any authenticated user can access the admin panel**. We often stick with this setup as our platforms are mostly or entirely within the admin panel. Given this, please make good use of CRUD::denyAccess() within the platform's Crud Controllers.
 
+TODO: setup push to push locations csv file to Kobo
+TODO: update XLS form module(s) to use locations csv instead of choice_filters
 
-TODO: fix project name - either select an existing project OR add a new project! 
-TODO: add information to user that the form is being saved + build as xlsxform... and then deployed! 
+TODO: modify household question to be either select or string; 
 
 
-TODO: remove countries field;
-TODO: add in module information to main build page
+TODO: add customise question text section;

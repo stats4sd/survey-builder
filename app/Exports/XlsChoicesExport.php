@@ -49,6 +49,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
             $selectedChoiceLists[] = 'region';
             $selectedChoiceLists[] = 'subregion';
             $selectedChoiceLists[] = 'village';
+
         }
 
 
