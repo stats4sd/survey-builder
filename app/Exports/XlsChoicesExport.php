@@ -14,7 +14,8 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 {
     public Xlsform $xlsform;
 
-    public function __construct(Xlsform $xlsform){
+    public function __construct(Xlsform $xlsform)
+    {
         $this->xlsform = $xlsform;
     }
 
@@ -23,60 +24,81 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         $coreOptionRows = ChoicesRow::where('module_version_id', null)->with('choicesLabels.language')->get();
 
-        $optionalModulesRows = $this->xlsform->moduleVersions->map(function($version) {
+        $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) {
             return $version->choicesRows->load('choicesLabels.language');
         })->flatten();
 
         return $coreOptionRows
-        ->merge($optionalModulesRows)
-        ->map(function($row) {
+            ->merge($optionalModulesRows)
+            ->map(function ($row) {
 
 
-        $labels = $row->choicesLabels;
-        $header = "label::English (en)";
-        $row->$header = '';
+                $labels = $row->choicesLabels;
+                $header = "label::English (en)";
+                $row->$header = '';
 
-            foreach($labels as $label) {
-                // $header = $label->type . ":: " . $label->language->name . " (" . $label->language_id . ")";
+                foreach ($labels as $label) {
+                    foreach ($this->xlsform->languages as $language) {
+                        if ($label->language_id === $language->id) {
+                            $row->$header = "label::" . $language->name . " (" . $language->id . ")";
 
-                if($label->language_id === "en" && $row->$header === '') {
-                    $row->$header = $label->label;
+                            // only need one language-specific header per language for choices sheet;
+                            break;
+                        }
+                    }
                 }
-            }
-            return $row;
-        })
-        // make sure no duplicates from different modules exist.
-        ->unique(function($row) {
-            return $row['list_name'].$row['name'];
-        });
+                return $row;
+            })
+            // make sure no duplicates from different modules exist.
+            ->unique(function ($row) {
+                return $row['list_name'] . $row['name'];
+            });
 
 
     }
 
-    public function map ($choicesRow): array
+    public function map($choicesRow): array
     {
 
-        $labelHeader = "label::English (en)";
+        $labelHeaders = [];
 
-       return [
-           $choicesRow->list_name,
-           $choicesRow->name,
-           $choicesRow->$labelHeader
-       ];
-    }
+        foreach ($this->xlsform->languages as $language) {
+            $labelHeaders[] = "label::" . $language->name . " (" . $language->id . ")";
+        }
 
-    public function headings (): array
-    {
-        return [
-            'list_name',
-            'name',
-            'label::English (en)',
+        $newRow = [
+            $choicesRow->list_name,
+            $choicesRow->name
         ];
+
+        foreach ($labelHeaders as $labelHeader) {
+            $newRow[] = $choicesRow->$labelHeader;
+        }
+
     }
 
-    public function title (): string
+    public function headings(): array
     {
-       return "choices";
+
+        $labelHeaders = [];
+
+        foreach ($this->xlsform->languages as $language) {
+            $labelHeaders[] = "label::" . $language->name . " (" . $language->id . ")";
+        }
+
+        $headers = [
+            'list_name',
+            'name'
+        ];
+
+        foreach ($labelHeaders as $labelHeader) {
+            $newRow[] = $labelHeader;
+        }
+    }
+
+    public function title(): string
+    {
+        return "choices";
     }
 
 }

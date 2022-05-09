@@ -77,7 +77,7 @@ gs
             <b-form-radio-group
                 id="household-list-yn"
                 name="household-list-yn"
-                :value="hasHouseholdList"
+                :checked="hasHouseholdList"
                 :options="ynList"
                 @change="updateHasHouseholdList($event)"
             />
@@ -124,7 +124,7 @@ export default {
             }
         },
         hasHouseholdList: {
-            default: false,
+            default: 0,
         },
         locationFileUrl: '',
         locationFileName: '',
@@ -132,6 +132,7 @@ export default {
             default: null,
         },
     },
+
     methods: {
         updateRegionLabel(regionLabel, lang) {
             let labels = {...this.regionLabel};

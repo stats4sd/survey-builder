@@ -13,7 +13,8 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
     public Xlsform $xlsform;
 
-    public function __construct (Xlsform $xlsform){
+    public function __construct(Xlsform $xlsform)
+    {
         $this->xlsform = $xlsform;
     }
 
@@ -21,53 +22,57 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     public function collection()
     {
         // get module versions in correct order
-       // dd($this->xlsform->moduleVersions->sortBy('pivot.order')->pluck('module_id'));
-        $collection = $this->xlsform->moduleVersions->sortBy('pivot.order')->map(function($version) {
-            return $version->surveyRows->map(function($row) use ($version) {
+        // dd($this->xlsform->moduleVersions->sortBy('pivot.order')->pluck('module_id'));
+        $collection = $this->xlsform->moduleVersions->sortBy('pivot.order')->map(function ($version) {
+            return $version->surveyRows->map(function ($row) use ($version) {
                 $row->order = $version->pivot->order;
                 return $row;
             });
 
 
         })->flatten()
-        // merge in language labels:
-        ->map(function($row) {
-            // hard code EN only for now
-            $labels = $row->surveyLabels->load('language');
+            // merge in language labels:
+            ->map(function ($row) {
 
-            foreach($labels as $label) {
-                if($label->language_id == "en") {
-                    $header = $label->type .  "::" . $label->language->name . " (" . $label->language_id . ")";
-                    $row->$header = $label->label;
+                $labels = $row->surveyLabels->load('language');
+
+
+                foreach ($this->xlsform->languages as $language) {
+                    foreach ($labels as $label) {
+                        if ($label->language_id == $language->id) {
+                            $header = $label->type . "::" . $label->language->name . " (" . $label->language_id . ")";
+                            $row->$header = $label->label;
+
+                        }
+                    }
                 }
-            }
-            return $row;
-        })->groupBy('name');
+                return $row;
+            })->groupBy('name');
 
-       //ddd($collection['HFIAS_module'], $collection['crops_all'], $collection['food_environments_module']);
+        //ddd($collection['HFIAS_module'], $collection['crops_all'], $collection['food_environments_module']);
 
         // handle duplicate question names:
         // -
-        $collection = $collection->map(function($name) {
+        $collection = $collection->map(function ($name) {
             // include all entries where name is unique
-            if(count($name) === 1) {
+            if (count($name) === 1) {
                 return $name;
             }
 
             // include all entries where name is null (should all be notes)
-            if($name[0]['name'] === "" || $name[0]['name'] === null) {
+            if ($name[0]['name'] === "" || $name[0]['name'] === null) {
                 return $name;
             }
 
             // check if duplicated names are begin + end groups or not
-            return $name->sortByDesc('module_version_id')->filter(function($row, $key) {
-                if(str_starts_with($row['type'], 'begin') || str_starts_with($row['type'], 'end')) {
+            return $name->sortByDesc('module_version_id')->filter(function ($row, $key) {
+                if (str_starts_with($row['type'], 'begin') || str_starts_with($row['type'], 'end')) {
                     return true;
                 }
 
                 // if the row is from a core module, it should be overridden by the row from the optional module.
                 // if multiple rows with the same name are from optional modules, all will be returned - this will result in an XLSform compilation error, but it should continue to highlight the error to the user + Rhomis team.
-                if($row['is_core']) {
+                if ($row['is_core']) {
                     return false;
                 }
                 return true;
@@ -81,66 +86,115 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
     }
 
-    public function map ($surveyRow): array
+    public function map($surveyRow): array
     {
-        $labelHeader = "label::English (en)";
-        $hintHeader = "hint::English (en)";
-        $constraintHeader = "constraint_message::English (en)";
-        $requiredHeader = "required_message::English (en)";
+        $labelHeaders = [];
+        $hintHeaders = [];
+        $constraintHeaders = [];
+        $requiredHeaders = [];
 
-        return [
+
+        foreach ($this->xlsform->languages as $language) {
+            $labelHeaders[] = "label::" . $language->name . ' (' . $language->id . ')';
+            $hintHeaders[] = "hint::" . $language->name . ' (' . $language->id . ')';
+            $constraintHeaders[] = "constraint_message::" . $language->name . ' (' . $language->id . ')';
+            $requiredHeaders[] = "required_message::" . $language->name . ' (' . $language->id . ')';
+        }
+
+        $newRow = [
             '-',
             $surveyRow->moduleVersion->module->slug,
             $surveyRow->moduleVersion->module->slug,
             $surveyRow->type,
             $surveyRow->name,
-            $surveyRow->$labelHeader,
-            $surveyRow->$hintHeader,
-            $surveyRow->constraint,
-            $surveyRow->$constraintHeader,
-            $surveyRow->required,
-            $surveyRow->$requiredHeader,
-            $surveyRow->appearance,
-            $surveyRow->default,
-            $surveyRow->relevant,
-            $surveyRow->repeat_count,
-            $surveyRow->read_only,
-            $surveyRow->calculation,
-            $surveyRow->choice_filter,
         ];
+
+        foreach ($labelHeaders as $labelHeader) {
+            $newRow[] = $surveyRow->$labelHeader;
+        }
+
+        foreach ($hintHeaders as $hintHeader) {
+            $newRow[] = $surveyRow->$hintHeader;
+        }
+
+
+        $newRow[] = $surveyRow->constraint;
+
+        foreach ($constraintHeaders as $constraintHeader) {
+            $newRow[] = $surveyRow->$constraintHeader;
+        }
+
+        $newRow[] = $surveyRow->required;
+
+        foreach ($requiredHeaders as $requiredHeader) {
+            $newRow[] = $surveyRow->$requiredHeader;
+        }
+
+        $newRow[] = $surveyRow->appearance;
+        $newRow[] = $surveyRow->default;
+        $newRow[] = $surveyRow->relevant;
+        $newRow[] = $surveyRow->repeat_count;
+        $newRow[] = $surveyRow->read_only;
+        $newRow[] = $surveyRow->calculation;
+        $newRow[] = $surveyRow->choice_filter;
+
+        return $newRow;
     }
 
 
-    public function headings (): array
+    public function headings(): array
     {
+        $labelHeaders = [];
+        $hintHeaders = [];
+        $constraintHeaders = [];
+        $requiredHeaders = [];
+
+
+        foreach ($this->xlsform->languages as $language) {
+            $labelHeaders[] = "label::" . $language->name . ' (' . $language->id . ')';
+            $hintHeaders[] = "hint::" . $language->name . ' (' . $language->id . ')';
+            $constraintHeaders[] = "constraint_message::" . $language->name . ' (' . $language->id . ')';
+            $requiredHeaders[] = "required_message::" . $language->name . ' (' . $language->id . ')';
+        }
+
+
         $headers = [
             'localisable',
             'module_for_import',
             'module_name',
             'type',
-            'name',
-            'label::English (en)',
-            'hint::English (en)',
-            'constraint',
-            'constraint_message::English (en)',
-            'required',
-            'required_message::English (en)',
-            'appearance',
-            'default',
-            'relevant',
-            'repeat_count',
-            'read_only',
-            'calculation',
-            'choice_filter',
-            'body::accuracyThreshold',
+            'name'
         ];
+
+        foreach ($labelHeaders as $labelHeader) {
+            $headers[] = $labelHeader;
+        }
+        foreach ($hintHeaders as $hintHeader) {
+            $headers[] = $hintHeader;
+        }
+        $headers[] = 'constraint';
+        foreach ($constraintHeaders as $constraintHeader) {
+            $headers[] = $constraintHeader;
+        }
+        $headers[] = 'required';
+        foreach ($requiredHeaders as $requiredHeader) {
+            $headers[] = $requiredHeader;
+        }
+        $headers[] = 'appearance';
+        $headers[] = 'default';
+        $headers[] = 'relevant';
+        $headers[] = 'repeat_count';
+        $headers[] = 'read_only';
+        $headers[] = 'calculation';
+        $headers[] = 'choice_filter';
+        $headers[] = 'body::accuracyThreshold';
 
         return $headers;
     }
 
-    public function title (): string
+    public function title(): string
     {
-       return "survey";
+        return "survey";
     }
 
 }
