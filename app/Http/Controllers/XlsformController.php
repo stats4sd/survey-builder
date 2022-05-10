@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BuildXlsFormComplete;
+use App\Events\DeployXlsFormComplete;
 use App\Http\Requests\XlsformCreateRequest;
 use App\Http\Requests\XlsformCustomiseUpdateRequest;
 use App\Http\Requests\XlsformUpdateRequest;
@@ -163,31 +165,29 @@ class XlsformController extends CrudController
             'village_label' => 'nullable|json',
             'has_household_list' => 'nullable',
         ]);
-//
-//        // quick hack fix for boolean being submitted as a string
-//        if($request->input('has_household_list') === "true") {
-//            $validated['has_household_list'] = 1;
-//        }
-//        if($request->input('has_household_list') === "false") {
-//            $validated['has_household_list'] = 0;
-//        }
+
+        foreach($validated as $key => $value) {
+            if($value == null) {
+                unset($validated[$key]);
+            }
+        }
+
+
+        // purge existing form selected choices
+        $xlsform->selectedChoicesRows()->delete();
 
         // don't overwrite location_file unless a new file exists
-        if($request->file('location_file')) {
-
+        if ($request->file('location_file')) {
             $validated['location_file'] = $request->input('location_file');
 
             Excel::import(new ImportLocationsFileToChoices($xlsform), $request->file('location_file'));
         }
 
-        $xlsform->update($validated);
 
         // handle selected choices rows
         // object in format [ 'list_name' => [ choicesRows ]  ]
         $selectedChoicesRows = json_decode($request->input('selected_choices_rows'), true);
 
-        // purge existing form selected choices
-        $xlsform->selectedChoicesRows()->delete();
 
         foreach ($selectedChoicesRows as $listName => $choicesRows) {
 
@@ -213,7 +213,10 @@ class XlsformController extends CrudController
             }
         }
 
-        $this->buildForm($xlsform);
+        // $this->buildForm($xlsform);
+        // temp
+        BuildXlsFormComplete::dispatch($xlsform->name, Auth::user());
+        DeployXlsFormComplete::dispatch($xlsform->name, Auth::user());
         return $xlsform->load('selectedChoicesRows');
 
 

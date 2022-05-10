@@ -26,11 +26,9 @@
             </b-list-group-item>
         </b-list-group>
         <template #footer>
-            <a v-if="xlsform.download_url" :href="xlsform.download_url" class="btn btn-primary">Download XLS Form File</a>
             <a v-if="xlsform.draft || xlsform.complete"
                :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name" class="btn btn-success">View
                 Xlsform in RHoMIS App</a>
-
         </template>
     </b-card>
 </template>

@@ -6,6 +6,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\XlsChoicesController;
 use App\Http\Controllers\XlsformController;
 use App\Http\Controllers\XlsSurveyRowController;
+use App\Models\Xlsform;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,4 +73,10 @@ Route::get('testbroadcast', function() {
     $xlsform = \App\Models\Xlsform::first();
     $user = \App\Models\User::first();
     \App\Events\BuildXlsFormComplete::dispatch($xlsform->name, $user);
+});
+
+
+Route::get('testexport', function() {
+    $xlsform = Xlsform::find('tue-10-home');
+    return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\XlsFormExport($xlsform), 'test.xlsx');
 });

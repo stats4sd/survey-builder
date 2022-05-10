@@ -22,8 +22,6 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
     public function collection()
     {
 
-        $coreOptionRows = ChoicesRow::where('module_version_id', null)->with('choicesLabels.language')->get();
-
         // get any custom selected choice rows:
         $selectedRows = $this->xlsform->selectedChoicesRows->load('selectedChoicesLabels')
         ->map(function($row) {
@@ -52,19 +50,24 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         }
 
+        $coreOptionRows = ChoicesRow::where('module_version_id', null)
+            ->whereNotIn('list_name', $selectedChoiceLists)
+            ->with('choicesLabels.language')
+            ->get();
+
 
         $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
             return $version
                 ->choicesRows
                 // if any localisable lists have selected items, do not get the 'defaults' for that list.
-                ->whereNotIn('choice_list', $selectedChoiceLists)
+                ->whereNotIn('list_name', $selectedChoiceLists)
                 ->load('choicesLabels.language');
         })->flatten();
 
-        $coreOptionRows = $coreOptionRows
+
+        $defaultRows = $coreOptionRows
             ->merge($optionalModulesRows)
             ->map(function ($row) {
-
 
                 $labels = $row->choicesLabels;
                 $header = "label::English (en)";
@@ -88,9 +91,8 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
                 return $row['list_name'] . $row['name'];
             });
 
-
         // merge in custom selected options;
-        return $selectedRows->merge($coreOptionRows);
+        return $selectedRows->merge($defaultRows);
 
     }
 
@@ -111,6 +113,9 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         foreach ($labelHeaders as $labelHeader) {
             $newRow[] = $choicesRow->$labelHeader;
         }
+
+        // add filters for locations
+        $newRow[] = $choicesRow->filter;
 
         return $newRow;
 
@@ -133,6 +138,8 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         foreach ($labelHeaders as $labelHeader) {
             $headers[] = $labelHeader;
         }
+
+        $headers[] = 'filter';
 
         return $headers;
     }

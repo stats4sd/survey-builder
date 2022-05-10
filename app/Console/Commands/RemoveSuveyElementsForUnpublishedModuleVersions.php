@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\ModuleVersion;
+use App\Models\Xlsforms\ChoicesRow;
+use App\Models\Xlsforms\SurveyRow;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -44,8 +46,21 @@ class removeSuveyElementsForUnpublishedModuleVersions extends Command
         })->where('is_current', false)->get();
 
         $versions->each(function($version) {
+            $version->surveyRows->each(function($row) {
+                $row->surveyLabels()->delete();
+            });
+
+            $version->choicesRows->each(function($row) {
+                $row->choicesLabels()->delete();
+            });
+
             $version->surveyRows()->delete();
             $version->choicesRows()->delete();
+
         });
+
+
+        SurveyRow::whereNotIn('module_version_id', ModuleVersion::all()->pluck('id')->toArray())->delete();
+        ChoicesRow::whereNotIn('module_version_id', ModuleVersion::all()->pluck('id')->toArray())->delete();
     }
 }
