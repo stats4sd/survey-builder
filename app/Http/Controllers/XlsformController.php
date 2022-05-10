@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\XlsformCreateRequest;
 use App\Http\Requests\XlsformCustomiseUpdateRequest;
 use App\Http\Requests\XlsformUpdateRequest;
+use App\Imports\ImportLocationsFileToChoices;
 use App\Jobs\BuildXlsForm;
 use App\Jobs\DeployXlsForm;
 use App\Models\Country;
@@ -172,8 +173,11 @@ class XlsformController extends CrudController
 //        }
 
         // don't overwrite location_file unless a new file exists
-        if($request->input('location_file')) {
+        if($request->file('location_file')) {
+
             $validated['location_file'] = $request->input('location_file');
+
+            Excel::import(new ImportLocationsFileToChoices($xlsform), $request->file('location_file'));
         }
 
         $xlsform->update($validated);

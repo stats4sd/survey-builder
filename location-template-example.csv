@@ -1,0 +1,9 @@
+country_id,country_label_en,country_label_fr,region_id,region_label_en,region_label_fr,subregion_id,subregion_label_en,subregion_label_fr,village_id,village_label_en,village_label_fr
+uk,United Kingdom,UK-fr,london,London,Londres,sw1,South West 1,sw1-fr,vill-1,Village 1,Village 1-FR
+uk,United Kingdom,UK-fr,london,London,Londres,sw1,South West 1,sw1-fr,vill-2,Village 2,Village 2-FR
+uk,United Kingdom,UK-fr,london,London,Londres,sw2,South West 2,sw2-fr,vill-3,Village 3,Village 3-FR
+uk,United Kingdom,UK-fr,london,London,Londres,sw2,South West 2,sw2-fr,vill-4,Village 4,Village 4-FR
+uk,United Kingdom,UK-fr,reading,Reading,Reading FR,central,central,central-fr,vill-5,Village 5,Village 5-FR
+uk,United Kingdom,UK-fr,reading,Reading,Reading FR,central,central,central-fr,vill-6,Village 6,Village 6-FR
+uk,United Kingdom,UK-fr,reading,Reading,Reading FR,caversham,Caversham,caversham-fr,vill-7,Village 7,Village 7-FR
+uk,United Kingdom,UK-fr,reading,Reading,Reading FR,caversham,Caversham,caversham-fr,vill-8,Village 8 ,Village 8 -FR

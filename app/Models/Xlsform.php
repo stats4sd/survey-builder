@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Imports\ImportLocationsFileToChoices;
 use App\Models\Traits\HasUploadFields;
 use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
@@ -9,6 +10,7 @@ use App\Models\Xlsforms\SelectedChoicesRow;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Xlsform extends Model
 {
@@ -116,6 +118,5 @@ class Xlsform extends Model
         $destination_path = $this->name;
 
         $this->uploadFileWithNames($value, $attribute_name, $disk, $destination_path);
-
     }
 }
