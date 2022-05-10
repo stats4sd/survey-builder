@@ -82,6 +82,16 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
             ['id', 'asc'],
         ]);
 
+        $idsToRemove = [];
+        // finally, check if there are begin and end groups or repeats that are now empty due to the removal of duplicate question names:
+        foreach($collection as $index => $row) {
+            if (str_starts_with($row['type'], 'begin') && str_starts_with($collection[$index+1]['type'], 'end')) {
+                $idsToRemove[] = $row['id'];
+                $idsToRemove[] = $collection[$index+1]['id'];
+            }
+        }
+        $collection = $collection->whereNotIn('id', $idsToRemove);
+
         return $collection;
 
     }

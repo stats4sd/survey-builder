@@ -28,7 +28,7 @@
                 @include('layouts.sidebar-front-end')
 
                 <!-- Page Content -->
-                <main class="main mx-auto px-5 pt-5" style="max-width:1200px; background-color: #1b8697 !important">
+                <main class="main mx-auto px-5 pt-5" style="max-width: 1600px; background-color: #1b8697 !important">
                     @yield('content')
                 </main>
             </div>

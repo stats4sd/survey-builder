@@ -114,7 +114,9 @@
                                         <template #listItem="props">
                                             <td>{{ props.element.name }}</td>
                                             <td v-for="lang in languages">{{
-                                                    props.element['choices_labels_by_lang'][lang.id][0]['label']
+                                                    props.element['choices_labels_by_lang'][lang.id] ?
+                                                        props.element['choices_labels_by_lang'][lang.id][0]['label']
+                                                        : '~undefined~'
                                                 }}
                                             </td>
                                         </template>

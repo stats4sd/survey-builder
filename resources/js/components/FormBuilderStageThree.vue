@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="container mt-2">
+        <div class="mt-2">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <h2 class="mb-3">Stage 3 - Customise to local context</h2>
