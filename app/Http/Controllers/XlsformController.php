@@ -92,7 +92,7 @@ class XlsformController extends CrudController
             }
 
             $project = auth()->user()->projects()->create([
-                'name' => $attributes['new_project_name'],
+                'name' => Str::replace(' ', '-', $attributes['new_project_name']),
                 'global' => 0,
             ]);
 
@@ -102,6 +102,8 @@ class XlsformController extends CrudController
             unset($attributes['new_project_name']);
         }
 
+        // ensure form name has no spaces
+        $attributes['name'] = Str::replace(' ', '-', $attributes['name']);
 
         $xlsform = Xlsform::create($attributes);
 
