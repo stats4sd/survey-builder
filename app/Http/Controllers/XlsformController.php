@@ -227,10 +227,10 @@ class XlsformController extends CrudController
             }
         }
 
-        // $this->buildForm($xlsform);
+        $this->buildForm($xlsform);
         // temp
-        BuildXlsFormComplete::dispatch($xlsform->name, Auth::user());
-        DeployXlsFormComplete::dispatch($xlsform->name, Auth::user());
+        // BuildXlsFormComplete::dispatch($xlsform->name, Auth::user());
+        // DeployXlsFormComplete::dispatch($xlsform->name, Auth::user());
         return $xlsform->load('selectedChoicesRows');
 
 
