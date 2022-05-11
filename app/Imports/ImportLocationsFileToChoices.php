@@ -103,7 +103,7 @@ class ImportLocationsFileToChoices implements ToCollection, WithHeadingRow, With
             $collection->pluck('country_label_' . $language, 'country_id')->each(function ($name, $key) use ($language) {
 
                 // find related choices row
-                $choicesRow = SelectedChoicesRow::where('list_name', 'Country')->where('name', $key)->first();
+                $choicesRow = SelectedChoicesRow::where('list_name', 'Country')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->first();
 
                 // TOCONSIDER: refactor to reduce db calls
                 SelectedChoicesLabel::updateOrCreate([
@@ -116,7 +116,7 @@ class ImportLocationsFileToChoices implements ToCollection, WithHeadingRow, With
             $collection->pluck('region_label_' . $language, 'region_id')->each(function ($name, $key) use ($language) {
 
                 // find related choices row
-                $choicesRow = SelectedChoicesRow::where('list_name', 'region')->where('name', $key)->first();
+                $choicesRow = SelectedChoicesRow::where('list_name', 'region')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->first();
 
                 // TOCONSIDER: refactor to reduce db calls
                 SelectedChoicesLabel::updateOrCreate([
@@ -128,7 +128,7 @@ class ImportLocationsFileToChoices implements ToCollection, WithHeadingRow, With
             $collection->pluck('subregion_label_' . $language, 'subregion_id')->each(function ($name, $key) use ($language) {
 
                 // find related choices row
-                $choicesRow = SelectedChoicesRow::where('list_name', 'subregion')->where('name', $key)->first();
+                $choicesRow = SelectedChoicesRow::where('list_name', 'subregion')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->first();
 
                 // TOCONSIDER: refactor to reduce db calls
                 SelectedChoicesLabel::updateOrCreate([
@@ -141,7 +141,7 @@ class ImportLocationsFileToChoices implements ToCollection, WithHeadingRow, With
             $collection->pluck('village_label_' . $language, 'village_id')->each(function ($name, $key) use ($language) {
 
                 // find related choices row
-                $choicesRow = SelectedChoicesRow::where('list_name', 'village')->where('name', $key)->first();
+                $choicesRow = SelectedChoicesRow::where('list_name', 'village')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->first();
 
                 // TOCONSIDER: refactor to reduce db calls
                 SelectedChoicesLabel::updateOrCreate([
@@ -155,7 +155,7 @@ class ImportLocationsFileToChoices implements ToCollection, WithHeadingRow, With
                 $collection->pluck('household_label_' . $language, 'household_id')->each(function ($name, $key) use ($language) {
 
                     // find related choices row
-                    $choicesRow = SelectedChoicesRow::where('list_name', 'household')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->first();
+                    $choicesRow = SelectedChoicesRow::where('list_name', 'household')->where('name', $key)->where('xlsform_name', $this->xlsform->name)->where('xlsform_name', $this->xlsform->name)->first();
 
                     // TOCONSIDER: refactor to reduce db calls
                     SelectedChoicesLabel::updateOrCreate([
