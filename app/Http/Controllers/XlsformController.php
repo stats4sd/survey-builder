@@ -183,6 +183,7 @@ class XlsformController extends CrudController
             Excel::import(new ImportLocationsFileToChoices($xlsform), $request->file('location_file'));
         }
 
+        $xlsform->update($validated);
 
         // handle selected choices rows
         // object in format [ 'list_name' => [ choicesRows ]  ]
