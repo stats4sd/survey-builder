@@ -78,6 +78,6 @@ Route::get('testbroadcast', function() {
 
 
 Route::get('testexport', function() {
-    $xlsform = Xlsform::find('tue-10-home');
+    $xlsform = Xlsform::find('location-labels');
     return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\XlsFormExport($xlsform), 'test.xlsx');
 });

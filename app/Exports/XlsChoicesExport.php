@@ -27,6 +27,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         ->map(function($row) {
             $labels = $row->selectedChoicesLabels;
 
+
             foreach($labels as $label) {
                 foreach($this->xlsform->languages as $language) {
                     if($label->language_id === $language->id) {
