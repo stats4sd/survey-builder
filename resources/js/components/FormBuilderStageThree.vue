@@ -59,7 +59,7 @@
                                     </a>
                                 </li>
                                 <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
+                                    <span class="w-50 text-right mr-4">3. Continue to Stage 4 - Review:</span>
                                     <a
                                         :href="`/xlsform/${xlsform.name}/edit-four`"
                                         class="btn btn-primary"
