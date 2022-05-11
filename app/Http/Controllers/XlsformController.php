@@ -10,6 +10,7 @@ use App\Http\Requests\XlsformUpdateRequest;
 use App\Imports\ImportLocationsFileToChoices;
 use App\Jobs\BuildXlsForm;
 use App\Jobs\DeployXlsForm;
+use App\Jobs\FinaliseXlsForm;
 use App\Models\Country;
 use App\Models\Language;
 use App\Models\Project;
@@ -179,16 +180,28 @@ class XlsformController extends CrudController
         // don't overwrite location_file unless a new file exists
         if ($request->file('location_file')) {
             $validated['location_file'] = $request->input('location_file');
-
-            Excel::import(new ImportLocationsFileToChoices($xlsform), $request->file('location_file'));
         }
 
         $xlsform->update($validated);
+
+        // handle location choice rows
+        if($xlsform->location_file_url) {
+               Excel::import(new ImportLocationsFileToChoices($xlsform), Storage::path($xlsform->location_file));
+        }
 
         // handle selected choices rows
         // object in format [ 'list_name' => [ choicesRows ]  ]
         $selectedChoicesRows = json_decode($request->input('selected_choices_rows'), true);
 
+        //filter out locations (that get mixed into the Vue objects after initial save)
+        $selectedChoicesRows = collect($selectedChoicesRows)
+            ->map(function($row, $key) {
+                if(collect(['Country', 'region', 'subregion', 'village', 'household'])->contains($key)) {
+                    return null;
+                }
+                return $row;
+            })
+        ->filter(fn($rows) => $rows );
 
         foreach ($selectedChoicesRows as $listName => $choicesRows) {
 
@@ -280,6 +293,11 @@ class XlsformController extends CrudController
         // build and deploy form in background
         BuildXlsForm::dispatch($xlsform->name, Auth::user());
         // DeployXlsForm::dispatch($xlsform->name, Auth::user());
+    }
+
+    public function finaliseForm(Xlsform $xlsform)
+    {
+        FinaliseXlsForm::dispatch($xlsform->name, Auth::user());
     }
 
 

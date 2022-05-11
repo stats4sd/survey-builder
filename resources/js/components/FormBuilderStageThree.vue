@@ -61,12 +61,12 @@
                                 <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
                                     <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
                                     <a
-                                        :href="`/xlsform/${xlsform.name}/edit-three`"
+                                        :href="`/xlsform/${xlsform.name}/edit-four`"
                                         class="btn btn-primary"
                                         :class="processing ? 'disabled' : ''"
                                     >
                                         <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Continue to Customise
+                                        Continue to Review
                                     </a>
                                 </li>
 
@@ -146,7 +146,7 @@ export default {
         this.xlsform = {...this.xlsformOriginal};
         this.xlsform.themes = this.xlsform.themes.map(theme => theme.id);
 
-        this.xlsform.module_versions = this.xlsform.modules ? this.xlsform.themes.map(moduleVersion => moduleVersion.id) : []
+        this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
 
         // keep languages as an array of objects as that's the best format for this page.
 

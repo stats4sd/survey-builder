@@ -32,6 +32,7 @@
                 <form-builder-stage-four
                     :xlsform-original="{{ $xlsform->toJson() }}"
                     user-id="{{ Auth::id() }}"
+                    rhomis-app-url="{{ config('auth.rhomis_url') }}"
                 >
                 </form-builder-stage-four>
             </b-card-body>

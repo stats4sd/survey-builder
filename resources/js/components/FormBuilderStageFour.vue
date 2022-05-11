@@ -1,12 +1,365 @@
 <template>
-<div>
-    <h3>Review the form and deploy to ODK</h3>
-</div>
+    <div class="px-5">
+        <h3>Review the form and deploy to ODK</h3>
+
+
+        <!--    Overall metrics: time for survey; no. of questions; no of optional modules added -->
+        <h4>Form Contents</h4>
+        <a href="xlsform.download_url">Download current XLSform file for review</a>
+
+        <b-row>
+            <b-col lg="6" cols="12">
+                <b-list-group>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">Modules:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ xlsform.modules.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">Optional Modules:</b-col>
+                        <b-col cols="3" class="font-weight-bold">
+                            {{ xlsform.modules.filter(module => module.module.core === 0).length }}
+                        </b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">Estimated Total Time:</b-col>
+                        <b-col cols="3" class="font-weight-bold">
+                            {{ xlsform.modules.reduce((carry, module) => carry + module.module.minutes, 0) }} minutes
+                        </b-col>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-col>
+        </b-row>
+
+        <!--    Module list     -->
+        <b-row class="my-4">
+            <b-col>
+                <b-button v-b-toggle.moduleList varient="info">Show full list of modules</b-button>
+            <b-collapse id="moduleList" name="moduleList">
+                <b-table :items="xlsform.modules" :fields="moduleFields"/>
+            </b-collapse>
+            </b-col>
+        </b-row>
+        <hr/>
+
+        <!-- Locations: count of countries, regions, subregions and villages. (Maybe list in collapsible?) -->
+        <h4>Location Information</h4>
+        <b-alert v-if="!xlsform.location_file_url" variant="warning" class="text-dark">
+            You have not uploaded any location information for the form. Please make sure you do so on the <a :href="'/xlsform/'+xlsform.name+'/edit-three'">Stage 3 page</a> before finalising the survey.
+        </b-alert>
+        <b-row class="my-4">
+            <b-col lg="6" cols="12">
+                <b-list-group>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">No. of Countries:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.Country.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">{{ xlsform.region_label.en }} count:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.region.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">{{  xlsform.subregion_label.en }} count:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.subregion.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">{{  xlsform.village_label.en }} count:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.village.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex" v-if="xlsform.has_household_list">
+                        <b-col cols="6" class="text-right">No. of Households:</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.household.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex" v-else>
+                        This form does not a pre-defined list of households. Household id entry will be via number or free-text field entry.
+                    </b-list-group-item>
+                </b-list-group>
+            </b-col>
+        </b-row>
+
+
+        <!-- List of customised lists. Comment that all other 'customisable' lists will take the default options, but it's recommended to explicitly choose the options... -->
+        <h4>Custom Response Option Lists</h4>
+        <p>Below you can see every response option list that you have customised.</p>
+        <b-row class="my-4">
+            <b-col lg="6" cols="12">
+                <b-list-group>
+                    <b-list-group-item class="d-flex">
+                        <b-col cols="6" class="text-right">List</b-col>
+                        <b-col cols="3" class="font-weight-bold">No. of choices</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex" v-for="row in nonLocationSelectedChoicesRows" v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
+                        <b-col cols="6" class="text-right">{{ row[0].list_name }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ row.length }}</b-col>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-col>
+        </b-row>
+
+        <!-- option to finalise the form -->
+        <b-button variant="primary" @click="finalise">Finalise and Publish Form</b-button>
+
+    </div>
 </template>
 
 <script>
+import Noty from "noty";
+import Swal from "sweetalert2";
+import {isSet} from "lodash";
+
 export default {
-    name: "FormBuilderStageThree"
+    name: "FormBuilderStageFour",
+
+    props: {
+        xlsformOriginal: {
+            default: () => [],
+        },
+        userId: {
+            default: null,
+        },
+        rhomisAppUrl: {
+            default: ''
+        }
+    },
+    data() {
+        return {
+            xlsform: {
+                countries: [],
+                languages: [],
+                themes: [],
+                modules: [],
+                moduleVersions: [],
+                project_id: null,
+                title: "",
+                default_language: "",
+                region_label: {"en": "region"},
+                subregion_label: {"en": "subregion"},
+                village_label: {"en": "village"},
+                location_file: null,
+                has_household_list: null,
+                selected_choices_rows: [],
+                location_file_url: "",
+                location_file_name: "",
+            },
+            processing: false,
+            building: false,
+            deploying: false,
+            complete: false,
+            needRelogin: false,
+            moduleFields: [
+                {
+                    key: 'module.title',
+                    label: 'title',
+                },
+                {
+                    key: 'version_name',
+                    label: 'version',
+                },
+                {
+                    key: 'question_count',
+                    label: 'No. of questions',
+                },
+                {
+                    key: 'module.minutes',
+                    label: 'Estimated time (minutes)',
+                },
+            ],
+            selectedChoicesRows: {},
+        }
+    },
+    computed: {
+        nonLocationSelectedChoicesRows() {
+            let nonLocationRows = {}
+            let locationKeys = ['Countries', 'regions', 'subregions', 'villages', 'households'];
+             Object.keys(this.selectedChoicesRows).forEach(key => {
+                if(!locationKeys.includes(key)) {
+                    nonLocationRows[key] = this.selectedChoicesRows[key] ?? null;
+                }
+            })
+
+            return nonLocationRows;
+        }
+    },
+
+    mounted() {
+        this.xlsform = {...this.xlsformOriginal};
+
+        this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+
+        this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
+
+        this.xlsform.region_label = this.xlsform.region_label ? JSON.parse(this.xlsform.region_label) : {"en": "region"}
+        this.xlsform.subregion_label = this.xlsform.subregion_label ? JSON.parse(this.xlsform.subregion_label) : {"en": "subregion"}
+        this.xlsform.village_label = this.xlsform.village_label ? JSON.parse(this.xlsform.village_label) : {"en": "village"}
+
+        // if file exists, put string of file path into location_file_original;
+        if (this.xlsform.location_file instanceof String) {
+            this.xlsform.location_file_original = this.xlsform.location_file;
+            this.xlsform.location_file = ""
+        }
+
+        this.xlsform.selectedChoicesRows.forEach(row => {
+            // if(!isSet(this.selectedChoicesRows[row.list_name])) {
+            //     this.$set(this.selectedChoicesRows, row.list_name, [])
+            //
+            // }
+            let updatedList = [ ...this.selectedChoicesRows[row.list_name] ?? [] ]
+            updatedList.push(row);
+
+            this.$set(this.selectedChoicesRows, row.list_name, updatedList);
+        })
+
+
+
+        this.setupListeners();
+    },
+    methods: {
+        reset() {
+            this.processing = this.building = this.deploying = this.complete = this.needRelogin = false;
+        },
+        // create listeners for Laravel Events
+        setupListeners() {
+            this.$echo
+                .private("App.Models.User." + this.userId)
+                .listen("BuildXlsFormComplete", payload => {
+                    this.deploying = true;
+
+                    this.xlsform.download_url = payload.xlsform.download_url
+
+                    new Noty({
+                        type: "info",
+                        text: "Your XLSX Form file has been built. It will now be deployed to the RHoMIS ODK Central Service as a draft form. <br/><br/>" +
+                            "Once complete, you will be able to try the form in ODK Collect. You can also download the file to review locally using the link below.</a>.",
+                        timeout: false,
+                    }).show();
+                })
+                .listen("DeployXlsFormComplete", payload => {
+
+                    this.reset();
+
+                    this.xlsform.draft = payload.xlsform.draft
+                    this.xlsform.complete = payload.xlsform.complete
+
+                    new Noty({
+                        type: "success",
+                        text: "Your XLSX form has been successfully deployed. Use the link below to get instructions on how to review the form in ODK Collect.",
+                    }).show()
+                })
+                .listen("BuildXlsFormFailed", payload => {
+                    this.reset()
+                    console.log(payload)
+                    new Noty({
+                        type: "error",
+                        text: `Building your XLSform file failed with the following code and message:
+                            Code: ${payload.code}
+                            Message: ${payload.message}`,
+                        timeout: false,
+                    }).show();
+                })
+                .listen("DeployXlsFormFailed", payload => {
+                    this.reset()
+
+
+                    // send reauth-message
+                    if (payload.code == 401 || payload.code == 419) {
+
+                        this.needRelogin = true;
+                        new Noty({
+                            type: "error",
+                            text: "Sorry - it looks like your session has timed out. Your form has been saved. To continue, please the link at the top of the page to re-login.",
+                            timeout: false,
+                        }).show();
+                    } else {
+                        new Noty({
+                            type: "error",
+                            text: `Deploying your XLSform file failed with the following code and message:
+                            Code: ${payload.code}
+                            Message: ${payload.message}`,
+                            timeout: false,
+                        }).show()
+                    }
+                })
+                .listen("RhomisAPiCallDidFail", payload => {
+                    this.reset()
+
+                    // send reauth-message
+                    if (payload.code == 401 || payload.code == 419) {
+
+                        this.needRelogin = true;
+                        new Noty({
+                            type: "error",
+                            text: "Sorry - it looks like your session has timed out. Your form has been saved. To continue, please the link at the top of the page to re-login.",
+                            timeout: false,
+                        }).show();
+                    } else {
+
+                        new Noty({
+                            type: "error",
+                            text: `There was an error communicating with the RHoMIS API. Please forward the following information to your friendly IT administrator:
+                            URL: ${payload.requestUrl}
+                            Status: ${payload.code}
+                            Message: ${payload.body}`,
+                            timeout: false,
+                        }).show()
+                    }
+                })
+                .listen("FinaliseXlsFormComplete", payload => {
+                    this.reset()
+
+                    if (payload.code == 401 || payload.code == 419) {
+                        this.needRelogin = true;
+                        new Noty({
+                            type: "error",
+                            text: "Sorry - it looks like your session has timed out. Your form has been saved. To continue, please the link at the top of the page to re-login.",
+                            timeout: false,
+                        }).show();
+                    } else {
+
+                        new Noty({
+                            type: "success",
+                            text: `Your Survey has been successfully published. It is now live and ready to be used for live data collection.`,
+                            timeout: false,
+                        }).show()
+
+                        this.xlsform.complete = 1;
+                        this.xlsform.draft = 0;
+
+                    }
+                })
+        },
+        finalise() {
+
+            Swal.fire({
+                title: 'Are you sure?',
+                html: 'After finalising you can no longer make edits to this form. Please make sure you have tested the form and are happy with it.',
+                showCancelButton: true,
+                confirmButtonText: `Yes - finalise and publish the form ${this.xlsform.name}`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    axios.post("/xlsform/" + this.xlsform.name + "/finalise")
+                        .then(res => {
+                            new Noty({
+                                'type': 'info',
+                                'text': 'Your Survey is being finalised and deployed...',
+                            }).show();
+                        })
+                        .catch(err => {
+                            // check for validation error
+
+                            if (err.response && err.response.status === 422) {
+                                this.errors = err.response.data.errors;
+                            }
+
+                            this.reset()
+                        });
+                }
+            })
+
+
+        }
+    }
+
+
 }
 </script>
 

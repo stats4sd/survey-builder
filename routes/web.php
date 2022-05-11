@@ -58,6 +58,7 @@ Route::group(
 
         Route::put('xlsform/{xlsform}/customise', [XlsformController::class, 'updateCustomisations']);
         Route::post('xlsform/{xlsform}/build', [XlsformController::class, 'buildForm']);
+        Route::post('xlsform/{xlsform}/finalise', [XlsformController::class, 'finaliseForm']);
 
         // redirect xlsform crud users to front-end
         Route::get('admin/xlsform/create', function(){

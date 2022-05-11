@@ -84,11 +84,20 @@ gs
         </b-form-group>
 
         <h5>Upload Location Information for Choice Lists</h5>
-        <div v-if="hasHouseholdList">Please upload your location information as a .csv file. It should include <b>1 row
+        <div class="mt-3 alert alert-light text-dark" v-if="locationFileUrl">Current file: <a :href="locationFileUrl">{{ locationFileName }}</a></div>
+        <div v-if="locationFileUrl">
+            If you wish to replace this file, please add it below.
+            <br/>
+            <span v-if="hasHouseholdList">You may use <a href="/storage/location-template-with-households.csv">this template</a> as a guide.</span>
+            <span v-if="!hasHouseholdList">You may use <a href="/storage/location-template.csv">this template</a> as a guide.</span>
+        </div>
+
+        <div v-if="hasHouseholdList && !locationFileUrl">
+            Please upload your location information as a .csv file. It should include <b>1 row
             per household</b>.<br/> You may use <a href="/storage/location-template-with-households.csv">this template</a> as
             a guide.
         </div>
-        <div v-if="!hasHouseholdList">Please upload your location information as a .csv file. It should include <b>1 row
+        <div v-if="!hasHouseholdList && !locationFileUrl">Please upload your location information as a .csv file. It should include <b>1 row
             per village</b>.<br/> You may use <a href="/storage/location-template.csv">this template</a> as a guide.
         </div>
 
@@ -101,7 +110,6 @@ gs
             @input="updateLocationFile($event)"
         ></b-form-file>
         <div class="mt-3">Selected file: {{ locationFile ? locationFile.name : '' }}</div>
-        <div class="mt-3" v-if="locationFileUrl">Current file: <a :href="locationFileUrl">{{ locationFileName }}</a></div>
     </b-card>
 </template>
 <script>
