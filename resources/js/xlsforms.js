@@ -11,7 +11,9 @@ import FormBuilderStageThree from "./components/FormBuilderStageThree"
 import FormBuilderStageFour from "./components/FormBuilderStageFour";
 import FormKeyDetailsView from "./components/FormKeyDetailsView";
 
+import DemoTest from "./components/DemoTest";
 
+Vue.component('DemoTest', DemoTest)
 Vue.component('FormKeyDetailsView', FormKeyDetailsView)
 Vue.component('FormBuilderStageOne', FormBuilderStageOne)
 Vue.component('FormBuilderStageTwo', FormBuilderStageTwo)

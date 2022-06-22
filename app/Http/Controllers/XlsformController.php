@@ -246,6 +246,8 @@ class XlsformController extends CrudController
         $languages = Language::all();
         $countries = Country::all();
 
+        // TODO: refactor to avoid 'module' vs 'moduleVersion' confusion. (But need tests first to help with refactoring)
+
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
         $modules = ModuleVersion::with('module')->where('is_current', true)->get();

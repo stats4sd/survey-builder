@@ -66,6 +66,8 @@ Route::group(
         });
 
         Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
+
+        Route::view('demo', 'demotest');
     }
 );
 

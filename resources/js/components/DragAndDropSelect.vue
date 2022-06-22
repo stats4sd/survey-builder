@@ -53,9 +53,12 @@
                     :value="selected"
                     :group="itemsName"
                     @input="updateSelected"
+                    @end="sendCoreRemoveFailMessage"
+                    :move="preventCore"
                 >
                     <b-list-group-item
-
+                        :id="element.id"
+                        :class="element.module.core ? 'core' : ''"
                         :variant="element.module.core ? 'light' : 'primary'"
                         v-for="element in selected"
                         :key="element.id"
@@ -77,6 +80,7 @@
 </template>
 <script>
 import Draggable from "vuedraggable"
+import Noty from "noty"
 
 export default {
     name: 'drag-and-drop-select',
@@ -100,9 +104,42 @@ export default {
         //     this.$emit('update:available', available);
         // },
         updateSelected(selected) {
-            this.$emit('update:selected', selected);
-        }
 
+            this.$emit('update:selected', selected);
+        },
+
+        // prevent core modules from being removed from 'selected' list
+        preventCore(e, oldE) {
+
+            // if the module is a core module...
+            if (e.draggedContext.element.core_version_id && e.draggedContext.futureIndex === 0) {
+
+
+
+                // setup callback to send message on mouse up
+                this.sendCorePreventMessage = true;
+
+                // prevent the drag
+                return false;
+
+            }
+        },
+
+        sendCoreRemoveFailMessage() {
+            if (this.sendCorePreventMessage) {
+                new Noty({
+                    'type': 'error',
+                    'text': 'You cannot remove the core modules from the survey.'
+                }).show();
+            }
+            this.sendCorePreventMessage = false;
+        }
+    },
+
+    data() {
+        return {
+            sendCorePreventMessage: null
+        }
     }
 }
 </script>
