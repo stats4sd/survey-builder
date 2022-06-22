@@ -51,13 +51,9 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         }
 
-        $coreOptionRows = ChoicesRow::where('module_version_id', null)
-            ->whereNotIn('list_name', $selectedChoiceLists)
-            ->with('choicesLabels.language')
-            ->get();
-
-
-        $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
+        // get 'default' choice lists for all modules selected in the form
+        // Core module choice lists are always linked to the metadata_start module version, so are included here.
+        $modulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
             return $version
                 ->choicesRows
                 // if any localisable lists have selected items, do not get the 'defaults' for that list.
@@ -66,8 +62,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         })->flatten();
 
 
-        $defaultRows = $coreOptionRows
-            ->merge($optionalModulesRows)
+        $defaultRows = $modulesRows
             ->map(function ($row) {
 
                 $labels = $row->choicesLabels;

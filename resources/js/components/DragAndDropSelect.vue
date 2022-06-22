@@ -14,7 +14,7 @@
             <div style="height:75vh; overflow-y: scroll">
 
                 <draggable
-                    class="list-group flex-grow-1"
+                    class="list-group flex-grow-1 available"
                     :value="available"
                     :group="itemsName"
 
@@ -49,7 +49,7 @@
 
             <div style="height:75vh; overflow-y: scroll">
                 <draggable
-                    class="list-group flex-grow-1"
+                    class="list-group flex-grow-1 selected"
                     :value="selected"
                     :group="itemsName"
                     @input="updateSelected"
@@ -111,10 +111,9 @@ export default {
         // prevent core modules from being removed from 'selected' list
         preventCore(e, oldE) {
 
+
             // if the module is a core module...
-            if (e.draggedContext.element.core_version_id && e.draggedContext.futureIndex === 0) {
-
-
+            if (e.draggedContext.element.core_version_id && e.relatedContext.component.$el.classList.contains('available')) {
 
                 // setup callback to send message on mouse up
                 this.sendCorePreventMessage = true;

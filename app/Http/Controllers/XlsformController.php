@@ -109,7 +109,7 @@ class XlsformController extends CrudController
 
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-        $xlsform->moduleVersions()->sync($request->input('module_versions'));
+        $xlsform->moduleVersions()->sync($request->input('moduleVersions'));
 //        $xlsform->countries()->sync($request->input('countries'));
         $xlsform->languages()->sync($request->input('languages'));
 
@@ -130,10 +130,11 @@ class XlsformController extends CrudController
 
         $moduleVersions = [];
         foreach ($request->input('module_versions') as $key => $value) {
-            $moduleVersions[$value] = [
+            $moduleVersions[$value['id']] = [
                 'order' => $key,
             ];
         }
+
 
         $xlsform->update($attributes);
 
@@ -246,14 +247,12 @@ class XlsformController extends CrudController
         $languages = Language::all();
         $countries = Country::all();
 
-        // TODO: refactor to avoid 'module' vs 'moduleVersion' confusion. (But need tests first to help with refactoring)
-
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
-        $modules = ModuleVersion::with('module')->where('is_current', true)->get();
+        $moduleVersions = ModuleVersion::with('module')->where('is_current', true)->get();
 
         if ($xlsform) {
-            $xlsform->modules = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
+            $xlsform->module_versions = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
             $xlsform->load('themes', 'countries', 'languages', 'selectedChoicesRows.selectedChoicesLabels');
 
 
@@ -267,13 +266,14 @@ class XlsformController extends CrudController
 
         }
 
+
         return [
             'projects' => $projects,
             'themes' => $themes,
             'languages' => $languages,
             'countries' => $countries,
             'xlsform' => $xlsform,
-            'modules' => $modules,
+            'moduleVersions' => $moduleVersions,
         ];
     }
 

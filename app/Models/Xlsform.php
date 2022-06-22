@@ -92,7 +92,7 @@ class Xlsform extends Model
 
     public function moduleVersions()
     {
-        return $this->belongsToMany(ModuleVersion::class)->withPivot(['order']);
+        return $this->belongsToMany(ModuleVersion::class)->withPivot(['order'])->orderBy('pivot_order');
     }
 
     public function languages()

@@ -31,7 +31,7 @@
                     <!--  ################# STEP 3: MODULES #########################-->
                     <drag-and-drop-select
                         :available.sync="availableModules"
-                        :selected.sync="xlsform.modules"
+                        :selected.sync="xlsform.module_versions"
                         items-name="modules"
                     >
                         <template #selectedinfo>
@@ -182,13 +182,13 @@ export default {
     },
     props: {
         projects: {
-            default: []
+            default: () => []
         },
-        modules: {
-            default: []
+        moduleVersions: {
+            default: () => []
         },
         themes: {
-            default: []
+            default: () => []
         },
         xlsformOriginal: {
             default: null
@@ -212,7 +212,6 @@ export default {
                 countries: [],
                 languages: ['en'],
                 themes: [],
-                modules: [],
                 module_versions: [],
                 project_id: null,
                 title: "",
@@ -242,14 +241,15 @@ export default {
     },
     computed: {
         availableModules() {
-            return this.modules.filter(
-                module =>
-                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id) &&
-                    this.xlsform.themes.includes(module.module.theme_id)
+            return this.moduleVersions.filter(
+                module_version =>
+                    !this.xlsform.module_versions.some(xlsModule => xlsModule.id === module_version.id) &&
+                    this.xlsform.themes.includes(module_version.module.theme_id) &&
+                    !module_version.core_version_id
             );
         },
         selectedModuleIds() {
-            return this.xlsform.modules.map(module => module.id);
+            return this.xlsform.module_versions.map(module => module.id);
         }
     },
 
@@ -258,13 +258,13 @@ export default {
 
         // if creating (not editing) assign core modules to xlsform
         if (this.xlsformOriginal == null) {
-            this.xlsform.modules = this.modules.filter(
-                module => module.module.core === 1
+            this.xlsform.module_versions = this.moduleVersions.filter(
+                module_version => module_version.module.core === 1
             );
         } else {
             this.xlsform = {...this.xlsformOriginal};
             this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
-            this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+            this.xlsform.moduleVersionIds = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
             this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
             this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
         }
@@ -274,14 +274,17 @@ export default {
     methods: {
         // Generic function to check if method should be store or update
         submit() {
-            this.xlsform.module_versions = this.xlsform.modules.map(
-                module => module.id
-            );
             this.reset();
             this.processing = true;
             this.update();
         },
         update() {
+
+            // prepare form for posting:
+            let xlsform = {...this.xlsform}
+
+            // make moduleVersions a list of IDs
+            xlsform.module_versions = xlsform.module_versions.map(moduleVersion => moduleVersion.id);
 
             axios.put("/xlsform/" + this.xlsform.name, this.xlsform)
                 .then(res => {

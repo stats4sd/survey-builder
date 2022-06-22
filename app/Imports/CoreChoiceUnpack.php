@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\CoreVersion;
 use App\Models\Language;
 use Illuminate\Support\Collection;
 use App\Models\Xlsforms\ChoicesRow;
@@ -11,6 +12,14 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFormulas
 {
+
+    public CoreVersion $coreVersion;
+
+    public function __construct(CoreVersion $coreVersion)
+    {
+        $this->coreVersion = $coreVersion;
+    }
+
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
@@ -20,8 +29,14 @@ class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
                 continue;
             }
 
+            // get the moduleVersion for the metadata_start module linked to this core version:
+            $moduleStartVersionId = $this->coreVersion->moduleVersions()->whereHas('module', function($query) {
+                $query->where('slug', 'metadata_start');
+            })->first()->id;
+
             $ChoicesRow = ChoicesRow::create([
-                'module_id' => null, // so it's included in all forms
+                // link the choices to the metadata(start) of the current core version.
+                'module_version_id' => $moduleStartVersionId,
                 'list_name' => $row['list_name'],
                 'name' => $row['name'],
                 'is_localisable' => $row['localisable'] ?? 0,

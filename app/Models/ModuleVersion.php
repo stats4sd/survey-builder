@@ -12,7 +12,7 @@ use App\Imports\ModuleFileValidation;
 use App\Models\Traits\HasUploadFields;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-
+//
 class ModuleVersion extends Model
 {
     use CrudTrait, HasUploadFields;
@@ -59,8 +59,8 @@ class ModuleVersion extends Model
     {
 
         // clean out old module_version from survey and choices table
-        $this->surveyRows()->delete();
-        $this->choicesRows()->delete();
+//        $this->surveyRows()->delete();
+//        $this->choicesRows()->delete();
 
         // import the new file + unpack into ODK survey + choices tables
         (new ModuleFileUnpack($this))->import($this->file);

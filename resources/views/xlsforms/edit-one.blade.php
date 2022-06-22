@@ -34,7 +34,7 @@
                     :countries="{{$countries->toJson() }}"
                     :languages="{{ $languages->toJson() }}"
                     :projects="{{ $projects->toJson() }}"
-                    :modules="{{ $modules->toJson() }}"
+                    :module-versions="{{ $moduleVersions->toJson() }}"
                     :themes="{{ $themes->toJson() }}"
                     user-id="{{ Auth::id() }}"
                     :xlsform-original="{{ $xlsform->toJson() }}"
