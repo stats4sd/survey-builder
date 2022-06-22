@@ -26,7 +26,7 @@
                         available in this demo
                     </b-alert
                     >
-                    <theme-select :themes="themes" :selectedThemes.sync="xlsform.themes"/>
+
 
                     <!--  ################# STEP 3: MODULES #########################-->
                     <drag-and-drop-select
@@ -244,7 +244,6 @@ export default {
             return this.moduleVersions.filter(
                 module_version =>
                     !this.xlsform.module_versions.some(xlsModule => xlsModule.id === module_version.id) &&
-                    this.xlsform.themes.includes(module_version.module.theme_id) &&
                     !module_version.core_version_id
             );
         },
@@ -254,7 +253,6 @@ export default {
     },
 
     mounted() {
-
 
         // if creating (not editing) assign core modules to xlsform
         if (this.xlsformOriginal == null) {
