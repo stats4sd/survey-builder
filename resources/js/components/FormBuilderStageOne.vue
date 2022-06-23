@@ -106,28 +106,17 @@
 </template>
 
 <script>
-import ThemeSelect from "./ThemeSelect";
-import DragAndDropSelect from "./DragAndDropSelect";
-import Draggable from "vuedraggable";
+
 import vSelect from "vue-select";
 
 
 export default {
     name: 'form-builder-stage-one',
     components: {
-        DragAndDropSelect,
-        ThemeSelect,
-        Draggable,
         vSelect,
     },
     props: {
         projectsStart: {
-            default: () => []
-        },
-        modules: {
-            default: () => []
-        },
-        themes: {
             default: () => []
         },
         xlsformOriginal: {
@@ -136,7 +125,6 @@ export default {
         userId: {
             default: null
         },
-
         languages: {
             default: () => [],
         },
@@ -158,16 +146,6 @@ export default {
         };
     },
     computed: {
-        availableModules() {
-            return this.modules.filter(
-                module =>
-                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id) &&
-                    this.xlsform.themes.includes(module.module.theme_id)
-            );
-        },
-        selectedModuleIds() {
-            return this.xlsform.modules.map(module => module.id);
-        },
         hasErrors() {
             return Object.keys(this.errors).length > 0;
         }
@@ -176,14 +154,12 @@ export default {
     mounted() {
 
         // if creating (not editing) assign core modules to xlsform
-        if (this.xlsformOriginal == null) {
-            this.xlsform.modules = this.modules.filter(
-                module => module.module.core === 1
-            );
-        } else {
+        if (this.xlsformOriginal !== null) {
             this.xlsform = {...this.xlsformOriginal};
-            this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
-            this.xlsform.module_versions = this.xlsform.modules ? this.xlsform.themes.map(moduleVersion => moduleVersion.id) : []
+
+            // remove module versions to avoid updating the list on save
+            this.$set(this.xlsform, 'module_versions', null)
+
             this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
         }
 
@@ -194,10 +170,6 @@ export default {
         // Generic function to check if method should be store or update
         submit() {
             this.errors = {}
-
-            this.xlsform.module_versions = this.xlsform.modules.map(
-                module => module.id
-            );
 
             if (this.xlsformOriginal && this.xlsformOriginal.hasOwnProperty('name')) {
                 this.update();

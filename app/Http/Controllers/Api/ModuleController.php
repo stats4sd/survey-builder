@@ -66,8 +66,12 @@ class ModuleController extends Controller
 
     public function getDetails(ModuleVersion $moduleversion)
     {
-        $module = $moduleversion->load(['surveyRows.surveyLabels','surveyRows.choiceList', 'module.indicators', 'module.authors', 'module.languages', 'module.sdgs']);
-        $module->indicator_list = $module->module->indicators->pluck('name')->toArray();
-        return $module;
+        $moduleVersion = $moduleversion->load(['surveyRows.surveyLabels','surveyRows.choiceList', 'module.indicators', 'module.authors', 'module.languages', 'module.sdgs', 'module.currentVersions']);
+        $moduleVersion->indicator_list = $moduleVersion->module->indicators ? $moduleVersion->module->indicators->pluck('name')->toArray() : [];
+
+        if(!$moduleVersion->is_current) {
+            $moduleVersion->newestVersion = $moduleVersion->module->currentVersions[0]->load('surveyRows.surveyLabels', 'surveyRows.choiceList');
+        }
+        return $moduleVersion;
     }
 }

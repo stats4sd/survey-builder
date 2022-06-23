@@ -127,26 +127,26 @@ class XlsformController extends CrudController
     {
         // store and post to RHOMIS app
         $attributes = $request->validated();
-
-        $moduleVersions = [];
-        foreach ($request->input('module_versions') as $key => $value) {
-            $moduleVersions[$value['id']] = [
-                'order' => $key,
-            ];
-        }
-
-
         $xlsform->update($attributes);
 
 
         // handle many-many relationships
         $xlsform->themes()->sync($request->input('themes'));
-//        $xlsform->countries()->sync($request->input('countries'));
-
         $xlsform->languages()->sync($request->input('languages'));
 
-        // include ordering of module versions
-        $xlsform->moduleVersions()->sync($moduleVersions);
+        // only update module versions link IF the module_versions were included in the request
+        if ($request->input('module_versions')) {
+
+            $moduleVersions = [];
+            foreach ($request->input('module_versions') as $key => $value) {
+                $moduleVersions[$value['id']] = [
+                    'order' => $key,
+                ];
+            }
+
+            $xlsform->moduleVersions()->sync($moduleVersions);
+
+        }
 
         $this->buildForm($xlsform);
 
@@ -170,8 +170,8 @@ class XlsformController extends CrudController
             'has_household_list' => 'nullable',
         ]);
 
-        foreach($validated as $key => $value) {
-            if($value == null) {
+        foreach ($validated as $key => $value) {
+            if ($value == null) {
                 unset($validated[$key]);
             }
         }
@@ -188,8 +188,8 @@ class XlsformController extends CrudController
         $xlsform->update($validated);
 
         // handle location choice rows
-        if($xlsform->location_file_url) {
-               Excel::import(new ImportLocationsFileToChoices($xlsform), Storage::path($xlsform->location_file));
+        if ($xlsform->location_file_url) {
+            Excel::import(new ImportLocationsFileToChoices($xlsform), Storage::path($xlsform->location_file));
         }
 
         // handle selected choices rows
@@ -198,13 +198,13 @@ class XlsformController extends CrudController
 
         //filter out locations (that get mixed into the Vue objects after initial save)
         $selectedChoicesRows = collect($selectedChoicesRows)
-            ->map(function($row, $key) {
-                if(collect(['Country', 'region', 'subregion', 'village', 'household'])->contains($key)) {
+            ->map(function ($row, $key) {
+                if (collect(['Country', 'region', 'subregion', 'village', 'household'])->contains($key)) {
                     return null;
                 }
                 return $row;
             })
-        ->filter(fn($rows) => $rows );
+            ->filter(fn($rows) => $rows);
 
         foreach ($selectedChoicesRows as $listName => $choicesRows) {
 
@@ -249,10 +249,10 @@ class XlsformController extends CrudController
 
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
-        $moduleVersions = ModuleVersion::with('module')->where('is_current', true)->get();
+        $moduleVersions = ModuleVersion::with('module.currentVersions')->where('is_current', true)->get();
 
         if ($xlsform) {
-            $xlsform->module_versions = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
+            $xlsform->module_versions = $xlsform->moduleVersions->load('module.currentVersions')->sortBy('pivot.order')->values();
             $xlsform->load('themes', 'countries', 'languages', 'selectedChoicesRows.selectedChoicesLabels');
 
 
@@ -295,8 +295,8 @@ class XlsformController extends CrudController
     public function buildForm(Xlsform $xlsform)
     {
         // build and deploy form in background
-        BuildXlsForm::dispatch($xlsform->name, Auth::user());
-        // DeployXlsForm::dispatch($xlsform->name, Auth::user());
+        // BuildXlsForm::dispatch($xlsform->name, Auth::user());
+        DeployXlsForm::dispatch($xlsform->name, Auth::user());
     }
 
     public function finaliseForm(Xlsform $xlsform)

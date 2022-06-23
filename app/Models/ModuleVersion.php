@@ -106,6 +106,10 @@ class ModuleVersion extends Model
         return '('.$themeTitle.') ' . $moduleTitle . ' - Version: ' . $this->version_name;
     }
 
+    public function getModuleNameAttribute()
+    {
+        return $this->module->name;
+    }
 
 
     public function module()
