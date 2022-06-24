@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\CoreVersion;
 use App\Models\Language;
+use App\Models\Xlsforms\ChoiceList;
 use Illuminate\Support\Collection;
 use App\Models\Xlsforms\ChoicesRow;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -42,6 +43,16 @@ class CoreChoiceUnpack implements ToCollection, WithHeadingRow, WithCalculatedFo
                 'is_localisable' => $row['localisable'] ?? 0,
                 'list_type' => $row['list_type'] ?? null,
             ]);
+
+            ChoiceList::firstOrCreate([
+                'module_version_id' => $moduleStartVersionId,
+                'list_name' => $row['list_name'],
+            ], [
+                'is_localisable' => $row['localisable'] ?? 0,
+                'is_units' => $row['is_units'] ?? 0,
+                'is_locations' => $row['is_locations'] ?? 0,
+            ]);
+
 
             foreach ($row as $header => $value) {
                 if (preg_match('/(.+)::(.+) \((.+)\)/', $header, $matches) && $value !== null) {

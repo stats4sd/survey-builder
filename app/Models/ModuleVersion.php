@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\ChoicesRow;
 use App\Models\Xlsforms\SurveyRow;
 use Carbon\Carbon;
@@ -20,7 +21,7 @@ class ModuleVersion extends Model
     protected $table = 'module_versions';
     protected $guarded = ['id'];
     protected $appends = [
-//        'required',
+            'full_label',
     ];
     protected $casts = [
         'is_current' => 'boolean',
@@ -108,7 +109,12 @@ class ModuleVersion extends Model
 
     public function getModuleNameAttribute()
     {
-        return $this->module->name;
+        return $this->module->title;
+    }
+
+    public function getFullLabelAttribute()
+    {
+        return $this->module->title . " (" . $this->version_name .')';
     }
 
 
@@ -139,6 +145,11 @@ class ModuleVersion extends Model
     public function choicesRows()
     {
         return $this->hasMany(ChoicesRow::class);
+    }
+
+    public function choiceLists()
+    {
+        return $this->hasMany(ChoiceList::class);
     }
 
 

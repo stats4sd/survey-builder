@@ -41,8 +41,13 @@ class ChoiceListCrudController extends CrudController
     protected function setupListOperation()
     {
 
+        CRUD::column('moduleVersion')
+            ->label('Module Version')
+            ->type('relationship')
+            ->limit(500)
+        ->attribute('full_label');
 
-        CRUD::column('list_name')->label('List Name <br/>(Click to view list)')->wrapper([
+        CRUD::column('list_name')->label('List <br/>(Click to view list)')->wrapper([
             'href' => function($crud, $column, $entry) {
                 return backpack_url('choices-row?list_name= ' . $entry->list_name);
             }

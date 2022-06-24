@@ -144,13 +144,9 @@ export default {
 
         // at this stage, there should always be an xlsform to edit / update, so clone initial state ready for editing:
         this.xlsform = {...this.xlsformOriginal};
-        this.xlsform.themes = this.xlsform.themes.map(theme => theme.id);
 
-        this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
-
-        // keep languages as an array of objects as that's the best format for this page.
-
-        this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
+        // remove moduleVersions as unneeded (to avoid saving and overwriting list)
+        this.xlsform.moduleVersions = null
 
         this.xlsform.region_label = this.xlsform.region_label ? JSON.parse(this.xlsform.region_label) : {"en": "region"}
         this.xlsform.subregion_label = this.xlsform.subregion_label ? JSON.parse(this.xlsform.subregion_label) : {"en": "subregion"}

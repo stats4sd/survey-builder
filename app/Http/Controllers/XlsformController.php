@@ -146,6 +146,20 @@ class XlsformController extends CrudController
 
             $xlsform->moduleVersions()->sync($moduleVersions);
 
+            //when module versions are synced; also update the xlsformChoiceLists
+            $choiceListsComplete = $xlsform->choiceLists->where('pivot_complete', true)->pluck('id');
+
+            $listsToSync = $xlsform->moduleVersions->choiceLists;
+            $lists = [];
+            foreach ($listsToSync as $value) {
+                $lists[$value['id']] = [
+                    'completed' => $value['completed'],
+                ];
+            }
+
+            $xlsform->choiceLists()->sync($lists);
+
+
         }
 
         $this->buildForm($xlsform);

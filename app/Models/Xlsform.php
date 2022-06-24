@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Imports\ImportLocationsFileToChoices;
 use App\Models\Traits\HasUploadFields;
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
 use App\Models\Xlsforms\SelectedChoicesRow;
@@ -93,6 +94,11 @@ class Xlsform extends Model
     public function moduleVersions()
     {
         return $this->belongsToMany(ModuleVersion::class)->withPivot(['order'])->orderBy('pivot_order');
+    }
+
+    public function choiceLists()
+    {
+        return $this->belongsToMany(ChoiceList::class)->withPivot(['completed']);
     }
 
     public function languages()

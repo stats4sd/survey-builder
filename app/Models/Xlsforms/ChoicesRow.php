@@ -20,7 +20,7 @@ class ChoicesRow extends Model
 
     public function choiceList(): BelongsTo
     {
-        return $this->belongsTo(ChoiceList::class, 'list_name', 'list_name');
+        return $this->belongsTo(ChoiceList::class);
     }
 
     public function choicesLabels(): HasMany

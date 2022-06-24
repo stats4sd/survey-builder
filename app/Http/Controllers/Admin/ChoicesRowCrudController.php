@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ChoicesRowRequest;
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\ChoicesLabel;
 use App\Models\Xlsforms\ChoicesRow;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -58,6 +59,7 @@ protected function setupListOperation()
                 ],
             );
 
+        CRUD::column('ChoiceList')->label('module')->type('relationship')->attribute('module_list_label')->limit(500);
         CRUD::column('list_name');
         CRUD::column('name');
         CRUD::column('choicesLabels')
@@ -67,9 +69,9 @@ protected function setupListOperation()
         ->separator("<br/>");
 
         CRUD::filter('list_name')
-            ->type('select2_ajax')
+            ->type('dropdown')
             ->placeholder('View single choice list')
-            ->values('api/choice-list/search')
+            ->values(ChoiceList::all()->pluck('module_list_label', 'id')->toArray())
             ->whenActive(function($entry) {
                 CRUD::addClause('where', 'list_name', '=', $entry);
             });

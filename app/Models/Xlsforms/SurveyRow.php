@@ -46,6 +46,6 @@ class SurveyRow extends Model
 
     public function choiceList()
     {
-        return $this->belongsTo(ChoiceList::class, 'choice_list', 'list_name');
+        return $this->belongsTo(ChoiceList::class);
     }
 }
