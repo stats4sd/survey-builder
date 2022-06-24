@@ -43,7 +43,7 @@ class RegisteredUserController extends Controller
             'password' => 'required|string|confirmed|min:6',
         ]);
 
-        $response = Http::post(config('auth.auth_url').'/api/user/register', $newUser);
+        $response = Http::post(config('app.auth_url').'/api/user/register', $newUser);
 
         // if creation fails
         if (! $response->ok()) {
@@ -72,7 +72,7 @@ class RegisteredUserController extends Controller
 
         // return redirect()->intended(RouteServiceProvider::HOME);
 
-        // $loginResponse = Http::post(config('auth.auth_url').'/api/user/login', $login);
+        // $loginResponse = Http::post(config('app.auth_url').'/api/user/login', $login);
 
         // //If cannot authenticate
         // if (! $loginResponse->ok()) {
@@ -81,7 +81,7 @@ class RegisteredUserController extends Controller
         //     ]);
         // }
 
-        // $decoded = JWT::decode($loginResponse->body(), config('auth.auth_secret'), ['alg' => 'HS256']);
+        // $decoded = JWT::decode($loginResponse->body(), config('app.auth_secret'), ['alg' => 'HS256']);
 
 
         // //If user is not in system, store:

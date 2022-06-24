@@ -18,6 +18,6 @@ class VerifyCsrfToken extends Middleware
     public function __construct(Application $app, Encrypter $encrypter)
     {
         parent::__construct($app, $encrypter);
-        $this->except = [config('auth.auth_url')];
+        $this->except = [config('app.auth_url')];
     }
 }

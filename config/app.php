@@ -2,6 +2,12 @@
 
 return [
 
+    // RHOMIS custom stuff
+    'auth_url' => env('AUTH_URL', 'http://localhost:3002'),
+    'rhomis_url' => env('RHOMIS_URL', 'http://localhost:3000'),
+    'auth_secret' => env('AUTH_SECRET', ''),
+    'deployment_enabled' => env('DEPLOYMENT_ENABLED', true),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

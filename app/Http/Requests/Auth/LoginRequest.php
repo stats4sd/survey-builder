@@ -117,14 +117,14 @@ class LoginRequest extends FormRequest
         // decode token to get User info
         // $token = JWTAuth::getToken();
         $token = $this->input('token');
-        $decoded = JWT::decode($token, config('auth.auth_secret'), ['alg' => 'HS256']);
+        $decoded = JWT::decode($token, config('app.auth_secret'), ['alg' => 'HS256']);
 
         // get user details:
         $userMeta = Http::withHeaders([
             'Authorization' => $token,
             'Content-Type' => 'application/json',
         ])
-            ->post(config('auth.auth_url') . '/api/meta-data')
+            ->post(config('app.auth_url') . '/api/meta-data')
             ->throw()
             ->json();
 

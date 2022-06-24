@@ -3,7 +3,7 @@
     <div class="card bg-white">
         <div class=" card-body d-flex align-items-center">
             <h5 class="mr-3 mb-0">Sign in through the RHoMIS System:</h5>
-            <a href="{{ config('auth.rhomis_url') }}" class="btn btn-primary">Sign in</a>
+            <a href="{{ config('app.rhomis_url') }}" class="btn btn-primary">Sign in</a>
         </div>
     </div>
 

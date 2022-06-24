@@ -17,7 +17,7 @@
             </b-card-header>
         </b-card>
 
-        <form-key-details-view :xlsform="{{ $xlsform->toJson() }}" rhomis-app-url="{{ config('auth.rhomis_url') }}"></form-key-details-view>
+        <form-key-details-view :xlsform="{{ $xlsform->toJson() }}" rhomis-app-url="{{ config('app.rhomis_url') }}"></form-key-details-view>
 
         <b-card no-body class="border-dark border-top-0 rounded-top rounded-lg" header-bg-variant="dark">
             <template #header>

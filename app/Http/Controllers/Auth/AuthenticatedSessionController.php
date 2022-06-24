@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
         //if(app()->environment('local')) {
             return view('auth.login');
         //} else {
-        //    return redirect(config('auth.rhomis_url'));
+        //    return redirect(config('app.rhomis_url'));
         //}
     }
 
@@ -59,6 +59,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect(config('auth.rhomis_url'));
+        return redirect(config('app.rhomis_url'));
     }
 }

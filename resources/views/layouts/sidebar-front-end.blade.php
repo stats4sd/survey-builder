@@ -1,10 +1,10 @@
 <div class="{{ config('backpack.base.sidebar_class') }}">
     <nav class="sidebar-nav overflow-hidden">
     <ul class="nav">
-            <li class='nav-item'><a class='nav-link' href='{{ config('auth.rhomis_url') }}'>Portal</a></li>
+            <li class='nav-item'><a class='nav-link' href='{{ config('app.rhomis_url') }}'>Portal</a></li>
             <li class='nav-item'><a class='nav-link active' href='#'>Design a Survey</a></li>
-            <li class='nav-item'><a class='nav-link' href='{{ config('auth.rhomis_url') . "/#/projects" }}'>Manage Projects</a></li>
-            <li class='nav-item'><a class='nav-link' href='{{ config('auth.rhomis_url') . "/#/projects" }}'>Collect Data</a></li>
+            <li class='nav-item'><a class='nav-link' href='{{ config('app.rhomis_url') . "/#/projects" }}'>Manage Projects</a></li>
+            <li class='nav-item'><a class='nav-link' href='{{ config('app.rhomis_url') . "/#/projects" }}'>Collect Data</a></li>
             @if(Auth::user()->is_admin)
                 <li class="'nav-item"><a class="nav-link" href="{{ url('admin') }}">Survey Builder Backend</a> </li>
             @endif

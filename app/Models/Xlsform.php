@@ -46,7 +46,7 @@ class Xlsform extends Model
     public function getRhomisAppUrl()
     {
         if ($this->xlsfile) {
-            return config('auth.rhomis_url');
+            return config('app.rhomis_url');
         }
     }
 

@@ -55,7 +55,7 @@ class FinaliseXlsForm implements ShouldQueue
             'Authorization' => $this->user->jwt_token,
         ])
             ->post(
-                config('auth.auth_url') .
+                config('app.auth_url') .
                 "/api/forms/publish?form_name=" . Str::slug($this->xlsform->name) .
                 "&project_name=" . urlencode($this->xlsform->project->name)
             )
