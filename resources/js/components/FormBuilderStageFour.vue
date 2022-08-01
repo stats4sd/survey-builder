@@ -51,23 +51,23 @@
                 <b-list-group>
                     <b-list-group-item class="d-flex">
                         <b-col cols="6" class="text-right">No. of Countries:</b-col>
-                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.Country.length }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ countryCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
                         <b-col cols="6" class="text-right">{{ xlsform.region_label.en }} count:</b-col>
-                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.region.length }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ regionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
                         <b-col cols="6" class="text-right">{{  xlsform.subregion_label.en }} count:</b-col>
-                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.subregion.length }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ subregionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
                         <b-col cols="6" class="text-right">{{  xlsform.village_label.en }} count:</b-col>
-                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.village.length }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ villageCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-if="xlsform.has_household_list">
                         <b-col cols="6" class="text-right">No. of Households:</b-col>
-                        <b-col cols="3" class="font-weight-bold">{{ selectedChoicesRows.household.length }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ householdCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-else>
                         This form does not a pre-defined list of households. Household id entry will be via number or free-text field entry.
@@ -177,7 +177,23 @@ export default {
             })
 
             return nonLocationRows;
-        }
+        },
+        countryCount() {
+            return this.selectedChoicesRows.hasOwnProperty('Country') ? this.selectedChoicesRows.Country.length : 0;
+        },
+        regionCount() {
+            return this.selectedChoicesRows.hasOwnProperty('region') ? this.selectedChoicesRows.region.length : 0;
+        },
+        subregionCount() {
+            return this.selectedChoicesRows.hasOwnProperty('subregion') ? this.selectedChoicesRows.subregion.length : 0;
+        },
+        villageCount() {
+            return this.selectedChoicesRows.hasOwnProperty('village') ? this.selectedChoicesRows.village.length : 0;
+        },
+        householdCount() {
+            return this.selectedChoicesRows.hasOwnProperty('household') ? this.selectedChoicesRows.household.length : 0;
+        },
+
     },
 
     mounted() {
@@ -330,9 +346,9 @@ export default {
 
             Swal.fire({
                 title: 'Are you sure?',
-                html: 'After finalising you can no longer make edits to this form. Please make sure you have tested the form and are happy with it.',
+                html: 'If this form is already live, this will update the live version with your latest edits. Otherwise, the form will be published and become ready for live data collection. Further edits to this form will be to a new draft version, and will not affect the published version until you re-publish the draft from here.',
                 showCancelButton: true,
-                confirmButtonText: `Yes - finalise and publish the form ${this.xlsform.name}`,
+                confirmButtonText: `Yes - publish the form ${this.xlsform.name}`,
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {

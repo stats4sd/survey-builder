@@ -149,7 +149,7 @@ class LoginRequest extends FormRequest
             if (!Project::find($project['name'])) {
                 Project::create([
                     'name' => $project['name'],
-                    'description' => $project['description'],
+                    'description' => $project['description'] ?? null,
                 ]);
             }
         }

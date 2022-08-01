@@ -80,15 +80,15 @@
                         <div class="col-12 col-lg-9">
                             <ul class="w-100">
                                 <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">1. Try out the Form in ODK Collect:</span>
+                                    <span class="w-50 text-right mr-4">1. Test out the Form in ODK Collect:</span>
                                     <a
 
-                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect/draft'"
                                         class="btn btn-link"
                                         :class="processing ? 'disabled' : ''"
                                     >
                                         <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Collect data
+                                        Test Survey
                                     </a>
                                 </li>
                                 <li v-if="xlsform.download_url && (xlsform.draft || xlsform.complete)" class="d-flex align-items-center">
