@@ -80,7 +80,6 @@ class DeployXlsForm implements ShouldQueue
                 });
         }
 
-        ddd($forms);
         // if the form doesn't exist on RHOMIS, create it...
         if (collect($forms)->contains($this->xlsform->name) || collect($forms)->contains(Str::lower(Str::replace(' ', '-', $this->xlsform->name)))) {
             $postUrl = 'new-draft';
