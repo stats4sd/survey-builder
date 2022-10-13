@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Xlsform::class);
     }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('admin');
+    }
 }

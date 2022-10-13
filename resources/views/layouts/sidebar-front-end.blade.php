@@ -5,7 +5,7 @@
             <li class='nav-item'><a class='nav-link active' href='#'>Design a Survey</a></li>
             <li class='nav-item'><a class='nav-link' href='{{ config('auth.rhomis_url') . "/#/projects" }}'>Manage Projects</a></li>
             <li class='nav-item'><a class='nav-link' href='{{ config('auth.rhomis_url') . "/#/projects" }}'>Collect Data</a></li>
-            @if(Auth::user()->is_admin)
+            @if(Auth::user()->isAdmin())
                 <li class="'nav-item"><a class="nav-link" href="{{ url('admin') }}">Survey Builder Backend</a> </li>
             @endif
             <li class='nav-item'>
