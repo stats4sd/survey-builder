@@ -30,26 +30,22 @@ class ModuleVersion extends Model
     {
 
         //Run validation **before** initial save
-        static::saving(function($moduleVersion) {
+        static::saving(function ($moduleVersion) {
 
-            // Only do this if the module version is stand-alone. Core Versions get validated at the CoreVersion level.
-            if(!$moduleVersion->core_version_id) {
-                Excel::import(new ModuleFileValidation($moduleVersion), $moduleVersion->file);
-            }
+
+            Excel::import(new ModuleFileValidation($moduleVersion), $moduleVersion->file);
 
         });
 
 //        // run importer to add question count to module Version
 //        static::created(function($moduleVersion) {
-//            if(!$moduleVersion->core_version_id) {
 //                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
-//            }
 //        });
 //
 //        static::updated(function($moduleVersion) {
 //            // if file is dirty
 //
-//            if(!$moduleVersion->core_version_id && $moduleVersion->wasChanged('file')) {
+//            if($moduleVersion->wasChanged('file')) {
 //                Excel::import(new ModuleFileImport($moduleVersion), $moduleVersion->file);
 //            }
 //        });
@@ -64,7 +60,6 @@ class ModuleVersion extends Model
 
         // import the new file + unpack into ODK survey + choices tables
         (new ModuleFileUnpack($this))->import($this->file);
-
 
 
         //remove 'is_current' flag from previous versions. If full - only change other full. if 'mini', change other minis
@@ -103,9 +98,8 @@ class ModuleVersion extends Model
         $moduleTitle = $this->module ? $this->module->title : null;
         $themeTitle = $this->module ? ($this->module->theme ? $this->module->theme->title : null) : null;
 
-        return '('.$themeTitle.') ' . $moduleTitle . ' - Version: ' . $this->version_name;
+        return '(' . $themeTitle . ') ' . $moduleTitle . ' - Version: ' . $this->version_name;
     }
-
 
 
     public function module()
@@ -123,21 +117,15 @@ class ModuleVersion extends Model
         return $this->belongsToMany(Xlsform::class)->withPivot(['order']);
     }
 
-    public function coreVersion ()
-    {
-       return $this->belongsTo(CoreVersion::class);
-    }
-
     public function surveyRows()
     {
         return $this->hasMany(SurveyRow::class);
     }
+
     public function choicesRows()
     {
         return $this->hasMany(ChoicesRow::class);
     }
-
-
 
 
     public function setFileAttribute($value)

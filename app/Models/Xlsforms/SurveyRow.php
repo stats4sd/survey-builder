@@ -24,7 +24,11 @@ class SurveyRow extends Model
      */
     public function getIsCoreAttribute()
     {
-        return $this->moduleVersion->core_version_id !== null;
+        if ($this->moduleVersion) {
+            return $this->moduleVersion->module->core;
+        }
+
+        return false;
     }
 
     public function getEnglishLabelAttribute()
