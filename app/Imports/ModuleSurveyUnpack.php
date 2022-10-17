@@ -77,7 +77,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 'calculation' => $row['calculation'],
                 'choice_filter' => $row['choice_filter'],
                 'is_localisable' => $localisable,
-                'localise_what' => json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR) ?? null,
+                'localise_what' => isset($row['localise_what']) ? json_encode(explode(', ', $row['localise_what']), JSON_THROW_ON_ERROR) : null,
                 'choice_list' => ($choiceList !== '') ? $choiceList : null,
             ]);
 
