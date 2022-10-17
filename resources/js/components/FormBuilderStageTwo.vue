@@ -26,7 +26,6 @@
                         available in this demo
                     </b-alert
                     >
-                    <theme-select :themes="themes" :selectedThemes.sync="xlsform.themes"/>
 
                     <!--  ################# STEP 3: MODULES #########################-->
                     <drag-and-drop-select
@@ -71,60 +70,61 @@
                     </b-button>
                 </b-form>
 
-                    <hr/>
-                    <h4>Next Steps</h4>
-                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save the form, new
-                        options will appear below.
+                <hr/>
+                <h4>Next Steps</h4>
+                <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save the form, new
+                    options will appear below.
+                </div>
+                <div class="row">
+                    <div class="col-12 col-lg-9">
+                        <ul class="w-100">
+                            <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                <span class="w-50 text-right mr-4">1. Test out the Form in ODK Collect:</span>
+                                <a
+
+                                    :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect/draft'"
+                                    class="btn btn-link"
+                                    :class="processing ? 'disabled' : ''"
+                                >
+                                    <i class="la la-spinner la-spin" v-if="processing"></i>
+                                    Test Survey
+                                </a>
+                            </li>
+                            <li v-if="xlsform.download_url && (xlsform.draft || xlsform.complete)"
+                                class="d-flex align-items-center">
+                                <span class="w-50 text-right mr-4">2. Review the ODK Form in Excel:</span>
+                                <a
+                                    :href="!processing ? xlsform.download_url : ''"
+                                    class="btn btn-link"
+                                    :class="processing ? 'disabled' : ''"
+                                >
+                                    <i class="la la-spinner la-spin" v-if="processing"></i>
+                                    Download XLS Form
+                                </a>
+                            </li>
+                            <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                                <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
+                                <a
+                                    :href="`/xlsform/${xlsform.name}/edit-three`"
+                                    class="btn btn-primary"
+                                    :class="processing ? 'disabled' : ''"
+                                >
+                                    <i class="la la-spinner la-spin" v-if="processing"></i>
+                                    Continue to Customise
+                                </a>
+                            </li>
+
+                        </ul>
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-lg-9">
-                            <ul class="w-100">
-                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">1. Test out the Form in ODK Collect:</span>
-                                    <a
+                </div>
 
-                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect/draft'"
-                                        class="btn btn-link"
-                                        :class="processing ? 'disabled' : ''"
-                                    >
-                                        <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Test Survey
-                                    </a>
-                                </li>
-                                <li v-if="xlsform.download_url && (xlsform.draft || xlsform.complete)" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">2. Review the ODK Form in Excel:</span>
-                                    <a
-                                        :href="!processing ? xlsform.download_url : ''"
-                                        class="btn btn-link"
-                                        :class="processing ? 'disabled' : ''"
-                                    >
-                                        <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Download XLS Form
-                                    </a>
-                                </li>
-                                <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">3. Continue to Stage 3 - Customise your form:</span>
-                                    <a
-                                        :href="`/xlsform/${xlsform.name}/edit-three`"
-                                        class="btn btn-primary"
-                                        :class="processing ? 'disabled' : ''"
-                                    >
-                                        <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Continue to Customise
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="d-flex">
+                <div class="d-flex">
                         <span v-if="processing"
                               :class="building ? 'text-secondary' : ''">Your form is being saved...</span>
-                        <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
-                        <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
-                        <span v-if="complete" class="ml-2">...success!</span>
-                    </div>
+                    <span v-if="processing" :class="deploying ? 'text-secondary' : ''" class="ml-2">...your XLSX file is being generated...</span>
+                    <span v-if="deploying" :class="complete ? 'text-secondary' : ''" class="ml-2">...your form is being deployed...</span>
+                    <span v-if="complete" class="ml-2">...success!</span>
+                </div>
             </div>
             <div class="col-md-6 offset-3" v-if="needRelogin">
                 <a
@@ -158,7 +158,9 @@
                 <b-table :fields="odkSurveyColumns" :items="modalModuleQuestions" :tbody-tr-class="questionRowClass">
                     <template #cell(is_localisable)="row">
                         <span
-                            :class="row.item.is_localisable ? 'text-bold text-dark bg-warning w-100' : ''">{{ row.item.is_localisable ? 'Yes' : '-' }}</span>
+                            :class="row.item.is_localisable ? 'text-bold text-dark bg-warning w-100' : ''">{{
+                                row.item.is_localisable ? 'Yes' : '-'
+                            }}</span>
                     </template>
                 </b-table>
             </div>
@@ -185,9 +187,6 @@ export default {
             default: []
         },
         modules: {
-            default: []
-        },
-        themes: {
             default: []
         },
         xlsformOriginal: {
@@ -244,8 +243,7 @@ export default {
         availableModules() {
             return this.modules.filter(
                 module =>
-                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id) &&
-                    this.xlsform.themes.includes(module.module.theme_id)
+                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id)
             );
         },
         selectedModuleIds() {
@@ -257,17 +255,15 @@ export default {
 
 
         // if creating (not editing) assign core modules to xlsform
-        if (this.xlsformOriginal == null) {
-            this.xlsform.modules = this.modules.filter(
-                module => module.module.core === 1
-            );
-        } else {
-            this.xlsform = {...this.xlsformOriginal};
-            this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
-            this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
-            this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
-            this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
-        }
+        this.xlsform = {...this.xlsformOriginal};
+
+        this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
+        this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+        this.xlsform.countries = this.xlsform.countries ? this.xlsform.countries.map(country => country.id) : []
+        this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
+
+        // handle modules
+
 
         this.setupListeners()
     },

@@ -35,7 +35,6 @@
                     :languages="{{ $languages->toJson() }}"
                     :projects="{{ $projects->toJson() }}"
                     :modules="{{ $modules->toJson() }}"
-                    :themes="{{ $themes->toJson() }}"
                     user-id="{{ Auth::id() }}"
                     :xlsform-original="{{ $xlsform->toJson() }}"
                     rhomis-app-url="{{ config('auth.rhomis_url') }}"
