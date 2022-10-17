@@ -51,12 +51,6 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         }
 
-        $coreOptionRows = ChoicesRow::where('module_version_id', null)
-            ->whereNotIn('list_name', $selectedChoiceLists)
-            ->with('choicesLabels.language')
-            ->get();
-
-
         $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
             return $version
                 ->choicesRows
@@ -66,8 +60,7 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
         })->flatten();
 
 
-        $defaultRows = $coreOptionRows
-            ->merge($optionalModulesRows)
+        $defaultRows = $optionalModulesRows
             ->map(function ($row) {
 
                 $labels = $row->choicesLabels;
