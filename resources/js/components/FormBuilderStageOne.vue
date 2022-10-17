@@ -179,7 +179,9 @@ export default {
         if (this.xlsformOriginal == null) {
             this.xlsform.modules = this.modules.filter(
                 module => module.module.core === 1
-            );
+            ).sort((a,b) => {
+                return a.module.lft > b.module.lft
+            });
         } else {
             this.xlsform = {...this.xlsformOriginal};
             this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
