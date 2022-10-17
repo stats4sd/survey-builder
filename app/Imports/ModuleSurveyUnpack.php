@@ -31,7 +31,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
     public function collection(Collection $rows)
     {
         //
-        $moduleLocalisable = false;
+        $localisable = false;
 
         $this->moduleVersion->update(
             [
@@ -46,10 +46,8 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
                 continue;
             }
 
-            $localisable = $row['localisable'] === "TRUE" || (($row['localisable'] ?? false));
-
-            if($localisable) {
-                $moduleLocalisable = true;
+            if (isset($row['localisable'])) {
+                $localisable = $row['localisable'] === "TRUE" || (($row['localisable'] ?? false));
             }
 
 
@@ -57,10 +55,10 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
 
             $choiceList = '';
             // for select questions, extract the choice list to allow linking
-            if(Str::contains($row['type'], ['select_one', 'select_multiple'])) {
-                $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''],$row['type']);
+            if (Str::contains($row['type'], ['select_one', 'select_multiple'])) {
+                $choiceList = Str::replace(['select_one ', 'select_multiple '], ['', ''], $row['type']);
 
-                if($choiceLists->pluck('list_name')->doesntContain($choiceList)) {
+                if ($choiceLists->pluck('list_name')->doesntContain($choiceList)) {
                     ChoiceList::create(['list_name' => $choiceList]);
                 }
             }
@@ -107,7 +105,7 @@ class ModuleSurveyUnpack implements ToCollection, WithHeadingRow, WithCalculated
 
         }
         $this->moduleVersion->update([
-            'is_localisable' => $moduleLocalisable
+            'is_localisable' => (bool)$localisable,
         ]);
     }
 }
