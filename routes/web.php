@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CoreVersionCrudController;
 use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\XlsChoicesController;
 use App\Http\Controllers\XlsformController;
 use App\Http\Controllers\XlsSurveyRowController;
@@ -66,6 +67,10 @@ Route::group(
         });
 
         Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
+
+
+        Route::get('template-download/{xlsform}', [TemplateController::class, 'download']);
+        Route::get('template-download-household/{xlsform}', [TemplateController::class, 'downloadHousehold']);
     }
 );
 

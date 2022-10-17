@@ -6,6 +6,7 @@
                     <h2 class="mb-3">Stage 3 - Customise to local context</h2>
 
                     <customise-locations
+                        :xlsform-name="xlsform.name"
                         :languages="xlsform.languages"
                         :region-label.sync="xlsform.region_label"
                         :subregion-label.sync="xlsform.subregion_label"
