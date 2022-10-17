@@ -94,11 +94,11 @@ gs
 
         <div v-if="hasHouseholdList && !locationFileUrl">
             Please upload your location information as a .csv file. It should include <b>1 row
-            per household</b>.<br/> You may use <a href="/storage/location-template-with-households.csv">this template</a> as
+            per household</b>.<br/> You may use  <a :href="'/template-download-household/'+xlsformName">this template</a> as
             a guide.
         </div>
         <div v-if="!hasHouseholdList && !locationFileUrl">Please upload your location information as a .csv file. It should include <b>1 row
-            per village</b>.<br/> You may use <a href="/storage/location-template.csv">this template</a> as a guide.
+            per village</b>.<br/> You may use <a :href="'/template-download/'+xlsformName">this template</a> as a guide.
         </div>
 
         <b-form-file
@@ -139,6 +139,7 @@ export default {
         locationFile: {
             default: null,
         },
+        xlsformName: ''
     },
 
     methods: {
