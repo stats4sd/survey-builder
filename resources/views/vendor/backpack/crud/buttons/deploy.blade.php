@@ -1,5 +1,7 @@
 @if ($crud->hasAccess('update'))
-	<a href="javascript:void(0)" onclick="deployEntry(this)" data-route="{{ url($crud->route.'/'.$entry->getKey().'/deploy') }}" class="btn btn-sm btn-link" data-button-type="deploy"><i class="la la-copy"></i>Deploy to Central</a>
+	<a href="javascript:void(0)" onclick="deployEntry(this)" data-route="{{ url($crud->route.'/'.$entry->getKey().'/deploy') }}" class="btn btn-sm btn-link" data-button-type="deploy">
+        <i class="la la-copy"></i>Deploy to Central
+    </a>
 @endif
 
 {{-- Button Javascript --}}

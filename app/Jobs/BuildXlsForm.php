@@ -4,10 +4,12 @@ namespace App\Jobs;
 
 use App\Events\BuildXlsFormComplete;
 use App\Events\BuildXlsFormFailed;
+use App\Events\DeploymentErrorOccured;
 use App\Events\DeployXlsFormComplete;
 use App\Exports\XlsFormExport;
 use App\Models\User;
 use App\Models\Xlsform;
+use App\Services\PyXformService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,6 +18,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Telescope\Telescope;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
@@ -45,29 +48,35 @@ class BuildXlsForm implements ShouldQueue
     {
         $path = $this->xlsform->name . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $this->xlsform->name . '.xlsx';
 
-        try {
 
-            $file = Excel::store(new XlsFormExport($this->xlsform), $path);
+        $file = Excel::store(new XlsFormExport($this->xlsform), $path);
 
-            $this->xlsform->update([
-                'xlsfile' => $path
-            ]);
+        $this->xlsform->update([
+            'xlsfile' => $path
+        ]);
 
-            // broadcast completion of xlsfile
-            BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
-            DeployXlsForm::dispatch($this->xlsform->name, $this->user);
-            //DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
-        } catch (Exception | \PhpOffice\PhpSpreadsheet\Exception $e) {
-            $this->fail($e);
-        } catch (\RuntimeException $e) {
-            $this->fail($e);
+        // test built form against pyxform standard;
+        $testResult = (new PyXformService)->testXlsform($this->xlsform);
+
+        if ($testResult !== true) {
+
+            BuildXlsFormFailed::dispatch($this->xlsform->name, $testResult->join(', '), 500, $this->user);
+
+            return;
         }
+
+        // broadcast completion of xlsfile
+        BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+        DeployXlsForm::dispatch($this->xlsform->name, $this->user);
+
+
+        //DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
 
     }
 
     public function failed($e): void
     {
-        BuildXlsFormFailed::dispatch($e->getMessage(), $e->getCode(), $this->xlsform->name, $this->user);
+        dd($e);
     }
 
 

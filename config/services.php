@@ -36,6 +36,8 @@ return [
             'email' => env('ODK_CENTRAL_ADMIN_EMAIL'),
             'password' => env('ODK_CENTRAL_ADMIN_PASSWORD'),
         ],
+        'test-project' => env('ODK_TEST_PROJECT', 'project-for-testing'),
+        'pyxform-path' => env('PYXFORM_PATH'),
     ],
 
 ];

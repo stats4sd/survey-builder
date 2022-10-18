@@ -2,15 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\XlsFormExport;
+use App\Jobs\BuildXlsForm;
 use App\Models\Module;
 use App\Imports\CoreFileImport;
 use App\Http\Requests\ModuleRequest;
+use App\Models\ModuleVersion;
+use App\Models\Xlsform;
+use App\Services\PyXformService;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\CoreImportRequest;
 use App\Http\Controllers\Operations\ImportOperation;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * Class ModuleCrudController
@@ -62,7 +72,6 @@ class ModuleCrudController extends CrudController
         $this->crud->query = $this->crud->query->orderBy('lft', 'asc');
 
 
-
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
         CRUD::column('slug')->label('slug');
@@ -82,16 +91,73 @@ class ModuleCrudController extends CrudController
         CRUD::filter('optional')
             ->label('Show only optional modules')
             ->type('simple')
-            ->whenActive(function($value) {
+            ->whenActive(function ($value) {
                 CRUD::addClause('where', 'core', 0);
             });
 
         CRUD::filter('core')
             ->label('Show only core modules')
             ->type('simple')
-            ->whenActive(function($value) {
+            ->whenActive(function ($value) {
                 CRUD::addClause('where', 'core', 1);
             });
+
+
+        CRUD::addButton('top', 'testCore', 'view', 'backpack::crud.buttons.test-core');
+    }
+
+    /**
+     * Builds a form and runs through pyXform to check it compiles to a valid ODK form.
+     * If a module is passed as a prop, that is added to the core and then compiled. Otherwise just the core is tested.
+     */
+    public function testModules(Module $module = null)
+    {
+
+        // build core form
+        $randomSeed = Str::uuid();
+        $xlsform = Xlsform::create([
+            'name' => 'test-form-' . $randomSeed,
+            'user_id' => Auth::id(),
+            'project_name' => config('services.odk_central.test-project'),
+        ]);
+
+    //TODO: update to check full or reduced;
+
+        $xlsform->moduleVersions()
+            ->sync(ModuleVersion::where('is_current', 1)
+                ->whereHas('module', function ($query) {
+                    $query->where('module.core', 1);
+                })
+                ->get()
+                ->pluck('id')
+                ->toArray()
+            );
+
+        if($module) {
+            $versions = $module->moduleVersions()->where('is_current', 1)
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
+            $xlsform->moduleVersions()->syncWithoutDetaching($versions);
+        }
+
+        $path = $xlsform->name . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $xlsform->name . '.xlsx';
+
+
+        $file = Excel::store(new XlsFormExport($xlsform), $path);
+
+        $xlsform->update([
+            'xlsfile' => $path
+        ]);
+
+        // test built form against pyxform standard;
+        $result = (new PyXformService())->testXlsform($xlsform);
+
+        if ($result === true) {
+            return response('All Core modules compiled successfully!', 200);
+        }
+        throw new \Exception($result->join(','), 500);
     }
 
     /**
