@@ -6,6 +6,8 @@
 // This route file is loaded automatically by Backpack\Base.
 // Routes you generate using Backpack\Generators will be placed here.
 
+use App\Http\Controllers\Admin\ModuleCrudController;
+
 Route::group([
     'prefix'     => config('backpack.base.route_prefix', 'admin'),
     'middleware' => array_merge(
@@ -42,4 +44,8 @@ Route::group([
 
     Route::crud('choice-list', 'ChoiceListCrudController');
     Route::crud('choices-row', 'ChoicesRowCrudController');
+
+    Route::post('module/test-core', [ModuleCrudController::class, 'testModules']);
+    Route::post('module/{module}/test-optional', [ModuleCrudController::class, 'testModules']);
+
 }); // this should be the absolute last line of this file

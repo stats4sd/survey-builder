@@ -27,7 +27,7 @@ class BuildXlsFormFailed implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(string $message, int $code, $xlsform, User $user = null)
+    public function __construct($xlsform, $message, $code, User $user = null)
     {
         $this->message = $message;
         $this->code = $code;
