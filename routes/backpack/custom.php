@@ -45,5 +45,7 @@ Route::group([
     Route::crud('choice-list', 'ChoiceListCrudController');
     Route::crud('choices-row', 'ChoicesRowCrudController');
 
-    Route::post('module/test-core', [ModuleCrudController::class, 'testCore']);
+    Route::post('module/test-core', [ModuleCrudController::class, 'testModules']);
+    Route::post('module/{module}/test-optional', [ModuleCrudController::class, 'testModules']);
+
 }); // this should be the absolute last line of this file

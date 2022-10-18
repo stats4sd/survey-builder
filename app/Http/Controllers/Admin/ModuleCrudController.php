@@ -104,6 +104,8 @@ class ModuleCrudController extends CrudController
 
 
         CRUD::addButton('top', 'testCore', 'view', 'backpack::crud.buttons.test-core');
+        CRUD::addButton('line', 'testOptionl', 'view', 'backpack::crud.buttons.test-optional');
+
     }
 
     /**
@@ -126,7 +128,7 @@ class ModuleCrudController extends CrudController
         $xlsform->moduleVersions()
             ->sync(ModuleVersion::where('is_current', 1)
                 ->whereHas('module', function ($query) {
-                    $query->where('module.core', 1);
+                    $query->where('modules.core', 1);
                 })
                 ->get()
                 ->pluck('id')
@@ -142,6 +144,9 @@ class ModuleCrudController extends CrudController
             $xlsform->moduleVersions()->syncWithoutDetaching($versions);
         }
 
+        // add English to the form, otherwise no labels will be created;
+        $xlsform->languages()->sync('en');
+
         $path = $xlsform->name . '/' . Str::slug(Carbon::now()->toISOString()) . '/' . $xlsform->name . '.xlsx';
 
 
@@ -155,9 +160,15 @@ class ModuleCrudController extends CrudController
         $result = (new PyXformService())->testXlsform($xlsform);
 
         if ($result === true) {
-            return response('All Core modules compiled successfully!', 200);
+
+            return response()->json([
+                'message' => $module ? "{$module->title} Compiled with Core modules successfully" : "All Core modules compiled successfully!",
+                ], 200);
         }
-        throw new \Exception($result->join(','), 500);
+        return response()->json([
+            'errors' => $result->join(','),
+            'xlsform_path' => Storage::url($xlsform->xlsfile),
+            ], 500);
     }
 
     /**
