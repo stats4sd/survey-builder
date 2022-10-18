@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Imports\ImportLocationsFileToChoices;
 use App\Models\Traits\HasUploadFields;
+use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\CompiledChoicesRow;
 use App\Models\Xlsforms\CompiledSurveyRow;
 use App\Models\Xlsforms\SelectedChoicesRow;
@@ -108,6 +109,11 @@ class Xlsform extends Model
     public function selectedChoicesRows()
     {
         return $this->hasMany(SelectedChoicesRow::class);
+    }
+
+    public function choiceLists()
+    {
+        return $this->belongsToMany(ChoiceList::class, 'xlsform_choice_list');
     }
 
     public function setLocationFileAttribute($value)

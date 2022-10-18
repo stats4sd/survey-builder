@@ -150,7 +150,7 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex">
                         <span class="w-25 text-right pr-4">Indicators that can be calculated from this module:</span>
-                        <span>{{ modalModule.indicator_list.join(', ') }}</span>
+                        <span>{{ modalModule.indicator_list.join("\n") }}</span>
                     </li>
                 </ul>
 
@@ -335,7 +335,7 @@ export default {
                 })
                 .listen("BuildXlsFormFailed", payload => {
                     this.reset()
-                    console.log(payload)
+
                     new Noty({
                         type: "error",
                         text: `Building your XLSform file failed with the following code and message:

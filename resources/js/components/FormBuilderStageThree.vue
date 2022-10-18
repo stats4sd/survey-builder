@@ -6,7 +6,7 @@
                     <h2 class="mb-3">Stage 3 - Customise to local context</h2>
 
                     <customise-locations
-                        :xlsform-name="xlsform.name"
+                        :xlsform-name="xlsformOriginal.name"
                         :languages="xlsform.languages"
                         :region-label.sync="xlsform.region_label"
                         :subregion-label.sync="xlsform.subregion_label"
@@ -20,9 +20,11 @@
                     <!-- <customise-questions></customise-questions>-->
 
                     <customise-lists
+                        :xlsform-name="xlsformOriginal.name"
                         :languages="xlsform.languages"
                         :selected-choices-rows-original="xlsform.selected_choices_rows"
                         @form-choice-rows="updateSelectedChoicesRows"
+                        @list-completion-updated="updateListCompletion"
                     ></customise-lists>
 
                     <b-button variant="primary" @click.prevent="submit">Save Choice Lists and Build</b-button>
@@ -326,6 +328,10 @@ export default {
 
                     this.reset()
                 });
+        },
+
+        updateListCompletion(list) {
+            console.log('emitted list: ', list)
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Xlsforms;
 
+use App\Models\Xlsform;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,5 +21,10 @@ class ChoiceList extends Model
     public function surveyRows()
     {
         return $this->hasMany(SurveyRow::class, 'choice_list', 'list_name');
+    }
+
+    public function xlsforms()
+    {
+        return $this->belongsToMany(Xlsform::class, 'xlsform_choice_list');
     }
 }

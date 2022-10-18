@@ -1,6 +1,7 @@
 <template>
     <div class="col-md-12">
         <h2 class="mb-3">Stage 1 - Create a Survey</h2>
+        <h4 v-if="xlsformOriginal">{{ xlsformOriginal.name }}</h4>
         <b-form @submit.prevent="submit">
             <slot name="csrf"></slot>
             <div class="font-weight-bold mb-4" v-if="xlsformOriginal && xlsformOriginal.hasOwnProperty('project_name')">

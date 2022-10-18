@@ -178,7 +178,8 @@ export default {
         },
         selectedChoicesRowsOriginal: {
             default: () => [],
-        }
+        },
+        xlsformName: '',
     },
     data() {
         return {
@@ -285,8 +286,8 @@ export default {
         // TODO: update this to load up the compiled_choices_rows for the current XLSform
 
         this.isLoading = true;
-
-        axios.get('/xls-choices')
+    console.log('hello there');
+        axios.get('/xlsform/'+this.xlsformName+'/xls-choices')
             .then(res => {
                 console.log('lists got', res);
                 this.xlsChoicesLists = res.data;
@@ -314,6 +315,10 @@ export default {
                         alert('You must select at least one option for the ' + list_name + ' list.');
                     } else {
                         list.complete = !list.complete;
+                        // emit to main component to update formData
+                         this.$emit('listCompletionUpdated', list);
+
+
                         // close collapse
                         if (list.complete) {
                             this.$root.$emit('bv::toggle::collapse', 'collapse-' + list_name)

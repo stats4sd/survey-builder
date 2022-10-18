@@ -40,9 +40,9 @@ Route::group(
         Route::get('download/{path}/{disk?}', [FileController::class, 'download'])->where('path', '.*')->name('file.download');
 
         Route::get('module/{module}', [ModuleController::class, 'show'])->name('module.localshow');
-        Route::get('latest-core', [CoreVersionCrudController::class, 'getLatest'])->name('core.latest');
 
-        Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
+        //Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
+        Route::get('xlsform/{xlsform}/xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
 
 
         Route::resource('xlsform', XlsformController::class);
