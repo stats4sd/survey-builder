@@ -55,7 +55,7 @@
                     <b-list-group-item
                         :class="element.module.core ? 'core ' : ''"
                         :variant="element.module.core ? 'light' : (element.module.locked_to_start || element.module.locked_to_end ? 'secondary' : 'primary')"
-                        v-for="element in selected.filter((el) => el.module.locked_to_start === 1)"
+                        v-for="element in startModules"
                         :key="element.id"
                     >
                         <slot name="listItem" v-bind:element="element">
@@ -74,8 +74,8 @@
                 >
                     <b-list-group-item
                         :class="element.module.core ? 'core ' : ''"
-                        :variant="element.module.core ? 'light' : (element.module.locked_to_start || element.module.locked_to_end ? 'secondary' : 'primary')"
-                        v-for="element in selected.filter(el => el.module.locked_to_start !== 1 && el.module.locked_to_end !== 1)"
+                        :variant="element.module.core ? 'light' : 'primary'"
+                        v-for="element in selected"
                         :key="element.id"
                     >
                         <slot name="listItem" v-bind:element="element">
@@ -95,7 +95,7 @@
                     <b-list-group-item
                         :class="element.module.core ? 'core ' : ''"
                         :variant="element.module.core ? 'light' : (element.module.locked_to_start || element.module.locked_to_end ? 'secondary' : 'primary')"
-                        v-for="element in selected.filter((el) => el.module.locked_to_end === 1)"
+                        v-for="element in endModules"
                         :key="element.id"
                     >
                         <slot name="listItem" v-bind:element="element">
@@ -123,6 +123,14 @@ export default {
             type: Array,
             default: () => [],
         },
+        startModules: {
+            type: Array,
+            default: () => [],
+        },
+        endModules: {
+            type: Array,
+            default: () => [],
+        },
         itemsName: {
             type: String,
             default: 'items',
@@ -133,6 +141,7 @@ export default {
         //     this.$emit('update:available', available);
         // },
         updateSelected(selected) {
+            console.log(selected.map(item => item.module.title))
             this.$emit('update:selected', selected);
         },
 
@@ -145,14 +154,9 @@ export default {
                 // prevent the drag
                 return false;
             }
+            return true;
 
-            // if the module is locked, prevent the drag
-            if(e.draggedContext.element.module.locked_to_start) {
-                return false;
-
-            }
-
-        },
+            },
         sendCoreRemoveFailMessage() {
             if (this.sendCorePreventMessage) {
                 new Noty({
