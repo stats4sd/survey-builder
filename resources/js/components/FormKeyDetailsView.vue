@@ -1,7 +1,7 @@
 <template>
     <b-card class="border-0" header-bg-variant="dark" header-text-variant="white">
         <template #header>
-            <h4 class="mb-0">Editing Form {{ xlsform.name }}</h4>
+            <h4 class="mb-0">Form Key Details ({{ xlsform.name }})</h4>
         </template>
         <b-list-group flush>
             <b-list-group-item class="d-flex justify-content-start align-items-center">
