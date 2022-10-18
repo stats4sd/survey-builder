@@ -42,16 +42,25 @@
                         </template>
                         <template #listItem="props">
                             <div @click="selectModalModule(props.element)">
-                                {{ props.element.module.title }}
-                                <span
-                                    v-if="props.element.module.core"
-                                    class="text-small"
-                                >
-                                    (core)
-                                </span><br/>
+                                <div class="d-flex">
+                                    <span class="mr-2">{{ props.element.module.title }}</span>
+                                    <span
+                                        v-if="props.element.module.core"
+                                        class="text-small"
+                                    >
+                                        (core)
+                                    </span>
+                                    <span
+                                        v-if="props.element.module.locked_to_start || props.element.module.locked_to_end"
+                                        class="text-small text-right flex-grow-1">
+                                    (This element cannot be dragged)
+                                </span>
+                                    <br/>
+                                </div>
+
                                 <small>
-                                    - Version: {{ props.element.version_name }} | {{ props.element.question_count }}
-                                    questions
+                                    - Version: {{ props.element.version_name }} | {{ props.element.module.minutes }}
+                                    minutes
                                 </small>
                             </div>
                         </template>
