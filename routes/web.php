@@ -43,7 +43,7 @@ Route::group(
 
         //Route::get('xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
         Route::get('xlsform/{xlsform}/xls-choices', [XlsChoicesController::class, 'index'])->name('xlschoices.index');
-
+        Route::get('localisable-lists', [XlsChoicesController::class, 'getLocalisableChoiceLists']);
 
         Route::resource('xlsform', XlsformController::class);
 

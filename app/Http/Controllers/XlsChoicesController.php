@@ -65,4 +65,8 @@ class XlsChoicesController extends Controller
             ->toJson();
     }
 
+    public function getLocalisableChoiceLists(){
+        return ChoiceList::where('is_localisable', 1)->get();
+    }
+
 }

@@ -34,9 +34,9 @@
         <b-row class="my-4">
             <b-col>
                 <b-button v-b-toggle.moduleList varient="info">Show full list of modules</b-button>
-            <b-collapse id="moduleList" name="moduleList">
-                <b-table :items="xlsform.modules" :fields="moduleFields"/>
-            </b-collapse>
+                <b-collapse id="moduleList" name="moduleList">
+                    <b-table :items="xlsform.modules" :fields="moduleFields"/>
+                </b-collapse>
             </b-col>
         </b-row>
         <hr/>
@@ -44,7 +44,8 @@
         <!-- Locations: count of countries, regions, subregions and villages. (Maybe list in collapsible?) -->
         <h4>Location Information</h4>
         <b-alert v-if="!xlsform.location_file_url" variant="warning" class="text-dark">
-            You have not uploaded any location information for the form. Please make sure you do so on the <a :href="'/xlsform/'+xlsform.name+'/edit-three'">Stage 3 page</a> before finalising the survey.
+            You have not uploaded any location information for the form. Please make sure you do so on the <a
+            :href="'/xlsform/'+xlsform.name+'/edit-three'">Stage 3 page</a> before finalising the survey.
         </b-alert>
         <b-row class="my-4">
             <b-col lg="6" cols="12">
@@ -58,11 +59,11 @@
                         <b-col cols="3" class="font-weight-bold">{{ regionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
-                        <b-col cols="6" class="text-right">{{  xlsform.subregion_label.en }} count:</b-col>
+                        <b-col cols="6" class="text-right">{{ xlsform.subregion_label.en }} count:</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ subregionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
-                        <b-col cols="6" class="text-right">{{  xlsform.village_label.en }} count:</b-col>
+                        <b-col cols="6" class="text-right">{{ xlsform.village_label.en }} count:</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ villageCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-if="xlsform.has_household_list">
@@ -70,7 +71,8 @@
                         <b-col cols="3" class="font-weight-bold">{{ householdCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-else>
-                        This form does not a pre-defined list of households. Household id entry will be via number or free-text field entry.
+                        This form does not a pre-defined list of households. Household id entry will be via number or
+                        free-text field entry.
                     </b-list-group-item>
                 </b-list-group>
             </b-col>
@@ -79,7 +81,8 @@
 
         <!-- List of customised lists. Comment that all other 'customisable' lists will take the default options, but it's recommended to explicitly choose the options... -->
         <h4>Custom Response Option Lists</h4>
-        <p>Below you can see every response option list that you have customised.</p>
+        <p>Response option lists that require customisation are below. Any lists not yet customised appear highlighted
+            in red.</p>
         <b-row class="my-4">
             <b-col lg="6" cols="12">
                 <b-list-group>
@@ -87,9 +90,15 @@
                         <b-col cols="6" class="text-right">List</b-col>
                         <b-col cols="3" class="font-weight-bold">No. of choices</b-col>
                     </b-list-group-item>
-                    <b-list-group-item class="d-flex" v-for="row in nonLocationSelectedChoicesRows" v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
+                    <b-list-group-item class="d-flex" v-for="row in nonLocationSelectedChoicesRows"
+                                       v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
                         <b-col cols="6" class="text-right">{{ row[0].list_name }}</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ row.length }}</b-col>
+                    </b-list-group-item>
+                    <div v-if="isLoading"><span class="spinner-border-sm"></span> Loading</div>
+                    <b-list-group-item class="d-flex bg-danger" v-for="row in unselectedLists" v-if="!isLoading">
+                        <b-col cols="6" class="text-right">{{ row.list_name }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">0</b-col>
                     </b-list-group-item>
                 </b-list-group>
             </b-col>
@@ -104,7 +113,7 @@
 <script>
 import Noty from "noty";
 import Swal from "sweetalert2";
-import {isSet} from "lodash";
+import axios from "axios";
 
 export default {
     name: "FormBuilderStageFour",
@@ -155,28 +164,34 @@ export default {
                     label: 'version',
                 },
                 {
-                    key: 'question_count',
-                    label: 'No. of questions',
-                },
-                {
                     key: 'module.minutes',
                     label: 'Estimated time (minutes)',
                 },
             ],
             selectedChoicesRows: {},
+            choiceLists: [],
+            isLoading: false,
         }
     },
     computed: {
         nonLocationSelectedChoicesRows() {
             let nonLocationRows = {}
             let locationKeys = ['Countries', 'regions', 'subregions', 'villages', 'households'];
-             Object.keys(this.selectedChoicesRows).forEach(key => {
-                if(!locationKeys.includes(key)) {
+            Object.keys(this.selectedChoicesRows).forEach(key => {
+                if (!locationKeys.includes(key)) {
                     nonLocationRows[key] = this.selectedChoicesRows[key] ?? null;
                 }
             })
 
             return nonLocationRows;
+        },
+        unselectedLists() {
+            let selectedLists = Object.keys(this.selectedChoicesRows);
+            let locationKeys = ['Country', 'region', 'subregion', 'village', 'household'];
+
+            return this.choiceLists
+                .filter(list => !selectedLists.includes(list.list_name))
+                .filter(list => !locationKeys.includes(list.list_name))
         },
         countryCount() {
             return this.selectedChoicesRows.hasOwnProperty('Country') ? this.selectedChoicesRows.Country.length : 0;
@@ -198,8 +213,10 @@ export default {
 
     mounted() {
         this.xlsform = {...this.xlsformOriginal};
-
+        this.xlsform.modules = this.xlsform.allModules;
+        this.xlsform.module_versions = this.xlsform.allModuleVersions;
         this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+
 
         this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
 
@@ -214,16 +231,24 @@ export default {
         }
 
         this.xlsform.selectedChoicesRows.forEach(row => {
-            // if(!isSet(this.selectedChoicesRows[row.list_name])) {
-            //     this.$set(this.selectedChoicesRows, row.list_name, [])
-            //
-            // }
-            let updatedList = [ ...this.selectedChoicesRows[row.list_name] ?? [] ]
+
+            let updatedList = [...this.selectedChoicesRows[row.list_name] ?? []]
             updatedList.push(row);
 
             this.$set(this.selectedChoicesRows, row.list_name, updatedList);
         })
 
+        this.isLoading = true;
+        axios.get('/localisable-lists/')
+            .then(res => {
+                console.log('lists got', res);
+                this.choiceLists = res.data;
+
+                // filter to only show localisable lists
+
+                this.isLoading = false;
+
+            });
 
 
         this.setupListeners();
