@@ -69,7 +69,7 @@
                     :value="selected"
                     :group="itemsName"
                     @input="updateSelected"
-                    @end="sendCoreRemoveFailMessage"
+                    @end="checkAndSendFailMessage"
                     :move="preventCore"
                 >
                     <b-list-group-item
@@ -141,7 +141,6 @@ export default {
         //     this.$emit('update:available', available);
         // },
         updateSelected(selected) {
-            console.log(selected.map(item => item.module.title))
             this.$emit('update:selected', selected);
         },
 
@@ -154,17 +153,73 @@ export default {
                 // prevent the drag
                 return false;
             }
+
+            // if the drag breaks any 'requires_before' rules, prevent:
+            console.log(e.relatedContext.list.map(item => item.module_id))
+            console.log(e)
+
+            let currentList = e.relatedContext.list.map(item => item.module)
+
+            // remove item being dragged
+            let currentDraggedItem = currentList.splice(e.draggedContext.index, 1)[0]
+
+            let newBefore = currentList.slice(0, e.draggedContext.futureIndex)
+            let newAfter = currentList.slice(e.draggedContext.futureIndex, currentList.length)
+
+            // console.log('list:', currentList)
+            // console.log('new before:', newBefore)
+            // console.log('new after:', newAfter)
+            // console.log('currentdrag:', currentDraggedItem)
+
+            let check = true;
+
+            // ensure that the dragged item is not 'requires_before' by any module that is now after it.
+            newAfter.forEach(module => {
+                console.log(module.requires_before)
+                if(module.requires_before && module.requires_before.includes(currentDraggedItem.id)) {
+                    this.orderValidationMessage = `The module ${module.title} must appear before ${currentDraggedItem.title} in the survey.`
+                    this.sendOrderingValidationError = true
+                    check = false;
+                    return false
+                }
+            })
+
+            if(!check) return false;
+
+            // ensure that the dragged module is after any of it's own 'requires_before' modules.
+            newBefore.forEach(module => {
+                console.log(module.requires_before)
+                if(currentDraggedItem.requires_before && currentDraggedItem.requires_before.includes(module.id)) {
+                    this.orderValidationMessage = `The module ${currentDraggedItem.title} must appear before ${module.title} in the survey.`
+                    this.sendOrderingValidationError = true
+                    check = false;
+                    return false;
+                }
+            })
+
+            if(!check) return false;
+
+
+
             return true;
 
             },
-        sendCoreRemoveFailMessage() {
+        checkAndSendFailMessage() {
             if (this.sendCorePreventMessage) {
                 new Noty({
                     'type': 'error',
                     'text': 'You cannot remove the core modules from the survey.'
                 }).show();
+                this.sendCorePreventMessage = false;
             }
-            this.sendCorePreventMessage = false;
+
+            if(this.sendOrderingValidationError) {
+                new Noty({
+                    'type': 'error',
+                    'text': this.orderValidationMessage
+                }).show()
+                this.sendOrderingValidationError = false;
+            }
         }
 
     }

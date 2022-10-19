@@ -19,6 +19,10 @@ class Module extends Model
     protected $table = 'modules';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'requires_before' => 'array'
+    ];
+
     public function theme()
     {
         return $this->belongsTo(Theme::class);

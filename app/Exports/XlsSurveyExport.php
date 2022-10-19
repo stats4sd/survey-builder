@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\ModuleVersion;
 use App\Models\Xlsform;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -22,15 +23,27 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     public function collection()
     {
         // get module versions in correct order
-        // dd($this->xlsform->moduleVersions->sortBy('pivot.order')->pluck('module_id'));
-        $collection = $this->xlsform->moduleVersions->sortBy('pivot.order')->map(function ($version) {
-            return $version->surveyRows->map(function ($row) use ($version) {
-                $row->order = $version->pivot->order;
-                return $row;
-            });
+
+        $collection = $this
+            ->xlsform
+            ->moduleVersions
+            ->sortBy('pivot.order')
+            // add locked_to_start and locked_to_end modules
+            ->prepend(ModuleVersion::whereHas('module', function ($query) {
+                $query->where('locked_to_start', 1);
+            })->get()->sortBy(fn($moduleVersion) => $moduleVersion->module->lft))
+            ->append(ModuleVersion::whereHas('module', function ($query) {
+                $query->where('locked_to_end', 1);
+            })->get()->sortBy(fn($moduleVersion) => $moduleVersion->module->lft))
+            // map and get survey rows in correct order;
+            ->map(function ($version) {
+                return $version->surveyRows->map(function ($row) use ($version) {
+                    $row->order = $version->pivot->order;
+                    return $row;
+                });
 
 
-        })->flatten()
+            })->flatten()
             // merge in language labels:
             ->map(function ($row) {
 
@@ -84,10 +97,10 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
         $idsToRemove = [];
         // finally, check if there are begin and end groups or repeats that are now empty due to the removal of duplicate question names:
-        foreach($collection as $index => $row) {
-            if (str_starts_with($row['type'], 'begin') && str_starts_with($collection[$index+1]['type'], 'end')) {
+        foreach ($collection as $index => $row) {
+            if (str_starts_with($row['type'], 'begin') && str_starts_with($collection[$index + 1]['type'], 'end')) {
                 $idsToRemove[] = $row['id'];
-                $idsToRemove[] = $collection[$index+1]['id'];
+                $idsToRemove[] = $collection[$index + 1]['id'];
             }
         }
         $collection = $collection->whereNotIn('id', $idsToRemove);

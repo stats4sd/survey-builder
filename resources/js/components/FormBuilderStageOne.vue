@@ -177,9 +177,10 @@ export default {
     mounted() {
 
         // if creating (not editing) assign core modules to xlsform
+        // do not assign locked modules (they will be automatically added during xlsform build)
         if (this.xlsformOriginal == null) {
             this.xlsform.modules = this.modules.filter(
-                module => module.module.core === 1
+                module => module.module.core === 1 && module.module.locked_to_start !== 1 && module.module.locked_to_end !== 1
             ).sort((a,b) => {
                 return a.module.lft > b.module.lft
             });

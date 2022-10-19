@@ -29,10 +29,10 @@
 
                     <!--  ################# STEP 3: MODULES #########################-->
                     <drag-and-drop-select
-                        :startModules="xlsform.startModules"
-                        :endModules="xlsform.endModules"
+                        :startModules="startModules"
+                        :endModules="endModules"
                         :available.sync="availableModules"
-                        :selected.sync="xlsform.editableModules"
+                        :selected.sync="xlsform.modules"
                         items-name="modules"
                     >
                         <template #selectedinfo>
@@ -277,9 +277,8 @@ export default {
         this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
 
         // handle modules
-        this.xlsform.startModules = this.xlsform.modules.filter(module => module.module.locked_to_start === 1)
-        this.xlsform.endModules = this.xlsform.modules.filter(module => module.module.locked_to_end === 1)
-        this.xlsform.editableModules = this.xlsform.modules.filter(module => module.module.locked_to_start !== 1 && module.module.locked_to_end !== 1)
+        this.startModules = this.modules.filter(module => module.module.locked_to_start === 1).sort((a,b) => a.module.lft > b.module.lft)
+        this.endModules = this.modules.filter(module => module.module.locked_to_end === 1).sort((a,b) => a.module.lft > b.module.lft)
 
         this.setupListeners()
     },
