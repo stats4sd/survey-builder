@@ -25,6 +25,7 @@ class ChoiceList extends Model
 
     public function xlsforms()
     {
-        return $this->belongsToMany(Xlsform::class, 'xlsform_choice_list');
+        return $this->belongsToMany(Xlsform::class, 'xlsform_choice_list')
+            ->withPivot('complete');
     }
 }

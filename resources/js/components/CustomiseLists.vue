@@ -316,7 +316,7 @@ export default {
                     } else {
                         list.complete = !list.complete;
                         // emit to main component to update formData
-                         this.$emit('listCompletionUpdated', list);
+                         this.$emit('list-completion-updated', list);
 
 
                         // close collapse

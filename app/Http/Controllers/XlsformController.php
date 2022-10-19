@@ -166,7 +166,7 @@ class XlsformController extends CrudController
             'region_label' => 'nullable|json',
             'subregion_label' => 'nullable|json',
             'village_label' => 'nullable|json',
-            'has_household_list' => 'nullable',
+            'has_household_list' => 'boolean',
         ]);
 
         foreach($validated as $key => $value) {
@@ -229,10 +229,17 @@ class XlsformController extends CrudController
             }
         }
 
+        // update completed choice lists for form
+        $completedLists = json_decode($request->input('completed_lists'), true);
+        $completedListsToSync = collect($completedLists)
+            ->combine(collect($completedLists)->map(function($list) {
+                return ['complete' => 1];
+            }));
+
+        $xlsform->choiceLists()->sync($completedListsToSync);
+
         $this->buildForm($xlsform);
-        // temp
-        // BuildXlsFormComplete::dispatch($xlsform->name, Auth::user());
-        // DeployXlsFormComplete::dispatch($xlsform->name, Auth::user());
+
         return $xlsform->load('selectedChoicesRows');
 
 
@@ -262,6 +269,9 @@ class XlsformController extends CrudController
                 $choicesRow->preselected = true;
                 return $choicesRow;
             });
+
+            // get completed custom choice lists
+            $xlsform->completedLists = $xlsform->choiceLists->where('pivot.complete', 1)->pluck('id')->toArray();
 
         }
 

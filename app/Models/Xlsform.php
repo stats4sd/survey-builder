@@ -113,7 +113,8 @@ class Xlsform extends Model
 
     public function choiceLists()
     {
-        return $this->belongsToMany(ChoiceList::class, 'xlsform_choice_list');
+        return $this->belongsToMany(ChoiceList::class, 'xlsform_choice_list')
+            ->withPivot('complete');
     }
 
     public function setLocationFileAttribute($value)

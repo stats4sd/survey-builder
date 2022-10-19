@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ModuleVersion;
 use App\Models\Xlsform;
 use App\Models\Xlsforms\ChoiceList;
 use App\Models\Xlsforms\ChoicesRow;
@@ -14,6 +15,17 @@ class XlsChoicesController extends Controller
         // get any customised lists for the current form; merge in any un-customised lists;
         //$lists = $xlsform->choiceLists;
         $usedModuleVersions = $xlsform->moduleVersions->pluck('id')->toArray();
+
+        // merge modules that are required (locked to start and end)
+        $usedModuleVersions = array_merge(
+            $usedModuleVersions,
+            ModuleVersion::whereHas('module', function ($query) {
+                $query->where('locked_to_start', 1)
+                    ->orWhere('locked_to_end', 1);
+            })->get()
+                ->pluck('id')
+                ->toArray()
+        );
 
         return ChoiceList::with([
             'choicesRows' => function ($query) use ($usedModuleVersions) {
@@ -39,12 +51,14 @@ class XlsChoicesController extends Controller
             },
         ])
             ->get()
-            ->map(function ($list) {
+            ->map(function ($list) use ($xlsform){
                 $list->choicesRows = $list->choicesRows->map(function ($item) {
                     $item->choices_labels_by_lang = $item->choicesLabels ? $item->choicesLabels->groupBy('language_id') : null;
                     return $item;
-                });
-                $list->complete = false;
+                })
+                ->unique('name');
+
+                $list->complete = $xlsform->choiceLists->where('pivot.complete', 1)->pluck('id')->contains($list->id);
 
                 return $list;
             })

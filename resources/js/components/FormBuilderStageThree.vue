@@ -28,11 +28,12 @@
                     ></customise-lists>
 
                     <b-button variant="primary" @click.prevent="submit">Save Choice Lists and Build</b-button>
-<!--                    <b-button variant="success" @click.prevent="build">Build Form</b-button>-->
+                    <!--                    <b-button variant="success" @click.prevent="build">Build Form</b-button>-->
 
                     <hr/>
                     <h4>Next Steps</h4>
-                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save and build the form, new
+                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save and build the
+                        form, new
                         options will appear below.
                     </div>
                     <div class="row">
@@ -95,6 +96,7 @@ import CustomiseLocations from "./CustomiseLocations";
 import CustomiseQuestionText from "./CustomiseQuestionText";
 import CustomiseLists from "./CustomiseLists";
 import Noty from "noty";
+import {indexOf} from "lodash";
 
 
 export default {
@@ -130,10 +132,11 @@ export default {
                 subregion_label: {"en": "subregion"},
                 village_label: {"en": "village"},
                 location_file: null,
-                has_household_list: null,
+                has_household_list: 0,
                 selected_choices_rows: [],
                 location_file_url: "",
                 location_file_name: "",
+                completedLists: null,
             },
             updatedSelectedChoicesRows: {},
             processing: false,
@@ -188,6 +191,7 @@ export default {
             formData.append("village_label", JSON.stringify(this.xlsform.village_label));
             formData.append("has_household_list", this.xlsform.has_household_list);
             formData.append("selected_choices_rows", JSON.stringify(this.updatedSelectedChoicesRows));
+            formData.append("completed_lists", JSON.stringify(this.xlsform.completedLists));
             formData.append("_method", 'PUT');
 
             axios.post('/xlsform/' + this.xlsform.name + '/customise', formData, {
@@ -332,6 +336,11 @@ export default {
 
         updateListCompletion(list) {
             console.log('emitted list: ', list)
+            if (list.complete) {
+                this.xlsform.completedLists.push(list.id)
+            } else {
+                this.xlsform.completedLists.splice(indexOf(this.xlsform.completedLists, list.list_name), 1)
+            }
         }
     }
 }

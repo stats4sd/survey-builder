@@ -256,8 +256,7 @@ export default {
     computed: {
         availableModules() {
             return this.modules.filter(
-                module =>
-                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id)
+                module => !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id) && module.module.locked_to_start == 0 && module.module.locked_to_end == 0
             );
         },
         selectedModuleIds() {
