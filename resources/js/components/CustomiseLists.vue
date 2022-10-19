@@ -1,143 +1,158 @@
 <template>
     <div>
-        <b-card header="Step 2 - Customise Response Option Lists" header-tag="h3" bg-variant="light"
-                border-variant="dark">
-            <b-row>
-                <b-col cols="12">
-                    Next, you must create the response options lists to be used in your survey. <br/><br/>
-                    Each list has a set of options, created from all the previous RHoMIS surveys. Please build your
-                    lists by
-                    dragging existing items into your list. If you cannot find an item you need, you may create one, but
-                    please check the main list first to avoid creating duplicate entries.
-                    <br/><br/>
-                </b-col>
-            </b-row>
-
-            <div v-if="isLoading" class="d-flex justify-content-middle align-items-center"><i
-                class="la la-spinner la-spin"> </i> Loading
-            </div>
-            <div v-else>
-
-                <h3>Customise Unit Choice Lists</h3>
-                <b-row v-for="list in xlsChoicesUnits" :key="list.list_name">
+        <b-card bg-variant="light"
+                border-variant="dark" no-body>
+            <b-card-header>
+                <h4 class="d-flex align-items-center    ">
+                    <HelpLink section="building-a-survey" heading="choice-localisation"/>
+                    Step 2 - Customise Response Option Lists
+                </h4>
+            </b-card-header>
+            <b-card-body>
+                <b-row>
                     <b-col cols="12">
-                        <hr/>
-                        <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
-                                :header-border-variant="list.complete ? 'success' : 'info'"
-                                :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
-                            <template #header>
-                                <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
-                                    <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
-                                </b-button>
-                            </template>
-                            <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
-                                <b-card-body>
-                                    <div class="w-100 d-flex justify-content-between mb-2">
-                                        <b-button variant="info" @click="selectAll(list.list_name)">Select All
-                                        </b-button>
-                                        <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
-                                        </b-button>
-                                    </div>
-                                    <h5>Questions that use this list:</h5>
-                                    <ul>
-                                        <li v-for="question in list.survey_rows" :key="question.name">
-                                            <b>{{ question.name }}</b>:
-                                            {{ question.english_label }}
-                                        </li>
-                                    </ul>
-                                    <drag-and-drop-select-table
-                                        :columns="listTableColumns"
-                                        :available="list.availableChoicesRows"
-                                        :selected.sync="selectedChoicesRows[list.list_name]"
-                                        items-name="option"
-                                    >
-                                        <template #listItem="props">
-                                            <td>{{ props.element.name }}</td>
-                                            <td v-for="lang in languages">{{
-                                                    props.element['choices_labels_by_lang'][lang.id][0]['label']
-                                                }}
-                                            </td>
-                                        </template>
-                                        <template #addItemButton>
-                                            <p>Custom items are highlighted in blue. To delete them, drag them to the "available" list - they will disappear.</p>
-                                            <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New Item
-                                            </b-button>
-                                        </template>
-                                    </drag-and-drop-select-table>
-
-                                    <div class="d-flex justify-content-end">
-                                        <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
-                                            {{ list.complete ? 'Incomplete' : 'Complete' }}
-                                        </b-button>
-                                    </div>
-
-                                </b-card-body>
-                            </b-collapse>
-                        </b-card>
+                        Next, you must create the response options lists to be used in your survey. <br/><br/>
+                        Each list has a set of options, created from all the previous RHoMIS surveys. Please build your
+                        lists by
+                        dragging existing items into your list. If you cannot find an item you need, you may create one,
+                        but
+                        please check the main list first to avoid creating duplicate entries.
+                        <br/><br/>
                     </b-col>
                 </b-row>
 
-                <h3>Customise Other Choice Lists</h3>
-                <b-row v-for="list in xlsChoicesOther" :key="list.list_name">
-                    <b-col cols="12">
-                        <hr/>
-                        <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
-                                :header-border-variant="list.complete ? 'success' : 'info'"
-                                :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
-                            <template #header>
-                                <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
-                                    <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
-                                </b-button>
-                            </template>
-                            <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
-                                <b-card-body>
-                                    <div class="w-100 d-flex justify-content-between mb-2">
-                                        <b-button variant="info" @click="selectAll(list.list_name)">Select All
-                                        </b-button>
-                                        <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
-                                        </b-button>
-                                    </div>
-                                    <h5>Questions that use this list</h5>
-                                    <ul>
-                                        <li v-for="question in list.survey_rows" :key="question.name">{{
-                                                question.name
-                                            }}:
-                                            {{ question.english_label }}
-                                        </li>
-                                    </ul>
-                                    <drag-and-drop-select-table
-                                        :columns="listTableColumns"
-                                        :available="list.availableChoicesRows"
-                                        :selected.sync="selectedChoicesRows[list.list_name]"
-                                        items-name="option"
-                                    >
-                                        <template #listItem="props">
-                                            <td>{{ props.element.name }}</td>
-                                            <td v-for="lang in languages">{{
-                                                    props.element['choices_labels_by_lang'][lang.id] ?
+                <div v-if="isLoading" class="d-flex justify-content-middle align-items-center"><i
+                    class="la la-spinner la-spin"> </i> Loading
+                </div>
+                <div v-else>
+
+                    <h3>Customise Unit Choice Lists</h3>
+                    <b-row v-for="list in xlsChoicesUnits" :key="list.list_name">
+                        <b-col cols="12">
+                            <hr/>
+                            <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
+                                    :header-border-variant="list.complete ? 'success' : 'info'"
+                                    :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
+                                <template #header>
+                                    <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
+                                        <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
+                                    </b-button>
+                                </template>
+                                <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
+                                    <b-card-body>
+                                        <div class="w-100 d-flex justify-content-between mb-2">
+                                            <b-button variant="info" @click="selectAll(list.list_name)">Select All
+                                            </b-button>
+                                            <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
+                                            </b-button>
+                                        </div>
+                                        <h5>Questions that use this list:</h5>
+                                        <ul>
+                                            <li v-for="question in list.survey_rows" :key="question.name">
+                                                <b>{{ question.name }}</b>:
+                                                {{ question.english_label }}
+                                            </li>
+                                        </ul>
+                                        <drag-and-drop-select-table
+                                            :columns="listTableColumns"
+                                            :available="list.availableChoicesRows"
+                                            :selected.sync="selectedChoicesRows[list.list_name]"
+                                            items-name="option"
+                                        >
+                                            <template #listItem="props">
+                                                <td>{{ props.element.name }}</td>
+                                                <td v-for="lang in languages">{{
                                                         props.element['choices_labels_by_lang'][lang.id][0]['label']
-                                                        : '~undefined~'
-                                                }}
-                                            </td>
-                                        </template>
-                                        <template #addItemButton>
-                                            <p>Custom items are highlighted in blue. To delete them, drag them to the "available" list - they will disappear.</p>
-                                            <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New Item
-                                            </b-button>
-                                        </template>
-                                    </drag-and-drop-select-table>
-                                    <div class="d-flex justify-content-end">
-                                        <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
-                                            {{ list.complete ? 'Incomplete' : 'Complete' }}
-                                        </b-button>
-                                    </div>
+                                                    }}
+                                                </td>
+                                            </template>
+                                            <template #addItemButton>
+                                                <p>Custom items are highlighted in blue. To delete them, drag them to
+                                                    the
+                                                    "available" list - they will disappear.</p>
+                                                <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New
+                                                    Item
+                                                </b-button>
+                                            </template>
+                                        </drag-and-drop-select-table>
 
-                                </b-card-body>
-                            </b-collapse>
-                        </b-card>
-                    </b-col>
-                </b-row>
-            </div>
+                                        <div class="d-flex justify-content-end">
+                                            <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
+                                                {{ list.complete ? 'Incomplete' : 'Complete' }}
+                                            </b-button>
+                                        </div>
+
+                                    </b-card-body>
+                                </b-collapse>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+
+                    <h3>Customise Other Choice Lists</h3>
+                    <b-row v-for="list in xlsChoicesOther" :key="list.list_name">
+                        <b-col cols="12">
+                            <hr/>
+                            <b-card no-body :border-variant="list.complete ? 'success' : 'info'"
+                                    :header-border-variant="list.complete ? 'success' : 'info'"
+                                    :header-class=" list.complete ? 'bg-light-success p-0' : 'p-0'">
+                                <template #header>
+                                    <b-button v-b-toggle="'collapse-'+list.list_name" variant="link" class="w-100 p-2">
+                                        <h4 class="text-dark p-0 mb-0">{{ list.list_name }}</h4>
+                                    </b-button>
+                                </template>
+                                <b-collapse :id="'collapse-'+list.list_name" class="mt-2">
+                                    <b-card-body>
+                                        <div class="w-100 d-flex justify-content-between mb-2">
+                                            <b-button variant="info" @click="selectAll(list.list_name)">Select All
+                                            </b-button>
+                                            <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
+                                            </b-button>
+                                        </div>
+                                        <h5>Questions that use this list</h5>
+                                        <ul>
+                                            <li v-for="question in list.survey_rows" :key="question.name">{{
+                                                    question.name
+                                                }}:
+                                                {{ question.english_label }}
+                                            </li>
+                                        </ul>
+                                        <drag-and-drop-select-table
+                                            :columns="listTableColumns"
+                                            :available="list.availableChoicesRows"
+                                            :selected.sync="selectedChoicesRows[list.list_name]"
+                                            items-name="option"
+                                        >
+                                            <template #listItem="props">
+                                                <td>{{ props.element.name }}</td>
+                                                <td v-for="lang in languages">{{
+                                                        props.element['choices_labels_by_lang'][lang.id] ?
+                                                            props.element['choices_labels_by_lang'][lang.id][0]['label']
+                                                            : '~undefined~'
+                                                    }}
+                                                </td>
+                                            </template>
+                                            <template #addItemButton>
+                                                <p>Custom items are highlighted in blue. To delete them, drag them to
+                                                    the
+                                                    "available" list - they will disappear.</p>
+                                                <b-button class="mt-2" @click="createNewEntry(list.list_name)">+ Add New
+                                                    Item
+                                                </b-button>
+                                            </template>
+                                        </drag-and-drop-select-table>
+                                        <div class="d-flex justify-content-end">
+                                            <b-button variant="info" @click="toggleComplete(list.list_name)">Mark as
+                                                {{ list.complete ? 'Incomplete' : 'Complete' }}
+                                            </b-button>
+                                        </div>
+
+                                    </b-card-body>
+                                </b-collapse>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-card-body>
         </b-card>
 
         <!-- new entry modal -->
@@ -286,8 +301,8 @@ export default {
         // TODO: update this to load up the compiled_choices_rows for the current XLSform
 
         this.isLoading = true;
-    console.log('hello there');
-        axios.get('/xlsform/'+this.xlsformName+'/xls-choices')
+        console.log('hello there');
+        axios.get('/xlsform/' + this.xlsformName + '/xls-choices')
             .then(res => {
                 console.log('lists got', res);
                 this.xlsChoicesLists = res.data;
@@ -316,7 +331,7 @@ export default {
                     } else {
                         list.complete = !list.complete;
                         // emit to main component to update formData
-                         this.$emit('list-completion-updated', list);
+                        this.$emit('list-completion-updated', list);
 
 
                         // close collapse

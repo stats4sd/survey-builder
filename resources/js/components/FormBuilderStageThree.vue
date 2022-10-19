@@ -3,7 +3,9 @@
         <div class="mt-2">
             <div class="row justify-content-center">
                 <div class="col-md-12">
-                    <h2 class="mb-3">Stage 3 - Customise to local context</h2>
+                    <h2 class="mb-3 d-flex">
+                        <HelpLink section="building-a-survey" heading="localising-your-questionnaire"/>
+                        Stage 3 - Customise to local context</h2>
 
                     <customise-locations
                         :xlsform-name="xlsformOriginal.name"

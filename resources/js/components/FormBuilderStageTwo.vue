@@ -18,7 +18,10 @@
                 is this needed?
             </div>
             <div class="col-md-12">
-                <h2 class="mb-3">Stage 2 - Build the Survey</h2>
+                <h2 class="mb-3 d-flex">
+                    <HelpLink section="building-a-survey" heading="designing-your-questionnaire"/>
+                    Stage 2 - Build the Survey
+                </h2>
                 <b-form @submit.prevent="submit">
                     <!-- ##################### STEP 2 ######################## -->
                     <b-alert show variant="link" class="text-danger"

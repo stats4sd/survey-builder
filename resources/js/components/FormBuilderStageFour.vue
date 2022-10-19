@@ -1,12 +1,13 @@
 <template>
     <div class="px-5">
-        <h3>Review the form and deploy to ODK</h3>
-
+        <h2 class="d-flex align-items-center">
+            <HelpLink section="building-a-survey" heading="reviewing-your-questionnaire"/>
+            Review the form and deploy to ODK
+        </h2>
+        <hr/>
 
         <!--    Overall metrics: time for survey; no. of questions; no of optional modules added -->
         <h4>Form Contents</h4>
-        <a href="xlsform.download_url">Download current XLSform file for review</a>
-
         <b-row>
             <b-col lg="6" cols="12">
                 <b-list-group>
@@ -24,6 +25,30 @@
                         <b-col cols="6" class="text-right">Estimated Total Time:</b-col>
                         <b-col cols="3" class="font-weight-bold">
                             {{ xlsform.modules.reduce((carry, module) => carry + module.module.minutes, 0) }} minutes
+                        </b-col>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="xlsform.draft || xlsform.complete" class="d-flex">
+                        <b-col cols="6" class="text-right">Try out the Form in ODK Collect:</b-col>
+                        <b-col cols="6" class="font-weight-bold">
+                            <a
+                                :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                class="btn btn-link"
+                            >
+                                <i class="la la-spinner la-spin" v-if="processing"></i>
+                                Collect data
+                            </a>
+                        </b-col>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="xlsform.download_url" class="d-flex">
+                        <b-col cols="6" class="text-right">Review the ODK Form in Excel:</b-col>
+                        <b-col cols="6" class="font-weight-bold">
+                            <a
+                                :href="!processing ? xlsform.download_url : ''"
+                                class="btn btn-link"
+                            >
+                                <i class="la la-spinner la-spin" v-if="processing"></i>
+                                Download XLS Form
+                            </a>
                         </b-col>
                     </b-list-group-item>
                 </b-list-group>
