@@ -143,17 +143,17 @@ class ModuleCrudController extends CrudController
                     ->where('modules.locked_to_end', 0);
             })
             ->get()
-            ->sortBy(function($version) {
+            ->sortBy(function ($version) {
                 return $version->module->lft;
             });
 
         $moduleVersionsToSync = $moduleVersions
             ->pluck('id')
-            ->combine($moduleVersions->map(function($moduleVersion) {
+            ->combine($moduleVersions->map(function ($moduleVersion) {
                 return ['order' => $moduleVersion->module->lft];
             }));
 
-       //dd($moduleVersionsToSync);
+        //dd($moduleVersionsToSync);
 
         $xlsform->moduleVersions()
             ->sync($moduleVersionsToSync);
@@ -161,13 +161,13 @@ class ModuleCrudController extends CrudController
         if ($module) {
             $versions = $module->moduleVersions()->where('is_current', 1)
                 ->get()
-                ->sortBy(function($version) {
+                ->sortBy(function ($version) {
                     return $version->module->lft;
                 });
 
             $versionsToSync = $versions
                 ->pluck('id')
-                ->combine($versions->map(function($moduleVersion) {
+                ->combine($versions->map(function ($moduleVersion) {
                     return ['order' => $moduleVersion->module->lft];
                 }));
 
@@ -243,6 +243,21 @@ class ModuleCrudController extends CrudController
         CRUD::field('title');
         CRUD::field('slug')->label('No-spaces unique string to identify modules in compiled XLSforms');
         CRUD::field('minutes')->label('Approx. time to complete this part of the survey (in minutes)');
+
+        CRUD::field('ordering-ingo')->type('section-title')->title('Module Ordering Rules');
+
+        CRUD::field('locked_to_start')->type('boolean')->label('Should this module always appear at the start of the form?')
+            ->hint('Tick yes to prevent users from re-ordering this module during form creation.');
+        CRUD::field('locked_to_end')->type('boolean')->label('Should this module always appear at the start of the form?')
+            ->hint('Tick yes to prevent users from re-ordering this module during form creation.');
+        CRUD::field('requires_before')
+            ->type('select2_from_array')
+            ->allows_multiple(true)
+            ->options(Module::where('locked_to_start', 0)->where('locked_to_end', 0)->get()->pluck('title', 'id')->toArray())
+            ->label('Does this module require other modules to come before it?')
+            ->hint('E.g., The Food Security module must come before the Dietry Diversity module, because the Dietry diversity questions reference answers given in the previous module.<br/>
+                    Note that you do not need to select modules that are set to always appear at the start, such as the Metadata (start) and Demographics modules.
+                    ');
 
 
         CRUD::field('property-info')->type('section-title')->title('Module Properties');
