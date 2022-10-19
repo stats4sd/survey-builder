@@ -59,7 +59,9 @@
                         }).show();
 
                         document.getElementById('test-form-download-spot').insertAdjacentHTML('afterbegin', `<a class="btn btn-warning text-dark" href="${path}" target="_blank">Download Test Form for debugging</a>`)
-
+                        if (typeof crud !== 'undefined') {
+                            crud.table.draw(false);
+                        }
 
                     }
                 });

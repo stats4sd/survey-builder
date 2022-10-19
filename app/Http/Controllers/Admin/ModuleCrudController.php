@@ -82,7 +82,7 @@ class ModuleCrudController extends CrudController
                 if ($entry->test_success) {
                     return 'badge badge-success';
                 }
-                if($entry->test_failed) {
+                if ($entry->test_failed) {
                     return 'badge badge-danger';
                 }
 
@@ -136,24 +136,42 @@ class ModuleCrudController extends CrudController
         ]);
 
         //TODO: update to check full or reduced;
+        $moduleVersions = ModuleVersion::where('is_current', 1)
+            ->whereHas('module', function ($query) {
+                $query->where('modules.core', 1)
+                    ->where('modules.locked_to_start', 0)
+                    ->where('modules.locked_to_end', 0);
+            })
+            ->get()
+            ->sortBy(function($version) {
+                return $version->module->lft;
+            });
+
+        $moduleVersionsToSync = $moduleVersions
+            ->pluck('id')
+            ->combine($moduleVersions->map(function($moduleVersion) {
+                return ['order' => $moduleVersion->module->lft];
+            }));
+
+       //dd($moduleVersionsToSync);
 
         $xlsform->moduleVersions()
-            ->sync(ModuleVersion::where('is_current', 1)
-                ->whereHas('module', function ($query) {
-                    $query->where('modules.core', 1);
-                })
-                ->get()
-                ->pluck('id')
-                ->toArray()
-            );
+            ->sync($moduleVersionsToSync);
 
         if ($module) {
             $versions = $module->moduleVersions()->where('is_current', 1)
                 ->get()
-                ->pluck('id')
-                ->toArray();
+                ->sortBy(function($version) {
+                    return $version->module->lft;
+                });
 
-            $xlsform->moduleVersions()->syncWithoutDetaching($versions);
+            $versionsToSync = $versions
+                ->pluck('id')
+                ->combine($versions->map(function($moduleVersion) {
+                    return ['order' => $moduleVersion->module->lft];
+                }));
+
+            $xlsform->moduleVersions()->syncWithoutDetaching($versionsToSync);
         }
 
         // add English to the form, otherwise no labels will be created;
@@ -175,10 +193,16 @@ class ModuleCrudController extends CrudController
 
             Module::where('core', 1)->update([
                 'test_success' => 1,
+                'test_failed' => 0,
+
             ]);
 
             if ($module) {
-                $module->update(['test_success' => 1]);
+                $module->update([
+                    'test_success' => 1,
+                    'test_failed' => 0,
+
+                ]);
             }
 
             return response()->json([
@@ -187,10 +211,14 @@ class ModuleCrudController extends CrudController
         }
 
         if ($module) {
-            $module->update(['test_success' => 0]);
+            $module->update([
+                'test_success' => 0,
+                'test_failed' => 1,
+            ]);
         } else {
             Module::where('core', 1)->update([
                 'test_success' => 0,
+                'test_failed' => 1,
             ]);
         }
 

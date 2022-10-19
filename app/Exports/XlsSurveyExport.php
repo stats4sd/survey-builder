@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\ModuleVersion;
 use App\Models\Xlsform;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -32,7 +33,7 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
             ->get()
             ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
             ->map(function ($moduleVersion, $index) {
-                $moduleVersion['order'] = $index - 100;
+                $moduleVersion->order = $index - 100;
                 return $moduleVersion;
             });
 
@@ -43,7 +44,7 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
             ->get()
             ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
             ->map(function ($moduleVersion, $index) {
-                $moduleVersion['order'] = $index + 100000;
+                $moduleVersion->order = $index + 100000;
                 return $moduleVersion;
             });
 
@@ -56,13 +57,13 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
             // map and get survey rows in correct order;
             ->map(function ($version) {
+                Log::debug($version);
                 return $version->surveyRows->map(function ($row) use ($version) {
                     if ($version->pivot) {
                         $row->order = $version->pivot->order;
                     } else {
-                        $row->order = $version['order'];
+                        $row->order = $version->order;
                     }
-
 
                     return $row;
                 });
@@ -238,7 +239,10 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
         $headers[] = 'read_only';
         $headers[] = 'calculation';
         $headers[] = 'choice_filter';
-        $headers[] = 'body::accuracyThreshold';
+        $headers[] = 'order';
+        $headers[] = 'id';
+        $headers[] = 'version_id';
+
 
         return $headers;
     }
