@@ -75,8 +75,20 @@ class ModuleCrudController extends CrudController
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
         CRUD::column('slug')->label('slug');
-        CRUD::column('requires')->type('array');
         CRUD::column('requires_before')->type('array');
+        CRUD::column('test_success')->type('boolean')->wrapper([
+            'element' => 'span',
+            'class' => function ($crud, $column, $entry, $related_key) {
+                if ($entry->test_success) {
+                    return 'badge badge-success';
+                }
+                if($entry->test_failed) {
+                    return 'badge badge-danger';
+                }
+
+                return 'badge badge-default';
+            },
+        ]);
         CRUD::column('current_version_name')->label('Current Version')->wrapper([
             'href' => function ($crud, $column, $entry, $related_key) {
                 if ($entry->current_version) {
@@ -123,7 +135,7 @@ class ModuleCrudController extends CrudController
             'project_name' => config('services.odk_central.test-project'),
         ]);
 
-    //TODO: update to check full or reduced;
+        //TODO: update to check full or reduced;
 
         $xlsform->moduleVersions()
             ->sync(ModuleVersion::where('is_current', 1)
@@ -135,11 +147,11 @@ class ModuleCrudController extends CrudController
                 ->toArray()
             );
 
-        if($module) {
+        if ($module) {
             $versions = $module->moduleVersions()->where('is_current', 1)
-            ->get()
-            ->pluck('id')
-            ->toArray();
+                ->get()
+                ->pluck('id')
+                ->toArray();
 
             $xlsform->moduleVersions()->syncWithoutDetaching($versions);
         }
@@ -161,14 +173,31 @@ class ModuleCrudController extends CrudController
 
         if ($result === true) {
 
+            Module::where('core', 1)->update([
+                'test_success' => 1,
+            ]);
+
+            if ($module) {
+                $module->update(['test_success' => 1]);
+            }
+
             return response()->json([
                 'message' => $module ? "{$module->title} Compiled with Core modules successfully" : "All Core modules compiled successfully!",
-                ], 200);
+            ], 200);
         }
+
+        if ($module) {
+            $module->update(['test_success' => 0]);
+        } else {
+            Module::where('core', 1)->update([
+                'test_success' => 0,
+            ]);
+        }
+
         return response()->json([
             'errors' => $result->join(','),
             'xlsform_path' => Storage::url($xlsform->xlsfile),
-            ], 500);
+        ], 500);
     }
 
     /**

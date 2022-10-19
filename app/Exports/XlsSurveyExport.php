@@ -24,21 +24,46 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     {
         // get module versions in correct order
 
-        $collection = $this
+        // starter modules
+        $startModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_start', 1);
+        })
+            ->where('is_current', 1)
+            ->get()
+            ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
+            ->map(function ($moduleVersion, $index) {
+                $moduleVersion['order'] = $index - 100;
+                return $moduleVersion;
+            });
+
+        $endModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_end', 1);
+        })
+            ->where('is_current', 1)
+            ->get()
+            ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
+            ->map(function ($moduleVersion, $index) {
+                $moduleVersion['order'] = $index + 100000;
+                return $moduleVersion;
+            });
+
+        $collection = $startModules->merge($this
             ->xlsform
             ->moduleVersions
             ->sortBy('pivot.order')
-            // add locked_to_start and locked_to_end modules
-            ->prepend(ModuleVersion::whereHas('module', function ($query) {
-                $query->where('locked_to_start', 1);
-            })->get()->sortBy(fn($moduleVersion) => $moduleVersion->module->lft))
-            ->append(ModuleVersion::whereHas('module', function ($query) {
-                $query->where('locked_to_end', 1);
-            })->get()->sortBy(fn($moduleVersion) => $moduleVersion->module->lft))
+        )
+            ->merge($endModules)
+
             // map and get survey rows in correct order;
             ->map(function ($version) {
                 return $version->surveyRows->map(function ($row) use ($version) {
-                    $row->order = $version->pivot->order;
+                    if ($version->pivot) {
+                        $row->order = $version->pivot->order;
+                    } else {
+                        $row->order = $version['order'];
+                    }
+
+
                     return $row;
                 });
 
@@ -160,6 +185,9 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
         $newRow[] = $surveyRow->read_only;
         $newRow[] = $surveyRow->calculation;
         $newRow[] = $surveyRow->choice_filter;
+        $newRow[] = $surveyRow->order;
+        $newRow[] = $surveyRow->id;
+        $newRow[] = $surveyRow->module_version_id;
 
         return $newRow;
     }
