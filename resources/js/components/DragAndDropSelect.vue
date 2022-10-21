@@ -175,7 +175,7 @@ export default {
 
             // ensure that the dragged item is not 'requires_before' by any module that is now after it.
             newAfter.forEach(module => {
-                if(module.requires_before && module.requires_before.includes(currentDraggedItem.id.toString())) {
+                if(module.requires_before && !module.requires_before.includes(currentDraggedItem.id.toString())) {
                     this.orderValidationMessage = `The module ${module.title} must appear before ${currentDraggedItem.title} in the survey.`
                     this.sendOrderingValidationError = true
                     check = false;

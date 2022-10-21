@@ -59,6 +59,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect(config('auth.rhomis_url'));
+        return redirect(config('auth.rhomis_url') . '/#/logout');
     }
 }

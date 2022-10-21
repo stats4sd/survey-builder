@@ -126,3 +126,20 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 .modal-backdrop {
     background-color: #0009 !important;
 }
+
+
+.menu-button{
+    display: grid;
+    place-content: center;
+    margin-left: 10px;
+    height:40px;
+    width:40px;
+
+    padding:10px;
+    border: solid;
+    border-radius: 10px;
+    border-width: 1px;
+    transition: .3s;
+    border-color: whitesmoke;
+background-color: #212529 !important;
+}
