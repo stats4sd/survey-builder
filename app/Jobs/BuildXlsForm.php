@@ -55,7 +55,7 @@ class BuildXlsForm implements ShouldQueue
             'xlsfile' => $path
         ]);
 
-         test built form against pyxform standard;
+        // test built form against pyxform standard;
          $testResult = (new PyXformService)->testXlsform($this->xlsform);
 
         if ($testResult !== true) {
