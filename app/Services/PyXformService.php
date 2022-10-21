@@ -19,6 +19,9 @@ class PyXformService
 
         $process->run();
         if (!$process->isSuccessful()) {
+
+            Log::error($process->getErrorOutput());
+
             return collect(explode("\n", $process->getErrorOutput()))
                 ->filter(fn($string) => Str::startsWith($string, 'pyxform.errors.PyXFormError:'))
                 ->map(fn($string) => Str::replace('pyxform.errors.PyXFormError:', '', $string));
