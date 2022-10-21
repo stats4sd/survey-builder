@@ -28,6 +28,8 @@ class PyXformService
                 ->map(fn($string) => Str::replace('pyxform.errors.PyXFormError:', '', $string));
         }
 
+        Log::info($process->getOutput());
+
         return true;
     }
 }
