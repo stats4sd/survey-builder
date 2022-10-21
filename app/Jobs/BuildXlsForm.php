@@ -55,23 +55,21 @@ class BuildXlsForm implements ShouldQueue
             'xlsfile' => $path
         ]);
 
-        // test built form against pyxform standard;
-        // $testResult = (new PyXformService)->testXlsform($this->xlsform);
+         test built form against pyxform standard;
+         $testResult = (new PyXformService)->testXlsform($this->xlsform);
 
-        //if ($testResult !== true) {
+        if ($testResult !== true) {
 
-        //    BuildXlsFormFailed::dispatch($this->xlsform->name, $testResult->join(', '), 500, $this->user);
+            BuildXlsFormFailed::dispatch($this->xlsform->name, $testResult->join(', '), 500, $this->user);
 
-        //} else {
+        } else {
 
 
         // broadcast completion of xlsfile
         BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
         DeployXlsForm::dispatch($this->xlsform->name, $this->user);
 
-       // }
-
-        //DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+        }
 
     }
 
