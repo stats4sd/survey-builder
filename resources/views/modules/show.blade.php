@@ -101,13 +101,18 @@
                         @endif
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-info" onclick="testModuleVersion({{$version->id}})">Test Version with
+                        <button class="btn btn-info" onclick="testModuleVersion({{$version->id}})" id="test-{{$version->id}}">Test Version with
                             Pyxform
                         </button>
                         <a href="{{ route('moduleversion.edit', ['id' => $version->id]) }}"
                            class="btn btn-primary">edit</a>
-                        <a href="{{ route('moduleversion.publish', ['moduleversion' => $version->id]) }}"
-                           class="btn btn-success">publish</a>
+
+                        @if($version->test_success)
+                            <a href="{{ route('moduleversion.publish', ['moduleversion' => $version->id]) }}" id="publish-{{$version->id}}"
+                               class="btn btn-success">publish</a>
+                        @else
+                            <button class="btn btn-secondary" disabled="disabled" id="publish-{{$version->id}}">publish</button>
+                        @endif
                     </div>
                 </li>
             @endforeach
@@ -166,6 +171,17 @@
 
                     document.getElementById('test-result-' + versionId).replaceChildren()
                     document.getElementById('test-result-' + versionId).insertAdjacentHTML('afterbegin', "<span class='badge badge-success'>TEST PASSED</span>")
+
+                    document.getElementById('publish-' + versionId).remove()
+                    document.getElementById('test-'+versionId).insertAdjacentHTML('afterend', `
+                            <a
+                                href="moduleversion/${versionId}/publish"
+                                id="publish-${versionId}"
+                                class="btn btn-success"
+                            >
+                                publish
+                            </a>`
+                    )
                 },
                 error: function (result) {
                     let errors = result.responseJSON.errors ?? null;
