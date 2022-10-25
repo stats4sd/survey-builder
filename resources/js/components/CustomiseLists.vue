@@ -298,7 +298,6 @@ export default {
         }
     },
     mounted() {
-        // TODO: update this to load up the compiled_choices_rows for the current XLSform
 
         this.isLoading = true;
         console.log('hello there');
