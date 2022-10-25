@@ -256,7 +256,10 @@ class XlsformController extends CrudController
 
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
-        $modules = ModuleVersion::with('module')->where('is_current', true)->get();
+        $modules = ModuleVersion::with('module')
+            ->where('is_current', true)
+            ->where('test_success', true)
+            ->get();
 
         if ($xlsform) {
             $xlsform->modules = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();

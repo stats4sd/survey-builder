@@ -68,7 +68,6 @@ Route::group(
 
         Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
 
-
         Route::get('template-download/{xlsform}', [TemplateController::class, 'download']);
         Route::get('template-download-household/{xlsform}', [TemplateController::class, 'downloadHousehold']);
     }
