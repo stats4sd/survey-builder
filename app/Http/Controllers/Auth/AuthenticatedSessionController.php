@@ -39,11 +39,11 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $redirect = $request->input('redirect_url') ?? 'admin';
+        $redirect = $request->input('redirect_url') ?? 'xlsform/create';
 
         $request->session()->regenerate();
 
-        return redirect($redirect);
+        return redirect($redirect)->with('project_name', $request->input('project_name'));
     }
 
     /**

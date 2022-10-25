@@ -46,6 +46,7 @@ class XlsformController extends CrudController
     public function create()
     {
         $data = $this->setupView(null);
+        $data['project_name'] = session('project_name');
 
         return view('xlsforms.create', $data);
     }

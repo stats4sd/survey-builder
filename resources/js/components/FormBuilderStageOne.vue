@@ -126,6 +126,9 @@ export default {
         vSelect,
     },
     props: {
+        projectName: {
+            default: ''
+        },
         projectsStart: {
             default: () => []
         },
@@ -188,6 +191,8 @@ export default {
             ).sort((a,b) => {
                 return a.module.lft > b.module.lft
             });
+
+            this.xlsform.project_name = this.projectName;
         } else {
             this.xlsform = {...this.xlsformOriginal};
             this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []
