@@ -235,7 +235,7 @@ export default {
         },
         selectedUnitChoicesRows() {
             let unitRows = {}
-            let unitKeys = this.choiceLists.filter(list => list.is_units === 1)
+            let unitKeys = this.choiceLists.filter(list => list.is_units === 1).map(list => list.list_name)
 
             Object.keys(this.selectedChoicesRows).forEach(key => {
                 if (unitKeys.includes(key)) {
