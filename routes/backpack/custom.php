@@ -7,6 +7,7 @@
 // Routes you generate using Backpack\Generators will be placed here.
 
 use App\Http\Controllers\Admin\ModuleCrudController;
+use App\Http\Controllers\Admin\ModuleVersionCrudController;
 
 Route::group([
     'prefix'     => config('backpack.base.route_prefix', 'admin'),
@@ -47,5 +48,7 @@ Route::group([
 
     Route::post('module/test-core', [ModuleCrudController::class, 'testModules']);
     Route::post('module/{module}/test-optional', [ModuleCrudController::class, 'testModules']);
+
+    Route::post('moduleversion/{moduleversion}/test', [ModuleVersionCrudController::class, 'test']);
 
 }); // this should be the absolute last line of this file

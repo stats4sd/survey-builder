@@ -7,6 +7,7 @@
             <b-tabs card nav-class="bg-dark rounded-top rounded-sm flex-nowrap" nav-wrapper-class="px-2" lazy>
                 <b-tab title="Stage 1 - Create" active>
                     <form-builder-stage-one
+                        project-name="{{ $project_name }}"
                         :countries="{{$countries->toJson() }}"
                         :languages="{{ $languages->toJson() }}"
                         :projects-start="{{ $projects->toJson() }}"

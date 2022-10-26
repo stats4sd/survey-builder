@@ -63,11 +63,10 @@ Route::group(
 
         // redirect xlsform crud users to front-end
         Route::get('admin/xlsform/create', function(){
-            return redirect('xlsform/create');
+            return redirect('xlsform/create')->with('project_name', session('project_name'));
         });
 
         Route::get('module-version/{moduleversion}/get-details', [ModuleController::class, 'getDetails']);
-
 
         Route::get('template-download/{xlsform}', [TemplateController::class, 'download']);
         Route::get('template-download-household/{xlsform}', [TemplateController::class, 'downloadHousehold']);

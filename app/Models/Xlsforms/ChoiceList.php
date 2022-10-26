@@ -2,6 +2,7 @@
 
 namespace App\Models\Xlsforms;
 
+use App\Models\ModuleVersion;
 use App\Models\Xlsform;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,7 @@ class ChoiceList extends Model
     use HasFactory, CrudTrait;
 
     protected $guarded = [];
+
 
     public function choicesRows()
     {

@@ -21,6 +21,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
+use function PHPUnit\Framework\equalToCanonicalizing;
 
 /**
  * Class ModuleCrudController
@@ -89,7 +90,7 @@ class ModuleCrudController extends CrudController
                 return 'badge badge-default';
             },
         ]);
-        CRUD::column('current_version_name')->label('Current Version')->wrapper([
+        CRUD::column('current_version_name')->type('array')->label('Current Version(s)')->wrapper([
             'href' => function ($crud, $column, $entry, $related_key) {
                 if ($entry->current_version) {
                     return Storage::url($entry->current_version->file);
@@ -139,6 +140,7 @@ class ModuleCrudController extends CrudController
         $moduleVersions = ModuleVersion::where('is_current', 1)
             ->whereHas('module', function ($query) {
                 $query->where('modules.core', 1)
+                    // locked modules are automatically added during build; so are not synced to the form
                     ->where('modules.locked_to_start', 0)
                     ->where('modules.locked_to_end', 0);
             })
@@ -147,13 +149,17 @@ class ModuleCrudController extends CrudController
                 return $version->module->lft;
             });
 
+        // prepare array to sync via belongsToMany relationship in format:
+        // [
+        //      $moduleVersionId => ['order' => 1],
+        //      $moduleVersionId => ['order' => 2],
+        //         ... etc
+        // ]
         $moduleVersionsToSync = $moduleVersions
             ->pluck('id')
             ->combine($moduleVersions->map(function ($moduleVersion) {
                 return ['order' => $moduleVersion->module->lft];
             }));
-
-        //dd($moduleVersionsToSync);
 
         $xlsform->moduleVersions()
             ->sync($moduleVersionsToSync);
@@ -189,6 +195,7 @@ class ModuleCrudController extends CrudController
         // test built form against pyxform standard;
         $result = (new PyXformService())->testXlsform($xlsform);
 
+        // check for exact 'true', not just a truthy statement;
         if ($result === true) {
 
             Module::where('core', 1)->update([

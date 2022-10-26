@@ -73,10 +73,4 @@ class BuildXlsForm implements ShouldQueue
 
     }
 
-    public function failed($e): void
-    {
-        dd($e);
-    }
-
-
 }

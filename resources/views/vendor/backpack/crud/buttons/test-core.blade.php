@@ -52,7 +52,7 @@
                         button.html('Test all Core Modules');
                         new Noty({
                             type: 'danger',
-                            text: `The current core modules could not be turned into a viable ODK form. The following error(s) occured:<br/>
+                            text: `The current core modules could not be turned into a viable ODK form. The following error occured:<br/>
                                     ${errors}<br/>
                                     Download the xlsform to review and identify the modules that need updating.`,
                             timeout: false,
