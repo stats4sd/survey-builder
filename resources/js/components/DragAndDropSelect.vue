@@ -155,8 +155,7 @@ export default {
             }
 
             // if the drag breaks any 'requires_before' rules, prevent:
-            console.log(e.relatedContext.list.map(item => item.module_id))
-            console.log(e)
+            // console.log(e.relatedContext.list.map(item => item.module_id))
 
             let currentList = e.relatedContext.list.map(item => item.module)
 
@@ -167,16 +166,19 @@ export default {
             let newAfter = currentList.slice(e.draggedContext.futureIndex, currentList.length)
 
             // console.log('list:', currentList)
-            // console.log('new before:', newBefore)
-            // console.log('new after:', newAfter)
-            // console.log('currentdrag:', currentDraggedItem)
+            // console.log('new before:', newBefore.map(item => item.id))
+            // console.log('new after:', newAfter.map(item => item.id))
+            // console.log('currentdrag:', currentDraggedItem.id.toString())
+            // console.log('currentdrag all:', currentDraggedItem)
 
             let check = true;
 
             // ensure that the dragged item is not 'requires_before' by any module that is now after it.
-            newAfter.forEach(module => {
-                if(module.requires_before && !module.requires_before.includes(currentDraggedItem.id.toString())) {
-                    this.orderValidationMessage = `The module ${module.title} must appear before ${currentDraggedItem.title} in the survey.`
+            newBefore.forEach(module => {
+
+                if(module.requires_before && module.requires_before.includes(currentDraggedItem.id.toString())) {
+
+                    this.orderValidationMessage = `The module ${currentDraggedItem.title} must appear before ${module.title} in the survey.`
                     this.sendOrderingValidationError = true
                     check = false;
                     return false
@@ -186,9 +188,10 @@ export default {
             if(!check) return false;
 
             // ensure that the dragged module is after any of it's own 'requires_before' modules.
-            newBefore.forEach(module => {
+            newAfter.forEach(module => {
                 if(currentDraggedItem.requires_before && currentDraggedItem.requires_before.includes(module.id.toString())) {
-                    this.orderValidationMessage = `The module ${currentDraggedItem.title} must appear before ${module.title} in the survey.`
+
+                    this.orderValidationMessage = `The module ${module.title} must appear before ${currentDraggedItem.title} in the survey.`
                     this.sendOrderingValidationError = true
                     check = false;
                     return false;
