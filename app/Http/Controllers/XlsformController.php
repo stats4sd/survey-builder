@@ -258,7 +258,6 @@ class XlsformController extends CrudController
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
         $modules = ModuleVersion::with('module')
             ->where('is_current', true)
-            ->where('test_success', true)
             ->get();
 
         if ($xlsform) {
