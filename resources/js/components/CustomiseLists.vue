@@ -46,6 +46,10 @@
                                             <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
                                             </b-button>
                                         </div>
+                                        <div v-if="list.description">
+                                            <h5>Description</h5>
+                                            <p>{{ list.description }}</p>
+                                        </div>
                                         <h5>Questions that use this list:</h5>
                                         <ul>
                                             <li v-for="question in list.survey_rows" :key="question.name">
@@ -107,6 +111,10 @@
                                             </b-button>
                                             <b-button variant="info" @click="deselectAll(list.list_name)">Deselect All
                                             </b-button>
+                                        </div>
+                                        <div v-if="list.description">
+                                            <h5>Description</h5>
+                                            <p>{{ list.description }}</p>
                                         </div>
                                         <h5>Questions that use this list</h5>
                                         <ul>
@@ -298,7 +306,6 @@ export default {
         }
     },
     mounted() {
-        // TODO: update this to load up the compiled_choices_rows for the current XLSform
 
         this.isLoading = true;
         console.log('hello there');

@@ -23,6 +23,11 @@ class Module extends Model
         'requires_before' => 'array'
     ];
 
+    public function getCurrentVersionNameAttribute()
+    {
+        return $this->currentVersions->pluck('version_name')->toArray();
+    }
+
     public function theme()
     {
         return $this->belongsTo(Theme::class);
