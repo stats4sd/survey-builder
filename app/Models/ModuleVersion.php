@@ -7,6 +7,7 @@ use App\Models\Xlsforms\SurveyRow;
 use Carbon\Carbon;
 use App\Imports\ModuleFileImport;
 use App\Imports\ModuleFileUnpack;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ModuleFileValidation;
 use App\Models\Traits\HasUploadFields;
@@ -32,8 +33,15 @@ class ModuleVersion extends Model
         //Run validation **before** initial save
         static::saving(function ($moduleVersion) {
 
+            if(!$moduleVersion->file) {
+                throw ValidationException::withMessages([
+                    'file' => 'Please add an XLS file for the module',
+                ]);
+            }
 
-            Excel::import(new ModuleFileValidation($moduleVersion), $moduleVersion->file);
+            if (request() && request()->hasFile('file')) {
+                Excel::import(new ModuleFileValidation($moduleVersion), request()->file('file'));
+            }
 
         });
 
