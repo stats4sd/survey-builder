@@ -175,7 +175,7 @@
                     document.getElementById('publish-' + versionId).remove()
                     document.getElementById('test-'+versionId).insertAdjacentHTML('afterend', `
                             <a
-                                href="moduleversion/${versionId}/publish"
+                                href="/moduleversion/${versionId}/publish"
                                 id="publish-${versionId}"
                                 class="btn btn-success"
                             >
