@@ -1,5 +1,9 @@
 # Survey Builder
-A refreshed ODK form survey builder, built specifically for RHoMiS 2.0.
+This platform is built to support the creation of ODK forms from a library of pre-built ODK modules. The platform includes an admin panel for users to manage the list of ODK modules available, and a front-end written in VueJS that lets users create new ODK forms. 
+
+This system was built in collaboration with RHOMIS, and the RHoMIS-specific version of this system now lives in their organisation's github page: https://github.com/RHoMIS. 
+
+This version is currently being updated to be more generalised, and hopefully will be useable in different scenarios. 
 
 # Development
 This platform is built using Laravel/PHP. The front-end is written in VueJS and the admin panel uses Backpack for Laravel.
@@ -20,21 +24,6 @@ php artisan backpack:install
 npm install
 npm run dev
 ```
-6.	Migrate the database: `php aritsan migrate:fresh --seed` (or copy from the staging site)
+6.	Migrate the database: `php aritsan migrate:fresh --seed` (or copy from the staging site, if one exists.)
 
 
-
-
-TODO: setup push to push locations csv file to Kobo
-
-TODO: update XLS form module(s) to use locations csv instead of choice_filters
-
-TODO: modify household question to be either select or string;
-
-TODO: add customise question text section;
-
-TODO: add rules to modules for ordering
-
-TODO: for non-finalised forms, link to modules instead of module versions, so the user always has access to the 'current' versions of each module? 
-
-TODO: provide user feedback for 419 errors (please re-login)
