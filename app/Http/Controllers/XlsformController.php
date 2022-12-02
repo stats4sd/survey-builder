@@ -46,6 +46,7 @@ class XlsformController extends CrudController
     public function create()
     {
         $data = $this->setupView(null);
+        $data['project_name'] = session('project_name');
 
         return view('xlsforms.create', $data);
     }
@@ -92,7 +93,7 @@ class XlsformController extends CrudController
             }
 
             $project = auth()->user()->projects()->create([
-                'name' => Str::replace(' ', '-', $attributes['new_project_name']),
+                'name' => Str::slug($attributes['new_project_name']),
                 'global' => 0,
             ]);
 
@@ -103,7 +104,7 @@ class XlsformController extends CrudController
         }
 
         // ensure form name has no spaces
-        $attributes['name'] = Str::replace(' ', '-', $attributes['name']);
+        $attributes['name'] = Str::slug($attributes['name']);
 
         $xlsform = Xlsform::create($attributes);
 
@@ -166,11 +167,11 @@ class XlsformController extends CrudController
             'region_label' => 'nullable|json',
             'subregion_label' => 'nullable|json',
             'village_label' => 'nullable|json',
-            'has_household_list' => 'nullable',
+            'has_household_list' => 'boolean',
         ]);
 
-        foreach($validated as $key => $value) {
-            if($value == null) {
+        foreach ($validated as $key => $value) {
+            if ($value == null) {
                 unset($validated[$key]);
             }
         }
@@ -187,8 +188,8 @@ class XlsformController extends CrudController
         $xlsform->update($validated);
 
         // handle location choice rows
-        if($xlsform->location_file_url) {
-               Excel::import(new ImportLocationsFileToChoices($xlsform), Storage::path($xlsform->location_file));
+        if ($xlsform->location_file_url) {
+            Excel::import(new ImportLocationsFileToChoices($xlsform), Storage::path($xlsform->location_file));
         }
 
         // handle selected choices rows
@@ -197,13 +198,13 @@ class XlsformController extends CrudController
 
         //filter out locations (that get mixed into the Vue objects after initial save)
         $selectedChoicesRows = collect($selectedChoicesRows)
-            ->map(function($row, $key) {
-                if(collect(['Country', 'region', 'subregion', 'village', 'household'])->contains($key)) {
+            ->map(function ($row, $key) {
+                if (collect(['Country', 'region', 'subregion', 'village', 'household'])->contains($key)) {
                     return null;
                 }
                 return $row;
             })
-        ->filter(fn($rows) => $rows );
+            ->filter(fn($rows) => $rows);
 
         foreach ($selectedChoicesRows as $listName => $choicesRows) {
 
@@ -229,10 +230,17 @@ class XlsformController extends CrudController
             }
         }
 
+        // update completed choice lists for form
+        $completedLists = json_decode($request->input('completed_lists'), true);
+        $completedListsToSync = collect($completedLists)
+            ->combine(collect($completedLists)->map(function ($list) {
+                return ['complete' => 1];
+            }));
+
+        $xlsform->choiceLists()->sync($completedListsToSync);
+
         $this->buildForm($xlsform);
-        // temp
-        // BuildXlsFormComplete::dispatch($xlsform->name, Auth::user());
-        // DeployXlsFormComplete::dispatch($xlsform->name, Auth::user());
+
         return $xlsform->load('selectedChoicesRows');
 
 
@@ -248,10 +256,30 @@ class XlsformController extends CrudController
 
         // TODO: accept the fact that there will be multiple "is_current" modules and get all modules as a collection of 'current' versions.
         // Then it will be upto the Vue component to handle picking the correct version based on user input;
-        $modules = ModuleVersion::with('module')->where('is_current', true)->get();
+        $modules = ModuleVersion::with('module')
+            ->where('is_current', true)
+            ->get();
 
         if ($xlsform) {
             $xlsform->modules = $xlsform->moduleVersions->load('module')->sortBy('pivot.order')->values();
+            $xlsform->allModules =
+                ModuleVersion::with('module')
+                    ->where('is_current', 1)
+                    ->whereHas('module', function ($query) {
+                        $query->where('modules.locked_to_start', 1)
+                            ->orderBy('modules.lft');
+                    })->get()
+                    ->merge($xlsform->modules)
+                    ->merge(
+                        ModuleVersion::with('module')
+                            ->where('is_current', 1)
+                            ->whereHas('module', function ($query) {
+                                $query->where('modules.locked_to_end', 1)
+                                    ->orderBy('modules.lft');
+                            })->get()
+                    );
+
+
             $xlsform->load('themes', 'countries', 'languages', 'selectedChoicesRows.selectedChoicesLabels');
 
 
@@ -262,6 +290,9 @@ class XlsformController extends CrudController
                 $choicesRow->preselected = true;
                 return $choicesRow;
             });
+
+            // get completed custom choice lists
+            $xlsform->completedLists = $xlsform->choiceLists->where('pivot.complete', 1)->pluck('id')->toArray();
 
         }
 

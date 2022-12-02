@@ -2,6 +2,8 @@
 
 namespace App\Exports;
 
+use App\Models\Module;
+use App\Models\ModuleVersion;
 use App\Models\Xlsform;
 use App\Models\Xlsforms\ChoicesRow;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -24,26 +26,26 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         // get any custom selected choice rows:
         $selectedRows = $this->xlsform->selectedChoicesRows->load('selectedChoicesLabels')
-        ->map(function($row) {
-            $labels = $row->selectedChoicesLabels;
+            ->map(function ($row) {
+                $labels = $row->selectedChoicesLabels;
 
 
-            foreach($labels as $label) {
-                foreach($this->xlsform->languages as $language) {
-                    if($label->language_id === $language->id) {
-                        $header = "label::" . $language->name . " (" . $language->id . ")";
-                        $row->$header = $label->label;
+                foreach ($labels as $label) {
+                    foreach ($this->xlsform->languages as $language) {
+                        if ($label->language_id === $language->id) {
+                            $header = "label::" . $language->name . " (" . $language->id . ")";
+                            $row->$header = $label->label;
+                        }
                     }
                 }
-            }
 
-            return $row;
-        });
+                return $row;
+            });
 
         $selectedChoiceLists = $selectedRows->pluck('list_name')->unique()->toArray();
 
         // handle location lists
-        if($this->xlsform->location_file_url) {
+        if ($this->xlsform->location_file_url) {
             $selectedChoiceLists[] = 'Country';
             $selectedChoiceLists[] = 'region';
             $selectedChoiceLists[] = 'subregion';
@@ -51,7 +53,21 @@ class XlsChoicesExport implements FromCollection, WithTitle, WithHeadings, WithM
 
         }
 
-        $optionalModulesRows = $this->xlsform->moduleVersions->map(function ($version) use ($selectedChoiceLists) {
+        $startModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_start', 1);
+        })
+            ->where('is_current', 1)
+            ->get();
+
+        $endModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_end', 1);
+        })
+            ->where('is_current', 1)
+            ->get();
+
+        $moduleVersions = $startModules->merge($this->xlsform->moduleVersions)->merge($endModules);
+
+        $optionalModulesRows = $moduleVersions->map(function ($version) use ($selectedChoiceLists) {
             return $version
                 ->choicesRows
                 // if any localisable lists have selected items, do not get the 'defaults' for that list.

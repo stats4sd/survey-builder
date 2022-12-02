@@ -10,13 +10,14 @@ import FormBuilderStageTwo from "./components/FormBuilderStageTwo"
 import FormBuilderStageThree from "./components/FormBuilderStageThree"
 import FormBuilderStageFour from "./components/FormBuilderStageFour";
 import FormKeyDetailsView from "./components/FormKeyDetailsView";
-
+import HelpLink from "./components/HelpLink";
 
 Vue.component('FormKeyDetailsView', FormKeyDetailsView)
 Vue.component('FormBuilderStageOne', FormBuilderStageOne)
 Vue.component('FormBuilderStageTwo', FormBuilderStageTwo)
 Vue.component('FormBuilderStageThree', FormBuilderStageThree)
 Vue.component('FormBuilderStageFour', FormBuilderStageFour)
+Vue.component('HelpLink', HelpLink)
 
 Vue.use(BootstrapVue);
 

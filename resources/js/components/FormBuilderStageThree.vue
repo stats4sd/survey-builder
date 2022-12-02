@@ -3,7 +3,10 @@
         <div class="mt-2">
             <div class="row justify-content-center">
                 <div class="col-md-12">
-                    <h2 class="mb-3">Stage 3 - Customise to local context</h2>
+                    <h2 class="mb-3 d-flex">
+                        <HelpLink section="building-a-survey" heading="localising-your-questionnaire"/>
+                        Stage 3 - Customise to local context
+                    </h2>
 
                     <customise-locations
                         :xlsform-name="xlsformOriginal.name"
@@ -28,26 +31,27 @@
                     ></customise-lists>
 
                     <b-button variant="primary" @click.prevent="submit">Save Choice Lists and Build</b-button>
-<!--                    <b-button variant="success" @click.prevent="build">Build Form</b-button>-->
+                    <!--                    <b-button variant="success" @click.prevent="build">Build Form</b-button>-->
 
                     <hr/>
                     <h4>Next Steps</h4>
-                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save and build the form, new
+                    <div v-if="!xlsform.draft && !xlsform.complete" class="alert alert-info">Once you save and build the
+                        form, new
                         options will appear below.
                     </div>
                     <div class="row">
                         <div class="col-12 col-lg-9">
                             <ul class="w-100">
                                 <li v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
-                                    <span class="w-50 text-right mr-4">1. Try out the Form in ODK Collect:</span>
+                                    <span class="w-50 text-right mr-4">1. Test out the Form in ODK Collect:</span>
                                     <a
 
-                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                        :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect/draft'"
                                         class="btn btn-link"
                                         :class="processing ? 'disabled' : ''"
                                     >
                                         <i class="la la-spinner la-spin" v-if="processing"></i>
-                                        Collect data
+                                        Test Survey
                                     </a>
                                 </li>
                                 <li v-if="xlsform.download_url" class="d-flex align-items-center">
@@ -95,6 +99,7 @@ import CustomiseLocations from "./CustomiseLocations";
 import CustomiseQuestionText from "./CustomiseQuestionText";
 import CustomiseLists from "./CustomiseLists";
 import Noty from "noty";
+import {indexOf} from "lodash";
 
 
 export default {
@@ -130,10 +135,11 @@ export default {
                 subregion_label: {"en": "subregion"},
                 village_label: {"en": "village"},
                 location_file: null,
-                has_household_list: null,
+                has_household_list: 0,
                 selected_choices_rows: [],
                 location_file_url: "",
                 location_file_name: "",
+                completedLists: null,
             },
             updatedSelectedChoicesRows: {},
             processing: false,
@@ -188,6 +194,7 @@ export default {
             formData.append("village_label", JSON.stringify(this.xlsform.village_label));
             formData.append("has_household_list", this.xlsform.has_household_list);
             formData.append("selected_choices_rows", JSON.stringify(this.updatedSelectedChoicesRows));
+            formData.append("completed_lists", JSON.stringify(this.xlsform.completedLists));
             formData.append("_method", 'PUT');
 
             axios.post('/xlsform/' + this.xlsform.name + '/customise', formData, {
@@ -332,6 +339,11 @@ export default {
 
         updateListCompletion(list) {
             console.log('emitted list: ', list)
+            if (list.complete) {
+                this.xlsform.completedLists.push(list.id)
+            } else {
+                this.xlsform.completedLists.splice(indexOf(this.xlsform.completedLists, list.list_name), 1)
+            }
         }
     }
 }

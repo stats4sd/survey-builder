@@ -39,6 +39,7 @@
         "swal": "^0.1.0",
         "sweetalert2": "^11.4.13",
         "vue-echo-laravel": "^0.1.0",
+        "vue-material-design-icons": "^5.1.2",
         "vue-select": "^3.16.0",
         "vue-template-loader": "^1.1.0",
         "vuedraggable": "^2.24.3"

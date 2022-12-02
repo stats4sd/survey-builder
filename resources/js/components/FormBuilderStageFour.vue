@@ -1,29 +1,54 @@
 <template>
     <div class="px-5">
-        <h3>Review the form and deploy to ODK</h3>
-
+        <h2 class="d-flex align-items-center">
+            <HelpLink section="building-a-survey" heading="reviewing-your-questionnaire"/>
+            Review the form and deploy to ODK
+        </h2>
+        <hr/>
 
         <!--    Overall metrics: time for survey; no. of questions; no of optional modules added -->
         <h4>Form Contents</h4>
-        <a href="xlsform.download_url">Download current XLSform file for review</a>
-
         <b-row>
             <b-col lg="6" cols="12">
                 <b-list-group>
-                    <b-list-group-item class="d-flex">
+                    <b-list-group-item class="d-flex align-items-center">
                         <b-col cols="6" class="text-right">Modules:</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ xlsform.modules.length }}</b-col>
                     </b-list-group-item>
-                    <b-list-group-item class="d-flex">
+                    <b-list-group-item class="d-flex align-items-center">
                         <b-col cols="6" class="text-right">Optional Modules:</b-col>
                         <b-col cols="3" class="font-weight-bold">
                             {{ xlsform.modules.filter(module => module.module.core === 0).length }}
                         </b-col>
                     </b-list-group-item>
-                    <b-list-group-item class="d-flex">
+                    <b-list-group-item class="d-flex align-items-center">
                         <b-col cols="6" class="text-right">Estimated Total Time:</b-col>
                         <b-col cols="3" class="font-weight-bold">
                             {{ xlsform.modules.reduce((carry, module) => carry + module.module.minutes, 0) }} minutes
+                        </b-col>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="xlsform.draft || xlsform.complete" class="d-flex align-items-center">
+                        <b-col cols="6" class="text-right">Try out the Form in ODK Collect:</b-col>
+                        <b-col cols="6" class="font-weight-bold">
+                            <a
+                                :href="rhomisAppUrl+'/#/projects/'+xlsform.project_name+'/forms/'+xlsform.name+'/collect'"
+                                class="btn btn-link"
+                            >
+                                <i class="la la-spinner la-spin" v-if="processing"></i>
+                                Collect data
+                            </a>
+                        </b-col>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="xlsform.download_url" class="d-flex align-items-center">
+                        <b-col cols="6" class="text-right">Review the ODK Form in Excel:</b-col>
+                        <b-col cols="6" class="font-weight-bold">
+                            <a
+                                :href="!processing ? xlsform.download_url : ''"
+                                class="btn btn-link"
+                            >
+                                <i class="la la-spinner la-spin" v-if="processing"></i>
+                                Download XLS Form
+                            </a>
                         </b-col>
                     </b-list-group-item>
                 </b-list-group>
@@ -34,17 +59,18 @@
         <b-row class="my-4">
             <b-col>
                 <b-button v-b-toggle.moduleList varient="info">Show full list of modules</b-button>
-            <b-collapse id="moduleList" name="moduleList">
-                <b-table :items="xlsform.modules" :fields="moduleFields"/>
-            </b-collapse>
+                <b-collapse id="moduleList" name="moduleList">
+                    <b-table :items="xlsform.modules" :fields="moduleFields"/>
+                </b-collapse>
             </b-col>
         </b-row>
         <hr/>
 
         <!-- Locations: count of countries, regions, subregions and villages. (Maybe list in collapsible?) -->
         <h4>Location Information</h4>
-        <b-alert v-if="!xlsform.location_file_url" variant="warning" class="text-dark">
-            You have not uploaded any location information for the form. Please make sure you do so on the <a :href="'/xlsform/'+xlsform.name+'/edit-three'">Stage 3 page</a> before finalising the survey.
+        <b-alert v-if="!xlsform.location_file_url" variant="warning" class="text-dark" show>
+            You have not uploaded any location information for the form. Please make sure you do so on the <a
+            :href="'/xlsform/'+xlsform.name+'/edit-three'">Stage 3 page</a> before finalising the survey.
         </b-alert>
         <b-row class="my-4">
             <b-col lg="6" cols="12">
@@ -58,11 +84,11 @@
                         <b-col cols="3" class="font-weight-bold">{{ regionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
-                        <b-col cols="6" class="text-right">{{  xlsform.subregion_label.en }} count:</b-col>
+                        <b-col cols="6" class="text-right">{{ xlsform.subregion_label.en }} count:</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ subregionCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex">
-                        <b-col cols="6" class="text-right">{{  xlsform.village_label.en }} count:</b-col>
+                        <b-col cols="6" class="text-right">{{ xlsform.village_label.en }} count:</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ villageCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-if="xlsform.has_household_list">
@@ -70,7 +96,8 @@
                         <b-col cols="3" class="font-weight-bold">{{ householdCount }}</b-col>
                     </b-list-group-item>
                     <b-list-group-item class="d-flex" v-else>
-                        This form does not a pre-defined list of households. Household id entry will be via number or free-text field entry.
+                        This form does not a pre-defined list of households. Household id entry will be via number or
+                        free-text field entry.
                     </b-list-group-item>
                 </b-list-group>
             </b-col>
@@ -79,7 +106,8 @@
 
         <!-- List of customised lists. Comment that all other 'customisable' lists will take the default options, but it's recommended to explicitly choose the options... -->
         <h4>Custom Response Option Lists</h4>
-        <p>Below you can see every response option list that you have customised.</p>
+        <p>Response option lists that require customisation are below. Any lists not yet customised appear highlighted
+            in red.</p>
         <b-row class="my-4">
             <b-col lg="6" cols="12">
                 <b-list-group>
@@ -87,10 +115,35 @@
                         <b-col cols="6" class="text-right">List</b-col>
                         <b-col cols="3" class="font-weight-bold">No. of choices</b-col>
                     </b-list-group-item>
-                    <b-list-group-item class="d-flex" v-for="row in nonLocationSelectedChoicesRows" v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
+                    <b-list-group-item class="d-flex font-weight-bold">UNITS</b-list-group-item>
+                    <b-list-group-item
+                        class="d-flex"
+                        v-for="row in selectedUnitChoicesRows"
+                        v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
                         <b-col cols="6" class="text-right">{{ row[0].list_name }}</b-col>
                         <b-col cols="3" class="font-weight-bold">{{ row.length }}</b-col>
                     </b-list-group-item>
+                    <b-list-group-item class="d-flex text-danger" v-for="row in unselectedUnitChoicesLists"
+                                       v-if="!isLoading">
+                        <b-col cols="6" class="text-right">{{ row.list_name }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">0</b-col>
+                    </b-list-group-item>
+
+                    <b-list-group-item class="d-flex font-weight-bold">OTHER LISTS</b-list-group-item>
+                    <b-list-group-item
+                        class="d-flex"
+                        v-for="row in selectedOtherChoicesRows"
+                        v-if="!['Country', 'region', 'subregion', 'village', 'household'].includes(row[0].list_name)">
+                        <b-col cols="6" class="text-right">{{ row[0].list_name }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">{{ row.length }}</b-col>
+                    </b-list-group-item>
+                    <b-list-group-item class="d-flex text-danger" v-for="row in unselectedOtherChoicesLists"
+                                       v-if="!isLoading">
+                        <b-col cols="6" class="text-right">{{ row.list_name }}</b-col>
+                        <b-col cols="3" class="font-weight-bold">0</b-col>
+                    </b-list-group-item>
+
+                    <div v-if="isLoading"><span class="spinner-border-sm"></span> Loading</div>
                 </b-list-group>
             </b-col>
         </b-row>
@@ -104,7 +157,7 @@
 <script>
 import Noty from "noty";
 import Swal from "sweetalert2";
-import {isSet} from "lodash";
+import axios from "axios";
 
 export default {
     name: "FormBuilderStageFour",
@@ -155,28 +208,53 @@ export default {
                     label: 'version',
                 },
                 {
-                    key: 'question_count',
-                    label: 'No. of questions',
-                },
-                {
                     key: 'module.minutes',
                     label: 'Estimated time (minutes)',
                 },
             ],
             selectedChoicesRows: {},
+            choiceLists: [],
+            isLoading: false,
         }
     },
     computed: {
-        nonLocationSelectedChoicesRows() {
+        selectedOtherChoicesRows() {
             let nonLocationRows = {}
             let locationKeys = ['Countries', 'regions', 'subregions', 'villages', 'households'];
-             Object.keys(this.selectedChoicesRows).forEach(key => {
-                if(!locationKeys.includes(key)) {
+            let unitKeys = this.choiceLists.filter(list => list.is_units === 1).map(list => list.list_name)
+
+            console.log('unitKeys', unitKeys);
+
+            Object.keys(this.selectedChoicesRows).forEach(key => {
+                if (!locationKeys.includes(key) && !unitKeys.includes(key)) {
                     nonLocationRows[key] = this.selectedChoicesRows[key] ?? null;
                 }
             })
 
             return nonLocationRows;
+        },
+        selectedUnitChoicesRows() {
+            let unitRows = {}
+            let unitKeys = this.choiceLists.filter(list => list.is_units === 1).map(list => list.list_name)
+
+            Object.keys(this.selectedChoicesRows).forEach(key => {
+                if (unitKeys.includes(key)) {
+                    unitRows[key] = this.selectedChoicesRows[key] ?? null;
+                }
+            })
+
+            return unitRows
+        },
+        unselectedUnitChoicesLists() {
+            return this.choiceLists
+                .filter(list => list.is_units === 1)
+                .filter(list => !Object.keys(this.selectedChoicesRows).includes(list.list_name))
+
+        },
+        unselectedOtherChoicesLists() {
+            return this.choiceLists
+                .filter(list => list.is_units === 0 && list.is_locations === 0)
+                .filter(list => !Object.keys(this.selectedChoicesRows).includes(list.list_name))
         },
         countryCount() {
             return this.selectedChoicesRows.hasOwnProperty('Country') ? this.selectedChoicesRows.Country.length : 0;
@@ -198,8 +276,10 @@ export default {
 
     mounted() {
         this.xlsform = {...this.xlsformOriginal};
-
+        this.xlsform.modules = this.xlsform.allModules;
+        this.xlsform.module_versions = this.xlsform.allModuleVersions;
         this.xlsform.module_versions = this.xlsform.module_versions ? this.xlsform.module_versions.map(moduleVersion => moduleVersion.id) : []
+
 
         this.xlsform.moduleVersions = this.xlsform.modules.map(moduleVersion => moduleVersion.id);
 
@@ -214,16 +294,22 @@ export default {
         }
 
         this.xlsform.selectedChoicesRows.forEach(row => {
-            // if(!isSet(this.selectedChoicesRows[row.list_name])) {
-            //     this.$set(this.selectedChoicesRows, row.list_name, [])
-            //
-            // }
-            let updatedList = [ ...this.selectedChoicesRows[row.list_name] ?? [] ]
+
+            let updatedList = [...this.selectedChoicesRows[row.list_name] ?? []]
             updatedList.push(row);
 
             this.$set(this.selectedChoicesRows, row.list_name, updatedList);
         })
 
+        this.isLoading = true;
+        axios.get('/localisable-lists/')
+            .then(res => {
+                console.log('lists got', res);
+                this.choiceLists = res.data;
+
+                this.isLoading = false;
+
+            });
 
 
         this.setupListeners();

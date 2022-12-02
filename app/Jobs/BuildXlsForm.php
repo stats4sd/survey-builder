@@ -56,28 +56,21 @@ class BuildXlsForm implements ShouldQueue
         ]);
 
         // test built form against pyxform standard;
-        $testResult = (new PyXformService)->testXlsform($this->xlsform);
+         $testResult = (new PyXformService)->testXlsform($this->xlsform);
 
         if ($testResult !== true) {
 
             BuildXlsFormFailed::dispatch($this->xlsform->name, $testResult->join(', '), 500, $this->user);
 
-            return;
-        }
+        } else {
+
 
         // broadcast completion of xlsfile
         BuildXlsFormComplete::dispatch($this->xlsform->name, $this->user);
         DeployXlsForm::dispatch($this->xlsform->name, $this->user);
 
-
-        //DeployXlsFormComplete::dispatch($this->xlsform->name, $this->user);
+        }
 
     }
-
-    public function failed($e): void
-    {
-        dd($e);
-    }
-
 
 }

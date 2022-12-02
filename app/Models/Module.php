@@ -19,6 +19,15 @@ class Module extends Model
     protected $table = 'modules';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'requires_before' => 'array'
+    ];
+
+    public function getCurrentVersionNameAttribute()
+    {
+        return $this->currentVersions->pluck('version_name')->toArray();
+    }
+
     public function theme()
     {
         return $this->belongsTo(Theme::class);

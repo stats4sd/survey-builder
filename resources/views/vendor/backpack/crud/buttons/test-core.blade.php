@@ -52,14 +52,16 @@
                         button.html('Test all Core Modules');
                         new Noty({
                             type: 'danger',
-                            text: `The current core modules could not be turned into a viable ODK form. The following error(s) occured:<br/>
+                            text: `The current core modules could not be turned into a viable ODK form. The following error occured:<br/>
                                     ${errors}<br/>
                                     Download the xlsform to review and identify the modules that need updating.`,
                             timeout: false,
                         }).show();
 
                         document.getElementById('test-form-download-spot').insertAdjacentHTML('afterbegin', `<a class="btn btn-warning text-dark" href="${path}" target="_blank">Download Test Form for debugging</a>`)
-
+                        if (typeof crud !== 'undefined') {
+                            crud.table.draw(false);
+                        }
 
                     }
                 });

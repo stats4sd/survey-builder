@@ -1,11 +1,15 @@
 <template>
     <div class="col-md-12">
-        <h2 class="mb-3">Stage 1 - Create a Survey</h2>
-        <h4 v-if="xlsformOriginal">{{ xlsformOriginal.name }}</h4>
+
+        <h2 class="mb-3 d-flex">
+            <HelpLink section="building-a-survey" heading="initialising-your-project"/>
+            Stage 1 - Create a Survey</h2>
+
         <b-form @submit.prevent="submit">
             <slot name="csrf"></slot>
             <div class="font-weight-bold mb-4" v-if="xlsformOriginal && xlsformOriginal.hasOwnProperty('project_name')">
                 <b>Project: </b> {{ xlsform.project_name}}<br/>
+                <span v-if="xlsformOriginal"><b>Form:</b> {{ xlsformOriginal.name }}</span><br/>
                 This form has been saved to this project. To change the project or the form name, please <a @click.prevent="destroy()" href="#">click here</a> to create a new form. Note this will reset your progress for this form.
             </div>
 
@@ -122,6 +126,9 @@ export default {
         vSelect,
     },
     props: {
+        projectName: {
+            default: ''
+        },
         projectsStart: {
             default: () => []
         },
@@ -177,12 +184,15 @@ export default {
     mounted() {
 
         // if creating (not editing) assign core modules to xlsform
+        // do not assign locked modules (they will be automatically added during xlsform build)
         if (this.xlsformOriginal == null) {
             this.xlsform.modules = this.modules.filter(
-                module => module.module.core === 1
+                module => module.module.core === 1 && module.module.locked_to_start !== 1 && module.module.locked_to_end !== 1
             ).sort((a,b) => {
                 return a.module.lft > b.module.lft
             });
+
+            this.xlsform.project_name = this.projectName;
         } else {
             this.xlsform = {...this.xlsformOriginal};
             this.xlsform.themes = this.xlsform.themes ? this.xlsform.themes.map(theme => theme.id) : []

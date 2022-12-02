@@ -21,6 +21,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ReorderOperation;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
+use function PHPUnit\Framework\equalToCanonicalizing;
 
 /**
  * Class ModuleCrudController
@@ -75,9 +76,21 @@ class ModuleCrudController extends CrudController
         CRUD::column('theme')->type('relationship');
         CRUD::column('title');
         CRUD::column('slug')->label('slug');
-        CRUD::column('requires')->type('array');
         CRUD::column('requires_before')->type('array');
-        CRUD::column('current_version_name')->label('Current Version')->wrapper([
+        CRUD::column('test_success')->type('boolean')->wrapper([
+            'element' => 'span',
+            'class' => function ($crud, $column, $entry, $related_key) {
+                if ($entry->test_success) {
+                    return 'badge badge-success';
+                }
+                if ($entry->test_failed) {
+                    return 'badge badge-danger';
+                }
+
+                return 'badge badge-default';
+            },
+        ]);
+        CRUD::column('current_version_name')->type('array')->label('Current Version(s)')->wrapper([
             'href' => function ($crud, $column, $entry, $related_key) {
                 if ($entry->current_version) {
                     return Storage::url($entry->current_version->file);
@@ -123,25 +136,48 @@ class ModuleCrudController extends CrudController
             'project_name' => config('services.odk_central.test-project'),
         ]);
 
-    //TODO: update to check full or reduced;
+        //TODO: update to check full or reduced;
+        $moduleVersions = ModuleVersion::where('is_current', 1)
+            ->whereHas('module', function ($query) {
+                $query->where('modules.core', 1)
+                    // locked modules are automatically added during build; so are not synced to the form
+                    ->where('modules.locked_to_start', 0)
+                    ->where('modules.locked_to_end', 0);
+            })
+            ->get()
+            ->sortBy(function ($version) {
+                return $version->module->lft;
+            });
+
+        // prepare array to sync via belongsToMany relationship in format:
+        // [
+        //      $moduleVersionId => ['order' => 1],
+        //      $moduleVersionId => ['order' => 2],
+        //         ... etc
+        // ]
+        $moduleVersionsToSync = $moduleVersions
+            ->pluck('id')
+            ->combine($moduleVersions->map(function ($moduleVersion) {
+                return ['order' => $moduleVersion->module->lft];
+            }));
 
         $xlsform->moduleVersions()
-            ->sync(ModuleVersion::where('is_current', 1)
-                ->whereHas('module', function ($query) {
-                    $query->where('modules.core', 1);
-                })
-                ->get()
-                ->pluck('id')
-                ->toArray()
-            );
+            ->sync($moduleVersionsToSync);
 
-        if($module) {
+        if ($module) {
             $versions = $module->moduleVersions()->where('is_current', 1)
-            ->get()
-            ->pluck('id')
-            ->toArray();
+                ->get()
+                ->sortBy(function ($version) {
+                    return $version->module->lft;
+                });
 
-            $xlsform->moduleVersions()->syncWithoutDetaching($versions);
+            $versionsToSync = $versions
+                ->pluck('id')
+                ->combine($versions->map(function ($moduleVersion) {
+                    return ['order' => $moduleVersion->module->lft];
+                }));
+
+            $xlsform->moduleVersions()->syncWithoutDetaching($versionsToSync);
         }
 
         // add English to the form, otherwise no labels will be created;
@@ -159,16 +195,44 @@ class ModuleCrudController extends CrudController
         // test built form against pyxform standard;
         $result = (new PyXformService())->testXlsform($xlsform);
 
+        // check for exact 'true', not just a truthy statement;
         if ($result === true) {
+
+            Module::where('core', 1)->update([
+                'test_success' => 1,
+                'test_failed' => 0,
+
+            ]);
+
+            if ($module) {
+                $module->update([
+                    'test_success' => 1,
+                    'test_failed' => 0,
+
+                ]);
+            }
 
             return response()->json([
                 'message' => $module ? "{$module->title} Compiled with Core modules successfully" : "All Core modules compiled successfully!",
-                ], 200);
+            ], 200);
         }
+
+        if ($module) {
+            $module->update([
+                'test_success' => 0,
+                'test_failed' => 1,
+            ]);
+        } else {
+            Module::where('core', 1)->update([
+                'test_success' => 0,
+                'test_failed' => 1,
+            ]);
+        }
+
         return response()->json([
             'errors' => $result->join(','),
             'xlsform_path' => Storage::url($xlsform->xlsfile),
-            ], 500);
+        ], 500);
     }
 
     /**
@@ -186,6 +250,21 @@ class ModuleCrudController extends CrudController
         CRUD::field('title');
         CRUD::field('slug')->label('No-spaces unique string to identify modules in compiled XLSforms');
         CRUD::field('minutes')->label('Approx. time to complete this part of the survey (in minutes)');
+
+        CRUD::field('ordering-ingo')->type('section-title')->title('Module Ordering Rules');
+
+        CRUD::field('locked_to_start')->type('boolean')->label('Should this module always appear at the start of the form?')
+            ->hint('Tick yes to prevent users from re-ordering this module during form creation.');
+        CRUD::field('locked_to_end')->type('boolean')->label('Should this module always appear at the start of the form?')
+            ->hint('Tick yes to prevent users from re-ordering this module during form creation.');
+        CRUD::field('requires_before')
+            ->type('select2_from_array')
+            ->allows_multiple(true)
+            ->options(Module::where('locked_to_start', 0)->where('locked_to_end', 0)->get()->pluck('title', 'id')->toArray())
+            ->label('Does this module require other modules to come before it?')
+            ->hint('E.g., The Food Security module must come before the Dietry Diversity module, because the Dietry diversity questions reference answers given in the previous module.<br/>
+                    Note that you do not need to select modules that are set to always appear at the start, such as the Metadata (start) and Demographics modules.
+                    ');
 
 
         CRUD::field('property-info')->type('section-title')->title('Module Properties');

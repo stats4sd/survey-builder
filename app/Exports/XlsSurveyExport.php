@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\ModuleVersion;
 use App\Models\Xlsform;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -22,15 +24,52 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
     public function collection()
     {
         // get module versions in correct order
-        // dd($this->xlsform->moduleVersions->sortBy('pivot.order')->pluck('module_id'));
-        $collection = $this->xlsform->moduleVersions->sortBy('pivot.order')->map(function ($version) {
-            return $version->surveyRows->map(function ($row) use ($version) {
-                $row->order = $version->pivot->order;
-                return $row;
+
+        // starter modules
+        $startModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_start', 1);
+        })
+            ->where('is_current', 1)
+            ->get()
+            ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
+            ->map(function ($moduleVersion, $index) {
+                $moduleVersion->order = $index - 100;
+                return $moduleVersion;
             });
 
+        $endModules = ModuleVersion::whereHas('module', function ($query) {
+            $query->where('locked_to_end', 1);
+        })
+            ->where('is_current', 1)
+            ->get()
+            ->sortBy(fn($moduleVersion) => $moduleVersion->module->lft)
+            ->map(function ($moduleVersion, $index) {
+                $moduleVersion->order = $index + 100000;
+                return $moduleVersion;
+            });
 
-        })->flatten()
+        $collection = $startModules->merge($this
+            ->xlsform
+            ->moduleVersions
+            ->sortBy('pivot.order')
+        )
+            ->merge($endModules)
+
+            // map and get survey rows in correct order;
+            ->map(function ($version) {
+                Log::debug($version);
+                return $version->surveyRows->map(function ($row) use ($version) {
+                    if ($version->pivot) {
+                        $row->order = $version->pivot->order;
+                    } else {
+                        $row->order = $version->order;
+                    }
+
+                    return $row;
+                });
+
+
+            })->flatten()
             // merge in language labels:
             ->map(function ($row) {
 
@@ -84,10 +123,10 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
 
         $idsToRemove = [];
         // finally, check if there are begin and end groups or repeats that are now empty due to the removal of duplicate question names:
-        foreach($collection as $index => $row) {
-            if (str_starts_with($row['type'], 'begin') && str_starts_with($collection[$index+1]['type'], 'end')) {
+        foreach ($collection as $index => $row) {
+            if (str_starts_with($row['type'], 'begin') && str_starts_with($collection[$index + 1]['type'], 'end')) {
                 $idsToRemove[] = $row['id'];
-                $idsToRemove[] = $collection[$index+1]['id'];
+                $idsToRemove[] = $collection[$index + 1]['id'];
             }
         }
         $collection = $collection->whereNotIn('id', $idsToRemove);
@@ -147,6 +186,9 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
         $newRow[] = $surveyRow->read_only;
         $newRow[] = $surveyRow->calculation;
         $newRow[] = $surveyRow->choice_filter;
+        $newRow[] = $surveyRow->order;
+        $newRow[] = $surveyRow->id;
+        $newRow[] = $surveyRow->module_version_id;
 
         return $newRow;
     }
@@ -197,7 +239,10 @@ class XlsSurveyExport implements FromCollection, WithHeadings, WithMapping, With
         $headers[] = 'read_only';
         $headers[] = 'calculation';
         $headers[] = 'choice_filter';
-        $headers[] = 'body::accuracyThreshold';
+        $headers[] = 'order';
+        $headers[] = 'id';
+        $headers[] = 'version_id';
+
 
         return $headers;
     }

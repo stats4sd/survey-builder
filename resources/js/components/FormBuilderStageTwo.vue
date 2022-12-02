@@ -18,7 +18,10 @@
                 is this needed?
             </div>
             <div class="col-md-12">
-                <h2 class="mb-3">Stage 2 - Build the Survey</h2>
+                <h2 class="mb-3 d-flex">
+                    <HelpLink section="building-a-survey" heading="designing-your-questionnaire"/>
+                    Stage 2 - Build the Survey
+                </h2>
                 <b-form @submit.prevent="submit">
                     <!-- ##################### STEP 2 ######################## -->
                     <b-alert show variant="link" class="text-danger"
@@ -29,6 +32,8 @@
 
                     <!--  ################# STEP 3: MODULES #########################-->
                     <drag-and-drop-select
+                        :startModules="startModules"
+                        :endModules="endModules"
                         :available.sync="availableModules"
                         :selected.sync="xlsform.modules"
                         items-name="modules"
@@ -42,16 +47,25 @@
                         </template>
                         <template #listItem="props">
                             <div @click="selectModalModule(props.element)">
-                                {{ props.element.module.title }}
-                                <span
-                                    v-if="props.element.module.core"
-                                    class="text-small"
-                                >
-                                    (core)
-                                </span><br/>
+                                <div class="d-flex">
+                                    <span class="mr-2">{{ props.element.module.title }}</span>
+                                    <span
+                                        v-if="props.element.module.core"
+                                        class="text-small"
+                                    >
+                                        (core)
+                                    </span>
+                                    <span
+                                        v-if="props.element.module.locked_to_start || props.element.module.locked_to_end"
+                                        class="text-small text-right flex-grow-1">
+                                    (This element cannot be dragged)
+                                </span>
+                                    <br/>
+                                </div>
+
                                 <small>
-                                    - Version: {{ props.element.version_name }} | {{ props.element.question_count }}
-                                    questions
+                                    - Version: {{ props.element.version_name }} | {{ props.element.module.minutes }}
+                                    minutes
                                 </small>
                             </div>
                         </template>
@@ -211,7 +225,10 @@ export default {
                 countries: [],
                 languages: ['en'],
                 themes: [],
+                startModules: [],
+                endModules: [],
                 modules: [],
+                editableModules: [],
                 module_versions: [],
                 project_id: null,
                 title: "",
@@ -242,8 +259,7 @@ export default {
     computed: {
         availableModules() {
             return this.modules.filter(
-                module =>
-                    !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id)
+                module => !this.xlsform.modules.some(xlsModule => xlsModule.id === module.id) && module.module.locked_to_start == 0 && module.module.locked_to_end == 0
             );
         },
         selectedModuleIds() {
@@ -263,7 +279,8 @@ export default {
         this.xlsform.languages = this.xlsform.languages ? this.xlsform.languages.map(language => language.id) : []
 
         // handle modules
-
+        this.startModules = this.modules.filter(module => module.module.locked_to_start === 1).sort((a,b) => a.module.lft > b.module.lft)
+        this.endModules = this.modules.filter(module => module.module.locked_to_end === 1).sort((a,b) => a.module.lft > b.module.lft)
 
         this.setupListeners()
     },
